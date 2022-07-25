@@ -1,0 +1,473 @@
+﻿@model KockpitPortal.ViewModels.SuperAdmin.tblUsersViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<div class="main">
+    <div class="admin-clients-container">
+        <div class="admin-clients-header">
+            <p>Clients</p>
+            <div class="offering-input">
+                <button class="ko-btn-primary-lg" data-toggle="modal" data-target="#actionModal"
+                        onclick="initControl();"
+                        title="Add New Client">
+                    Add New Client
+                </button>
+            </div>
+        </div>
+        <table id="clients-table">
+            <thead>
+                <tr>
+                    <td>S.No</td>
+                    <td>Company</td>
+                    <td>Email</td>
+                    <td>Domain</td>
+                    <td>Created On</td>
+                    <td>Expired On</td>
+                    <td>Status</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.users != null && Model.users.Count > 0)
+                {
+                    int nRow = 0;
+                    foreach (var item in Model.users)
+                    {
+                        <tr>
+                            <td>
+                                @(nRow += 1)
+                            </td>
+                            <td>
+                                <div class="company-info">
+                                    <div class="company-icon"><img src="@Url.Content(item.Logo)" height="50" width="50" /></div>
+                                    <p class="company-name">@item.CompanyName</p>
+                                </div>
+                            </td>
+                            <td>@item.EmailId</td>
+                            <td>@item.SchemaName</td>
+                            <td>@Convert.ToDateTime(item.ExpiredOn).ToShortDateString()</td>
+                            <td>@item.CreatedOn.ToShortDateString()</td>
+                            <td>
+                                @if (item.ActiveStatus)
+                                {
+                                    <span class="pill active">active</span>
+                                }
+                                else
+                                {
+                                    <span class="pill inactive">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <button class="btn btn-info btn-sm" clientid="@item.Id"
+                                        emailid="@item.EmailId"
+                                        schema="@item.SchemaName"
+                                        company="@item.CompanyName"
+                                        expiredon="@Convert.ToDateTime(item.ExpiredOn).ToString("yyyy-MM-dd")"
+                                        active="@item.ActiveStatus"
+                                        logo="@Url.Content(item.Logo)"
+                                        address="@item.Address"
+                                        contactNo="@item.ContactNo1"
+                                        alternateNumber="@item.Contact2"
+                                        empcode="@item.EmpCode"
+                                        onclick="editClient(this)"
+                                        title="Edit Client">
+                                    <span class="iconify" data-icon="ep:edit"></span>
+                                </button>
+
+                                <a href="@Url.Action("Remove","UserManagement", new { nId = item.Id, strSchemaName = item.SchemaName, strEmailId = item.EmailId })"
+                                   onclick="return confirmation();"
+                                   title="Remove Client">
+                                    <span class="iconify" data-icon="fluent:delete-20-regular"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="overlay" id="loader" style="display:none">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+</div>
+
+
+<div class="modal" tabindex="-1" id="actionModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Client</h5>
+                <button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close">
+                    <span class="iconify" data-icon="ep:close-bold"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create" asp-controller="UserManagement" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="user.Id" />
+                    <div class="input-row">
+                        <div class="input-group in-column form-margin">
+                            <label for="offering">Company<span style="color:indianred;">*</span></label>
+                            <input type="text" placeholder="Type here..." asp-for="user.CompanyName">
+                        </div>
+                        <div class="input-group in-column form-margin">
+                            <label for="offering">Client Code<span style="color:indianred;">*</span></label>
+                            <input type="text" placeholder="Type here..." asp-for="user.EmpCode">
+                        </div>
+                    </div>
+                    <div class="input-group in-column form-margin">
+                        <label for="offering">Email<span style="color:indianred;">*</span></label>
+                        <input type="email" placeholder="Type here..." asp-for="user.EmailId">
+                    </div>
+                    <div class="input-row form-margin">
+                        <div class="input-group in-column">
+                            <label for="plan-validity">Mobile Number(Whatsapp)<span style="color:indianred;">*</span></label>
+                            <input type="text" placeholder="Type here..." asp-for="user.ContactNo1">
+                        </div>
+                        <div class="input-group in-column">
+                            <label for="plan-price">Alternate Number</label>
+                            <input type="text" placeholder="Type here..." asp-for="user.Contact2">
+                        </div>
+                    </div>
+                    <div class="input-group in-column form-margin">
+                        <label for="address">Address</label>
+                        <input type="text" asp-for="user.Address">
+                    </div>
+                    <div class="input-row form-margin">
+                        <div class="input-group in-column">
+                            <label for="plan-validity">Domain<span style="color:indianred;">*</span></label>
+                            <input type="text" asp-for="user.SchemaName" placeholder="Type here...">
+                        </div>
+                        <div class="input-group in-column">
+                            <label for="plan-price">Expiry Date<span style="color:indianred;">*</span></label>
+                            <input type="date" asp-for="user.ExpiredOn">
+                        </div>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group in-column form-margin">
+                            <label for="address">Company Logo<span style="color:indianred;">*</span></label>
+                            <input type="file" accept="image/*" onchange="readURL(this)" asp-for="user.file">
+                        </div>
+                        <img id="imgLogo" style="max-height:10rem; object-fit:cover;" />
+                    </div>
+                    <div class="input-group form-margin">
+                        <input type="checkbox" class="custom-checkbox" asp-for="user.ActiveStatus">
+                        <label for="user_ActiveStatus" class="checkbox_label">
+                            <div class="check-icon">
+                                <span class="iconify" data-icon="akar-icons:check"></span>
+                            </div>
+                            Active
+                        </label>
+                    </div>
+                    <div class="input-group in-column form-margin" id="divCCEmail">
+                        <label for="cc-email">CC Emails</label>
+                        <textarea asp-for="user.CCMailIds" cols="30" rows="5" placeholder="Type here..."></textarea>
+                        <p  style="text-align: left; width: 100%; color: #687c97; font-size: 1.2rem;"><b>Note:</b> Enter comma separated email ids.</p>
+                    </div>
+                    <div class="input-group form-margin">
+                        <span style="color:#687c97; font-size: 1.2rem;">*Whatsapp number is required for send whatsapp notification for support</span>
+                    </div>
+                    <button class="ko-btn-primary-lg" id="btnSubmit" onclick="return ValidateEntry();">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+                    toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+                    toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#user_SchemaName").keydown(function (e) {
+                if (e.keyCode == 32) {
+                    return false;
+                }
+            });
+
+            $("#actionModal").on('hidden.bs.modal', function () {
+                clearValidate();
+            });
+
+        });
+
+        $(document).ready(function () {
+            //$("#btnSubmit").prop("disabled", true);
+            $("#user_CompanyName").prop("disabled", false);
+            $("#user_SchemaName").prop("disabled", false);
+            $("#user_EmailId").prop("disabled", false);
+
+            $("#btnTestURL").on("click", function () {
+                if ($('#user_SchemaName').val().trim().length == 0) {
+                    $('#user_SchemaName').parent().addClass('error');
+                }else {
+                    var _schemaName = $("#user_SchemaName").val();
+
+                    var btnTest = $(this);
+                    btnTest.html("<i class='fa fa-spinner fa-spin'></i>");
+                    btnTest.prop("disabled", true);
+
+                    var formData = new FormData();
+                    formData.append("strSchemaName", _schemaName);
+                    $.ajax({
+                        url: "@Url.Action("CheckURL", "UserManagement")",
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (res) {
+                            btnTest.html("Check Domain");
+                            btnTest.prop("disabled", false);
+                            if (res.success == true) {
+                                $("#btnSubmit").prop("disabled", false);
+                                toastr.success(res.msg);
+                            } else {
+                                $("#btnSubmit").prop("disabled", true);
+                                toastr.error(res.msg);
+                            }
+                        },
+                        error: function (err) {
+
+                        }
+                    });
+                }
+            });
+
+        });
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imgLogo')
+                        .attr('src', e.target.result);
+                    $("#imgLogo").show();
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                $("#imgLogo").hide();
+            }
+        }
+
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+            if ($('#user_CompanyName').val().trim().length == 0) {
+                $('#user_CompanyName').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#user_EmailId').val().trim().length == 0) {
+                $('#user_EmailId').parent().addClass('error');
+                allow = false;
+            }
+            if ($('#user_EmpCode').val().trim().length == 0) {
+                $('#user_EmpCode').parent().addClass('error');
+                allow = false;
+            }
+
+            if(allow && (validateEmail($('#user_EmailId').val().trim()) == false)) {
+                toastr.error("Please enter valid Email");
+                allow = false;
+            }
+
+            if ($('#user_SchemaName').val().trim().length == 0) {
+                $('#user_SchemaName').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($("#user_ContactNo1").val().trim().length != 10) {
+                $('#user_ContactNo1').parent().addClass('error');
+               // allow = false;
+            }
+
+            if ($("#user_Contact2").val() != "" && $("#user_Contact2").val().trim().length != 10) {
+                $('#user_Contact2').parent().addClass('error');
+             //   allow = false;
+            }
+
+            if ($("#user_Id").val() == '' &&  $("#user_file").val().trim().length == 0) {
+                $('#user_file').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#user_ExpiredOn').val().trim().length == 0) {
+                $('#user_ExpiredOn').parent().addClass('error');
+                allow = false;
+            }
+
+            if (allow && (validateEmail($('#user_EmailId').val()) == false)) {
+                toastr.error("Please enter valid Email");
+                allow = false;
+            }
+
+            if ( $("#user_Id").val() == '')
+            {
+                if (allow && ValidateFileType() == false) {
+                    $("#user_file").parent().addClass('error');
+                    allow = false;
+                }
+            }
+
+            if (allow && $("#user_ContactNo1").val().replace(/[^\d]/g, '').length != 10) {
+                toastr.error("please enter valid 10 digit mobile number");
+                $('#user_ContactNo1').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($("#user_Contact2").val() != "" && $("#user_Contact2").val().trim().length != 10) {
+                $('#user_Contact2').parent().addClass('error');
+                toastr.error("please enter valid 10 digit mobile number");
+                allow = false;
+            }
+
+            if (allow) {
+                $("#loader").show();
+                $("#actionModal").modal('hide');
+            }
+            return allow;
+        }
+
+        function confirmation() {
+            if (confirm("This action will remove client from backend also so, Are you sure want to completely remove this client ?")) {
+                $("#loader").show();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function editClient(btn) {
+            var _clientId = $(btn).attr("clientid");
+            var _companyName = $(btn).attr("company");
+            var _schemaName = $(btn).attr("schema");
+            var _emailId = $(btn).attr("emailid");
+            var _expiredOn = $(btn).attr("expiredon");
+            var _logo = $(btn).attr("logo");
+            var _empCode = $(btn).attr("empcode");
+            var _contactNo1 = $(btn).attr("contactNo");
+            var _contactNo2 = $(btn).attr("alternateNumber");
+            var _address = $(btn).attr("address");
+            var _active = $(btn).attr("active") == "active" ? true : false;
+
+            $("#user_Id").val(_clientId);
+            $("#user_CompanyName").val(_companyName);
+            $("#user_SchemaName").val(_schemaName);
+            $("#user_EmailId").val(_emailId);
+            $("#user_ExpiredOn").val(_expiredOn);
+            $("#user_ContactNo1").val(_contactNo1);
+            $("#user_Contact2").val(_contactNo2);
+            $("#user_EmpCode").val(_empCode);
+            $("#user_Address").val(_address);
+            $("#user_ActiveStatus").prop("checked", _active);
+
+            $("#user_CompanyName").prop("disabled", true);
+            $("#user_SchemaName").prop("disabled", true);
+            $("#user_EmailId").prop("disabled", true);
+
+            $("#imgLogo").attr("src", _logo);
+            $("#imgLogo").show();
+
+            $("#actionModal").modal("show");
+
+            $("#divCCEmail").hide();
+        }
+
+        function clearValidate() {
+            $('#user_CompanyName').parent().removeClass('error');
+            $('#user_EmailId').parent().removeClass('error');
+            $('#user_SchemaName').parent().removeClass('error');
+            $('#user_ContactNo1').parent().removeClass('error');
+            $('#user_Contact2').parent().removeClass('error');
+            $('#user_ExpiredOn').parent().removeClass('error');
+            $('#user_EmpCode').parent().removeClass('error');
+            $('#user_file').parent().removeClass('error');
+        }
+
+        function initControl() {
+            $("#user_CompanyName").prop("disabled", false);
+            $("#user_SchemaName").prop("disabled", false);
+            $("#user_EmailId").prop("disabled", false);
+
+            $("#user_Id").val("");
+            $("#user_CompanyName").val("");
+            $("#user_SchemaName").val("");
+            $("#user_EmailId").val("");
+            $("#user_ExpiredOn").val("");
+            $("#user_ActiveStatus").prop("checked", true);
+            $('#user_EmpCode').val("");
+            $("#imgLogo").attr("src", "");
+            $("#imgLogo").hide();
+            $("#user_file").val("");
+            $("#divCCEmail").val("");
+            $("#divCCEmail").show();
+            $("#user_ContactNo1").val("");
+            $("#user_Contact2").val("");
+            $("#user_Address").val("");
+            $("#user_ActiveStatus").prop("checked", true);
+        }
+
+        function validateEmail(email) {
+            const re = /^(([^<>()[\]\\.,;:\s@@"]+(\.[^<>()[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        function ValidateFileType() {
+            var validator = true;
+            var fileName = document.getElementById("user_file").value;
+            var idxDot = fileName.lastIndexOf(".") + 1;
+            var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+            if (!(extFile == "jpg" || extFile == "jpeg" || extFile == "png")) {
+                toastr.error("Only jpg/jpeg and png files are allowed!");
+                validator = false;
+            }
+            return validator;
+        }
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imgLogo')
+                        .attr('src', e.target.result);
+                    $("#imgLogo").show();
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                $("#imgLogo").hide();
+            }
+        }
+
+    </script>
+}
+
+

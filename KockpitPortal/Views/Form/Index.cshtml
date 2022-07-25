@@ -1,0 +1,379 @@
+﻿@model KockpitPortal.ViewModels.SuperAdmin.tblFormViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<section class="main">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-8">
+                        <h4 class="card-title">Forms</h4>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" style="float:right" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#actionModal"
+                                onclick="initControl();">
+                            <i class="fa fa-plus"></i> Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="col-md-12" style="overflow-x:scroll">
+                    <table id="tData" class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <td>Offering</td>
+                                <td>Category</td>
+                                <td>FormName</td>
+                                <td>Description</td>
+                                <td>Modules</td>
+                                <td>Action</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.forms != null && Model.forms.Count > 0)
+                            {
+                                foreach (var item in Model.forms)
+                                {
+                                    <tr>
+                                        <td>@item.ProjectName</td>
+                                        <td>@item.CategoryName</td>
+                                        <td>@item.FormName</td>
+                                        <td>@item.Description</td>
+                                        <td>@Html.Raw(item.ModuleName)</td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm" formid="@item.Id"
+                                                    projectid="@item.ProjectId"
+                                                    categoryid="@item.CategoryId"
+                                                    formname="@item.FormName"
+                                                    actionname="@item.ActionName"
+                                                    controllername="@item.ControllerName"
+                                                    moduleid="@item.ModuleIds"
+                                                    description="@item.Description"
+                                                    pagecode="@item.PageCode"
+                                                    linkicon="@item.LinkIcon"
+                                                    onclick="editModal(this)">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+
+                                            <a href="@Url.Action("Remove","Form", new { nId = item.Id })"
+                                               onclick="return confirmation();"
+                                               class="btn btn-danger btn-sm">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="overlay" id="loader" style="display:none">
+                <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal form for add user starts here-->
+<div class="modal fade" id="actionModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col-lg-12">
+                    <div class="row d-flex">
+                        <div class="col-lg-10">
+                            <h5 class="modal-title" id="exampleModalLabel"><b>Form</b></h5>
+                        </div>
+                        <div class="col-lg-2">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form asp-action="Create" asp-controller="Form" method="post">
+                <input type="hidden" asp-for="form.Id" />
+                <div class="modal-body">
+                    <div class="row d-flex">
+                        <div class="col-lg-12">
+                            <div class="row d-flex">
+                                <div class="col-lg-6 form-group">
+                                    <label for="fname">Offering</label>
+                                    <select class="fname form-control" asp-for="form.ProjectId" asp-items="ViewBag.ProjectList">
+                                    </select>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="fname">Category</label>
+                                    <select class="fname form-control" asp-for="form.CategoryId">
+                                    </select>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Form Name</label>
+                                    <input type="text" asp-for="form.FormName" class="fname form-control" placeholder="Form Name">
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Description</label>
+                                    <textarea asp-for="form.Description" rows="2" class="fname form-control" placeholder="Description"></textarea>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="fname">Controller</label>
+                                    <input type="text" asp-for="form.ControllerName" class="fname form-control" placeholder="Controller" />
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="fname">Action</label>
+                                    <input type="text" asp-for="form.ActionName" class="fname form-control" placeholder="Action">
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="fname">Page Code</label>
+                                    <input type="text" asp-for="form.PageCode" class="fname form-control" placeholder="Page Code">
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <label for="fname">Link Icon</label>
+                                    <input type="text" asp-for="form.LinkIcon" class="fname form-control" placeholder="Link Icon" />
+                                </div>
+                            </div>
+                            <div class="row d-flex">
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Modules</label>
+                                    <select class="select2" name="ModuleList[]" id="selModules" multiple="multiple"
+                                            data-placeholder="Select a Module" style="width: 100%;">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-12">
+                        <div class="row d-flex">
+                            <div class="col-lg-5">
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="modal-button">
+                                    <button type="submit" onclick="return ValidateEntry();" class="btn btn-primary"><b>Submit</b></button>
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        var _selectedCategoryId = 0;
+        var _selectedModuleId = [];
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+            toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+            toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#actionModal").on('hidden.bs.modal', function () {
+                clearValidate();
+            });
+
+            //var datatableHtml = '<div class="button-class"><button type="button" style="float:right" class="btn btn-primary" data-toggle="modal" data-target="#actionModal" onclick="initControl();"><span class="iconify" data-icon="ant-design:user-add-outlined" data-inline="false"></span> Add New Form</button></div>';
+            //$("div.toolbar").html(datatableHtml);
+
+            $('.select2').select2();
+
+            $("#form_ProjectId").on("change", function () {
+                var projectId = $(this).val();
+
+                $("#form_CategoryId").empty();
+                $("#selModules").empty();
+
+                var frmData = new FormData();
+                frmData.append("nProjectId", projectId);
+                $.ajax({
+                    url: "@Url.Action("GetDataByProject", "Form")",
+                    type: "POST",
+                    data: frmData,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+                        if (res.item1.success == true) {
+                            if (res.item2.length > 0) {
+                                var selCategory = "<option value=''>[--Select--]</option>";
+                                for (i = 0; i < res.item2.length; i++) {
+                                    selCategory += "<option value='" + res.item2[i].value + "'>" + res.item2[i].text + "</option>";
+                                }
+                                $("#form_CategoryId").append(selCategory);
+                                if (_selectedCategoryId != "") {
+                                    $("#form_CategoryId").val(_selectedCategoryId);
+                                    _selectedCategoryId = "";
+                                }
+                            }
+
+                            if (res.item3.length > 0) {
+                                var selModule = "<option value=''>[--Select--]</option>";
+                                for (i = 0; i < res.item3.length; i++) {
+                                    selModule += "<option value='" + res.item3[i].value + "'>" + res.item3[i].text + "</option>";
+                                }
+
+                                $("#selModules").append(selModule);
+                                if (_selectedModuleId != "") {
+                                    $('#selModules').val(_selectedModuleId).change();
+                                    _selectedModuleId = "";
+                                }
+                                $(".select").select2("destroy").select2();
+                            }
+                        }
+                        else {
+                            toastr.error(res.item1.msg);
+                        }
+                    },
+                    error: function (err) {
+                        toastr.error(err);
+                    }
+                });
+            });
+        });
+
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+            if ($('#form_ProjectId').val().trim().length == 0) {
+                $('#form_ProjectId').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#form_CategoryId').val().trim().length == 0) {
+                $('#form_CategoryId').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#form_FormName').val().trim().length == 0) {
+                $('#form_FormName').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#form_Description').val().trim().length == 0) {
+                $('#form_Description').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#form_ActionName').val().trim().length == 0) {
+                $('#form_ActionName').addClass('is-invalid');
+                allow = false;
+            }
+            if ($('#form_ControllerName').val().trim().length == 0) {
+                $('#form_ControllerName').addClass('is-invalid');
+                allow = false;
+            }
+            if ($('#form_PageCode').val().trim().length == 0) {
+                $('#form_PageCode').addClass('is-invalid');
+                allow = false;
+            }
+            if ($('#form_LinkIcon').val().trim().length == 0) {
+                $('#form_LinkIcon').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#selModules').val().length == 0) {
+                toastr.error("Please select Modules");
+                allow = false;
+            }
+
+            if (allow) {
+                $("#loader").show();
+                $("#actionModal").modal('hide');
+            }
+            return allow;
+        }
+
+        function confirmation() {
+            if (confirm("Are you sure want to delete this form ?")) {
+                $("#loader").show();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function editModal(btn) {
+            var _formid = $(btn).attr("formid");
+            var _formname = $(btn).attr("formname");
+            var _description = $(btn).attr("description");
+            var _actionname = $(btn).attr("actionname");
+            var _controllername = $(btn).attr("controllername");
+            var _moduleid = $(btn).attr("moduleid");
+
+            var _projectId = $(btn).attr("projectid");
+            var _categoryId = $(btn).attr("categoryid");
+            var _pagecode = $(btn).attr("pagecode");
+            var _linkicon = $(btn).attr("linkicon");
+
+            $("#form_Id").val(_formid);
+            $("#form_FormName").val(_formname);
+            $("#form_Description").val(_description);
+            $("#form_ActionName").val(_actionname);
+            $("#form_ControllerName").val(_controllername);
+            $("#form_ProjectId").val(_projectId);
+            $("#form_PageCode").val(_pagecode);
+            $("#form_LinkIcon").val(_linkicon);
+
+            var arrModule = []
+            arrModule = _moduleid.split(",");
+
+            _selectedCategoryId = _categoryId;
+            _selectedModuleId = arrModule;
+
+            $("#form_ProjectId").trigger("change");
+            $("#form_CategoryId").val(_categoryId);
+            $('#selModules').val(arrModule).change();
+
+            $("#actionModal").modal("show");
+        }
+
+        function clearValidate() {
+            $('#form_FormName').removeClass('is-invalid');
+            $('#form_Description').removeClass('is-invalid');
+            $('#form_ActionName').removeClass('is-invalid');
+            $('#form_ControllerName').removeClass('is-invalid');
+            $("#form_ProjectId").removeClass('is-invalid');
+            $("#form_CategoryId").removeClass('is-invalid');
+            $("#form_PageCode").removeClass('is-invalid');
+            $("#form_LinkIcon").removeClass('is-invalid');
+            $('#selModules').removeClass('is-invalid');
+        }
+
+        function initControl() {
+            $("#form_Id").val("");
+            $("#form_FormName").val("");
+            $("#form_Description").val("");
+            $("#form_ActionName").val("");
+            $("#form_ControllerName").val("");
+            $("#form_ProjectId").val("");
+            $("#form_CategoryId").val("");
+            $("#form_PageCode").val("");
+            $("#form_LinkIcon").val("");
+
+            $("#form_CategoryId").empty();
+            $("#selModules").empty();
+            $('#selModules').val("").change();
+        }
+    </script>
+}
+

@@ -1,0 +1,188 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    var i = 0;
+}
+@model KockpitPortal.ViewModels.Support.TblTicketIssueViewModal
+
+
+
+<div class="main">
+    <div class="admin-representatives-container">
+        <div class="admin-representatives-header">
+            <p>Ticket Issue</p>
+            <div class="offering-input">
+                <button class="ko-btn-primary-lg" type="button" data-toggle="modal" data-target="#actionModal"
+                        onclick="initControl();" title="Add New Issue">
+                    Add New Issue
+                </button>
+            </div>
+        </div>
+        <table id="representatives-table">
+            <thead>
+                <tr>
+                    <td>SR No.</td>
+                    <td>Issue</td>
+                    <td>Description</td>
+                    <td>CreatedOn</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.tblTicketIssues != null && Model.tblTicketIssues.Count > 0)
+                {
+                    foreach (var item in Model.tblTicketIssues)
+                    {
+                        <tr>
+                            <td>@(i += 1)</td>
+                            <td>@item.Issue</td>
+                            <td>@item.Description</td>
+                            <td>@item.CreatedOn.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                <button nId="@item.Id"
+                                        issue="@item.Issue"
+                                        Description="@item.Description"
+                                        active="@item.ActiveStatus"
+                                        onclick="editModal(this)"
+                                        title="Edit Issue">
+                                    <span class="iconify" data-icon="ep:edit"></span>
+                                </button>
+                                <a href="@Url.Action("Remove","TicketIssue", new { nId = item.Id })"
+                                   onclick="return confirmation();"
+                                   title="Remove Issue">
+                                    <span class="iconify" data-icon="fluent:delete-20-regular"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="overlay" id="loader" style="display:none">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+</div>
+
+
+<div class="modal" tabindex="-1" id="actionModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Issue</h5>
+                <button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close">
+                    <span class="iconify" data-icon="ep:close-bold"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Upsert" asp-controller="TicketIssue" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="tblTicketIssue.Id" />
+                    <div class="input-group in-column form-margin">
+                        <label for="offering">Ticket Issue<span style="color:indianred;">*</span></label>
+                        <input type="text" placeholder="Type here..." asp-for="tblTicketIssue.Issue">
+                    </div>
+                    <div class="input-group in-column form-margin">
+                        <label for="cc-email">Discription<span style="color:indianred;">*</span></label>
+                        <textarea asp-for="tblTicketIssue.Description" cols="30" rows="5" placeholder="Type here..."></textarea>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group form-margin">
+                            <input class="custom-checkbox" type="checkbox" asp-for="tblTicketIssue.ActiveStatus">
+                            <label class="checkbox_label" for="tblTicketIssue_ActiveStatus">
+                                <div class="check-icon">
+                                    <span class="iconify" data-icon="akar-icons:check"></span>
+                                </div>
+                                Active Status
+                            </label>
+                        </div>
+                    </div>
+                    <button class="ko-btn-primary-lg" onclick="return ValidateEntry();">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+                    toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+                    toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#actionModal").on('hidden.bs.modal', function () {
+                clearValidate();
+            });
+        });
+
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+            if ($('#tblTicketIssue_Issue').val().trim().length == 0) {
+                $('#tblTicketIssue_Issue').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#tblTicketIssue_Description').val().trim().length == 0) {
+                $('#tblTicketIssue_Description').parent().addClass('error');
+                allow = false;
+            }
+
+            if (allow) {
+                $("#loader").show();
+                $("#actionModal").modal('hide');
+            }
+            return allow;
+        }
+
+        function confirmation() {
+            if (confirm("Are you sure want to delete ?")) {
+                $("#loader").show();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function clearValidate() {
+            $('#tblTicketIssue_Issue').parent().removeClass('error');
+            $('#tblTicketIssue_Description').parent().removeClass('error');
+        }
+
+        function editModal(btn) {
+            var _Id = $(btn).attr("nId");
+            var _TicketIssue = $(btn).attr("issue");
+            var _Description = $(btn).attr("Description");
+            var _IsActive = $(btn).attr("active");
+
+            $("#tblTicketIssue_Id").val(_Id);
+            $("#tblTicketIssue_Issue").val(_TicketIssue);
+            $("#tblTicketIssue_Description").val(_Description);
+            $("#tblTicketIssue_ActiveStatus").prop("checked", _IsActive == "active" ? true : false);
+            $("#actionModal").modal("show");
+        }
+
+        function initControl() {
+            $("#tblTicketIssue_Id").val("");
+            $('#tblTicketIssue_Issue').val("");
+            $('#tblTicketIssue_Description').val("");
+            $("#tblTicketIssue_ActiveStatus").prop("checked",  true);
+        }
+
+    </script>
+}

@@ -1,0 +1,180 @@
+﻿@model KockpitPortal.Models.SuperAdmin.tblUsers;
+@using Microsoft.AspNetCore.Http;
+@{
+    ViewBag.Title = "Create";
+
+    if (Context.Session.GetString("SessionInfo_Role") == "SUPPORTREPRESENTATIVE")
+    {
+        Layout = "~/Views/Shared/_LayoutSupportRep.cshtml";
+    }
+    else if (Context.Session.GetString("SessionInfo_Role") == "SUPPORTMANAGER")
+    {
+        Layout = "~/Views/Shared/_LayoutSupportManager.cshtml";
+    }
+    else if(Context.Session.GetString("SessionInfo_Role") != "SUPERADMIN")
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    }
+}
+
+<div class="main">
+    <div class="change-password-wrapper">
+        <div class="change-password-header">
+            <h3 class="header-heading">Change Password</h3>
+        </div>
+        <div class="change-password-content">
+            <form asp-action="Index" asp-controller="ChangePassword" method="post">
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(m => m.Id)
+                @Html.HiddenFor(m => m.EmailId)
+                @Html.HiddenFor(m => m.CompanyName)
+                @Html.HiddenFor(m => m.Role)
+
+                <div class="input-wrapper">
+                    <label for="txtOldPassword">Old Password</label>
+                    <div class="input-icon toggle-password-visible" onclick="ShowPassword(this);">
+                        <i class="bi bi-eye-fill show-pass"></i>
+                        <i class="bi bi-eye-slash-fill hide-pass" style="display:none;"></i>
+                    </div>
+                    <input type="password" name="oldPassword" id="txtOldPassword">
+                </div>
+                <div class="form-group" id="divPassword" style="display:none;">
+                    <div class="input-wrapper">
+                        <label for="Password">New Password</label>
+                        <div class="input-icon toggle-password-visible" onclick="ShowPassword(this);">
+                            <i class="bi bi-eye-fill show-pass"></i>
+                            <i class="bi bi-eye-slash-fill hide-pass" style="display:none;"></i>
+                        </div>
+                        <input type="password" asp-for="Password" >
+                    </div>
+                    <div class="input-wrapper">
+                        <label for="ConfirmPassword">Confirm New Password</label>
+                        <div class="input-icon toggle-password-visible" onclick="ShowPassword(this);">
+                            <i class="bi bi-eye-fill show-pass" ></i>
+                            <i class="bi bi-eye-slash-fill hide-pass" style="display:none;"></i>
+                        </div>
+                        <input type="password" asp-for="ConfirmPassword">
+                    </div>
+                </div>
+                <div class="form-group" id="divSubmit" style="display:none">
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:right">
+                            <button type="submit" class="ko-btn-primary-lg" onclick="return validateSubmit();">
+                                Change
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="overlay" id="loader" style="display:none">
+                    <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+                </div>
+            </form>
+
+        
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script type="text/javascript">
+
+        $(function () {
+            $("#loader").hide();
+
+            @if(ViewData["error"] != null)
+            {
+                <text>
+                    toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+                    $('#Password').val("");
+                    $('#ConfirmPassword').val("");
+                    toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#txtOldPassword").change(function () {
+                $("#divPassword").hide();
+                $("#divConfPassword").hide();
+                $("#divSubmit").hide();
+
+                var _oldPassword = $(this).val();
+                var formData = new FormData();
+                formData.append("strOldPassword", _oldPassword);
+                $.ajax({
+                    url: "@Url.Action("CheckOldPassword", "ChangePassword")",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (result) {
+                        if (result == true) {
+                            $("#divPassword").show();
+                            $("#divConfPassword").show();
+                            $("#divSubmit").show();
+                        } else {
+                            toastr.error("Wrong Password");
+                        }
+                    },
+                    error: function (err) {
+                        toastr.error(err);
+                    }
+                });
+            });
+        });
+
+        function validateSubmit() {
+
+            $('#Password').removeClass('is-invalid');
+            $('#ConfirmPassword').removeClass('is-invalid');
+            var allow = true;
+
+            if ($('#Password').val().trim().length == 0) {
+                $('#Password').addClass('is-invalid');
+                allow = false;
+            }
+            if ($('#ConfirmPassword').val().trim().length == 0) {
+                $('#ConfirmPassword').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#Password').val().trim() !== $('#ConfirmPassword').val().trim()) {
+                $('#ConfirmPassword').val("");
+                toastr.error("Password and Confirm Password does not matched");
+                allow = false;
+            }
+
+            if (allow) {
+                $("#loader").show();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function ShowPassword(btn) {
+            var elem = $(btn).next('input');
+            var showPass = $(btn).children('.show-pass');
+            var hidePass = $(btn).children('.hide-pass');
+            if (elem.attr('type') == 'password') {
+                elem.prop("type", "text");
+                $(showPass).hide();
+                $(hidePass).show();
+            } else {
+                elem.prop("type", "password");
+                $(hidePass).hide();
+                $(showPass).show();
+            }
+        }
+    </script>
+}
+

@@ -1,0 +1,325 @@
+﻿@model KockpitPortal.ViewModels.PlanManagement.tblPlanViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<div class="main">
+    <div class="admin-plans-container">
+        <div class="admin-plans-header">
+            <p>Plans</p>
+            <div class="plan-input">
+                <select asp-items="ViewBag.FilterProject" id="selOfferings">
+                </select>
+                <button class="ko-btn-primary-lg" data-toggle="modal" data-target="#actionModal"
+                        onclick="initControl();" title="Add New Plan">
+                    Add New Plan
+                </button>
+            </div>
+        </div>
+        @if (Model.data != null && Model.data.Count > 0)
+        {
+            @foreach (var item in Model.data)
+            {
+                <div class="product-wrapper">
+                    <div class="product-wrapper-header">@item.Key</div>
+                    <div class="products-plans-wrapper">
+                        @foreach (var plan in item.Value)
+                        {
+                            <div class="product-plan">
+                                <div class="product-plan-header">
+                                    <div class="icon">
+                                        <span class="iconify" data-icon="iconoir:headset-help"></span>
+                                    </div>
+                                    <div class="text">
+                                        <p class="plan-name">@plan.PlanName</p>
+                                        <p class="plan-price">@plan.PlanPrice$ Per License</p>
+                                    </div>
+                                    <div class="plan-actions">
+                                        <button planid="@plan.Id"
+                                                projectid="@plan.ProjectId"
+                                                planname="@plan.PlanName"
+                                                description="@plan.Description"
+                                                noofusers="@plan.NoOfUsers"
+                                                validitydays="@plan.ValidityDays"
+                                                price="@plan.PlanPrice"
+                                                free="@plan.IsFree"
+                                                iswarranty="@plan.IsWarranty"
+                                                warrantyindays="@plan.WarrantyInDays"
+                                                onclick="editModal(this)" title="Edit Plan">
+                                            <span class="iconify" data-icon="akar-icons:edit"></span>
+                                        </button>
+                                        <a href="@Url.Action("Remove","Plan", new { nId = plan.Id })"
+                                           onclick="return confirmation();" title="Remove Plan">
+                                            <span class="iconify" data-icon="fluent:delete-24-regular"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="product-plan-tags">
+                                    <p>@plan.Description</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <div class="overlay" id="loader" style="display:none">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+</div>
+
+
+
+
+<div class="modal" tabindex="-1" id="actionModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Plan</h5>
+                <button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close" onclick="initControl();">
+                    <span class="iconify" data-icon="ep:close-bold"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Upsert" asp-controller="Plan" method="post">
+                    <input type="hidden" asp-for="plan.Id" />
+                    <div class="input-row form-margin">
+                        <div class="input-group in-column">
+                            <label for="offering">Offering<span style="color:indianred;">*</span></label>
+                            <select asp-for="plan.ProjectId" asp-items="ViewBag.ProjectList">
+                                <option>Offering</option>
+                            </select>
+                        </div>
+                        <div class="input-group in-column">
+                            <label for="plan-name">Plan Name<span style="color:indianred;">*</span></label>
+                            <input type="text" asp-for="plan.PlanName" placeholder="Type here...">
+                        </div>
+                    </div>
+                    <div class="input-group in-column form-margin">
+                        <label for="description">Description<span style="color:indianred;">*</span></label>
+                        <textarea asp-for="plan.Description" cols="30" rows="10" placeholder="Type here..."></textarea>
+                    </div>
+                    <div class="input-row form-margin">
+                        <div class="input-group in-column">
+                            <label for="plan-validity">Validity (In Days)<span style="color:indianred;">*</span></label>
+                            <input type="text" asp-for="plan.ValidityDays" placeholder="Type here...">
+                        </div>
+                        <div class="input-group in-column">
+                            <label for="plan-price">Plan Price<span style="color:indianred;">*</span></label>
+                            <input type="text" asp-for="plan.PlanPrice" placeholder="Type here...">
+                        </div>
+                    </div>
+                    <div class="input-group form-margin">
+
+                        <input class="custom-checkbox" type="checkbox" asp-for="plan.IsWarranty" onclick="ShowWarranty(this);">
+                        <label for="plan_IsWarranty" class="checkbox_label">
+                            <div class="check-icon">
+                                <span class="iconify" data-icon="akar-icons:check"></span>
+                            </div>
+                            Warranty
+                        </label>
+                    </div>
+                    <div class="input-group form-margin in-column" style="display:none;" id="_divWarranty">
+                        <label for="fname">Warranty In days</label>
+                        <input type="number" asp-for="plan.WarrantyInDays" class="fname" placeholder="Warranty In Days">
+                    </div>
+                    <button class="ko-btn-primary-lg" onclick="return ValidateEntry();">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+            toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+            toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#actionModal").on('hidden.bs.modal', function () {
+                clearValidate();
+            });
+
+            //var datatableHtml = '<div class="button-class"><button type="button" style="float:right" class="btn btn-primary" data-toggle="modal" data-target="#actionModal" onclick="initControl();"><span class="iconify" data-icon="ant-design:user-add-outlined" data-inline="false"></span> Add New Module</button></div>';
+            //$("div.toolbar").html(datatableHtml);
+        });
+
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+
+            try {
+
+                if ($('#plan_ProjectId').val().trim().length == 0 ) {
+                    $('#plan_ProjectId').parent().addClass('error');
+                    allow = false;
+                }
+
+                if ($('#plan_PlanName').val().trim().length == 0) {
+                    $('#plan_PlanName').parent().addClass('error');
+                    allow = false;
+                }
+
+                if ($('#plan_Description').val().trim().length == 0) {
+                    $('#plan_Description').parent().addClass('error');
+                    allow = false;
+                }
+
+                if ($('#plan_ValidityDays').val().trim().length == 0) {
+                    $('#plan_ValidityDays').parent().addClass('error');
+                    allow = false;
+                }
+
+                if ($('#plan_PlanPrice').val().trim().length == 0) {
+                    $('#plan_PlanPrice').parent().addClass('error');
+                    allow = false;
+                }
+
+                if ($("#plan_IsWarranty").is(":checked") && $('#plan_WarrantyInDays').val().trim().length == 0) {
+                    $('#plan_WarrantyInDays').parent().addClass('error');
+                    allow = false;
+                }
+
+                if (allow) {
+                    $("#loader").show();
+                    $("#actionModal").modal('hide');
+                }
+            } catch (e) {
+                toastr.error(e);
+                allow = false;
+            }
+
+            return allow;
+        }
+
+        function confirmation() {
+            if (confirm("Are you sure want to delete this module ?")) {
+                $("#loader").show();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function ShowWarranty(chkbx) {
+            var _showWarranty = $(chkbx).is(":checked");
+            if (_showWarranty) {
+                $("#_divWarranty").show();
+            } else {
+                $("#_divWarranty").hide();
+            }
+
+        }
+
+        function editModal(btn) {
+            $('#plan_WarrantyInDays').val("");
+            $("#plan_IsWarranty").prop("checked", false);
+            $("#_divWarranty").hide();
+            var _planId = $(btn).attr("planid");
+            var _projectId = $(btn).attr("projectid");
+            var _planName = $(btn).attr("planname");
+            var _description = $(btn).attr("description");
+            var _noofusers = $(btn).attr("noofusers");
+            var _validitydays = $(btn).attr("validitydays");
+            var _price = $(btn).attr("price");
+            var _free = $(btn).attr("free") == "free" ? true : false;
+            var _warranty = $(btn).attr("iswarranty") == "iswarranty" ? true : false;
+            var _warrantyInDays = $(btn).attr("warrantyindays");
+            if (_warranty) {
+                $("#_divWarranty").show();
+                $("#plan_WarrantyInDays").val(_warrantyInDays);
+
+            }
+
+            $("#plan_Id").val(_planId);
+            $("#plan_ProjectId").val(_projectId);
+            $("#plan_PlanName").val(_planName);
+            $("#plan_Description").val(_description);
+            $("#plan_NoOfUsers").val(_noofusers);
+            $("#plan_ValidityDays").val(_validitydays);
+            $("#plan_PlanPrice").val(_price);
+            $("#plan_IsFree").prop("checked", _free);
+            $("#plan_IsWarranty").prop("checked", _warranty);
+            $("#actionModal").modal("show");
+        }
+
+        function clearValidate() {
+            $('#plan_ProjectId').parent().removeClass('error');
+            $('#plan_PlanName').parent().removeClass('error');
+            $('#plan_Description').parent().removeClass('error');
+            $('#plan_NoOfUsers').parent().removeClass('error');
+            $('#plan_ValidityDays').parent().removeClass('error');
+            $('#plan_PlanPrice').parent().removeClass('error');
+            $('#plan_WarrantyInDays').parent().removeClass('error');
+        }
+
+        function initControl() {
+            $("#plan_Id").val("");
+            $("#plan_ProjectId").val("");
+            $("#plan_PlanName").val("");
+            $("#plan_Description").val("");
+            $('#plan_NoOfUsers').val("");
+            $('#plan_ValidityDays').val("");
+            $('#plan_PlanPrice').val("");
+            $('#plan_WarrantyInDays').val("");
+            $("#plan_IsWarranty").prop("checked", false);
+            $("#_divWarranty").hide();
+        }
+
+        $('#selOfferings').on('change', function () {
+
+            // Declare variables
+            var re;
+            //var input = document.getElementById('myInput'),
+            var filter = $(this).find("option:selected").text()
+
+            lis = $(".admin-plans-container").find('.product-wrapper');
+            //lis = ul.getElementsByTagName('li'),
+            searchTerms = filter.match(/[a-z]+/gi);
+            //li, a;
+
+            if (searchTerms) {
+                searchTerms = searchTerms.map(function (term) {
+                    return '(?=.*' + term + ')';
+                });
+
+                re = new RegExp(searchTerms.join(''), 'i');
+            } else {
+                re = /./;
+            }
+
+            // Loop through all list items, and hide those who don't match the search query
+            for (index = 0; index < lis.length; index++) {
+                var li = lis[index];
+                var a = $(li).find('.product-wrapper-header');
+
+                if (filter != "All") {
+                    if ($(a).text().includes(filter)) {
+                        li.style.display = '';
+                    } else {
+                        li.style.display = 'none';
+                    }
+                } else {
+                    li.style.display = '';
+                }
+            }
+        });
+    </script>
+}
+
+

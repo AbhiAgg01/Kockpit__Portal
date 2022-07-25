@@ -1,0 +1,208 @@
+﻿@using KockpitPortal.Models.PlanManagement
+@model Dictionary<string, List<tblPlanRequest>>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    var i = 0;
+}
+
+<div class="main">
+    <div class="request-plans-container">
+        <div class="request-plans-header">
+            <p>Plan Request</p>
+        </div>
+        @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+                <div class="company">
+                    <div class="company-header">
+                        <div class="company-info">
+                            <img src="@Url.Content(item.Value[0].Logo)" alt="" height="80%" width="80%">
+                            <p class="company-name">@item.Value[0].CompanyName </p>
+                        </div>
+                        <p class="company-email">
+                            <span class="iconify" data-icon="bi:envelope"></span>
+                            [@item.Value[0].EmailId]
+                        </p>
+                    </div>
+                    <div class="table-container">
+                        <table class="tData">
+                            <thead>
+                                <tr>
+                                    <td>S.No</td>
+                                    <td>Transaction Number</td>
+                                    <td>Purchase Date</td>
+                                    <td>Payment Method</td>
+                                    <td>Payment Mode</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var val in item.Value)
+                                {
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td style="cursor:pointer;" ><p style="color: #3aa0ff;" data-bs-toggle="modal" data-bs-target="#purchaseDetail" onclick="fnGetRequestDetail(this)" requestid="@val.Id">@val.PaymentTransactionNo</p></td>
+                                        <td>11/23/13</td>
+                                        <td>Internet Banking</td>
+                                        <td>PhonePe</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <span>No Requests Found.</span>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Purchase Detail</h5>
+                <button type="button" data-dismiss="modal" aria-label="Close"><span class="iconify" data-icon="ep:close-bold"></span></button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-container" id="divRequestDetail">
+
+                </div>
+                <div class="input-group in-column form-margin">
+                    <label for="">Remarks</label>
+                    <textarea name="" id="ctlRemarks" cols="30" rows="10" placeholder="Type here..."></textarea>
+                    <input type="hidden" id="ctlRequestId" value="" />
+                </div>
+                <div class="button-row">
+                    <button class="ko-btn-primary-lg" id="btnReject">Reject</button>
+                    <button class="ko-btn-primary-lg" id="btnApprove">Approve & Assign</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+         $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+            toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+            toastr.success("@ViewData["success"]");
+                </text>
+            }
+         });
+
+        $(document).ready(function () {
+            $("#btnApprove").on("click", function () {
+                var _requestId = $("#ctlRequestId").val();
+                var _remarks = $("#ctlRemarks").val();
+
+                if (_remarks != null && _remarks.trim().length != 0) {
+                    if (confirm("Once approved, the requested licenses has been transfered to the client. Are you sure want to approve ?")) {
+                        $("#loader").show();
+                        $("#actionModal").modal("hide");
+                        postForm("@Url.Action("Index", "PlanRequest")", {
+                            nReqId: _requestId,
+                            sRemarks: _remarks,
+                            lApprove: true
+                        });
+                    }
+                } else {
+                    toastr.error("please add approval comment");
+                }
+
+
+            });
+
+            $("#btnReject").on("click", function () {
+                var _requestId = $("#ctlRequestId").val();
+                var _remarks = $("#ctlRemarks").val();
+
+                if (_remarks != null && _remarks.trim().length != 0) {
+                    if (confirm("Are you sure want to reject the request ?")) {
+                        $("#loader").show();
+                        $("#actionModal").modal("hide");
+                        postForm("@Url.Action("Index", "PlanRequest")", {
+                            nReqId: _requestId,
+                            sRemarks: _remarks,
+                            lApprove: false
+                        });
+                    }
+                } else {
+                    toastr.error("please add reject comment");
+                }
+            });
+        });
+
+
+
+        function fnGetRequestDetail(btn) {
+            $("#divRequestDetail").empty();
+            $("#ctlRequestId").val("");
+            var _requestId = $(btn).attr("requestid");
+            var formData = new FormData();
+            formData.append("nReqId", _requestId);
+            $.ajax({
+                url: "@Url.Action("GetPlanRequestDetail", "PlanRequest")",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.item1.success == true) {
+                        if (res.item2 != null) {
+                            var _requestHtml = "";
+                            $.each(res.item2, function (key, value) {
+
+                                _requestHtml += '<div class="detail-header" >';
+                                _requestHtml += ' <p> ' + key + '</p>';
+                                _requestHtml += '                </div>';
+                                _requestHtml += ' <table class="tData" >';
+                                _requestHtml += ' <thead>'
+                                _requestHtml += ' <tr>'
+                                _requestHtml += ' <td> Plan</td>';
+                                _requestHtml += ' <td> Price</td>';
+                                _requestHtml += ' <td> Requested License</td>';
+                                _requestHtml += '                        </tr>';
+                                _requestHtml += '                    </thead>';
+                                _requestHtml += ' <tbody >';
+                                for (i = 0; i < value.length; i++) {
+                                    _requestHtml += '<tr>';
+                                    _requestHtml += '    <td>' + value[i].planName + '</td>';
+                                    _requestHtml += '    <td>' + value[i].planPrice + '</td>';
+                                    _requestHtml += '    <td><label>' + value[i].noOfUsers + '</label></td>';
+                                    _requestHtml += '</tr>';
+                                }
+                                _requestHtml += '</tbody>';
+                                _requestHtml += '</table>';
+                            });
+
+                            $("#divRequestDetail").html(_requestHtml);
+                            $("#actionModal").modal("show");
+                            $("#ctlRequestId").val(_requestId);
+                        } else {
+                            toastr.info("No records found")
+                        }
+                    } else {
+                        toastr.error(res.item1.msg);
+                    }
+                },
+                error: function (err) {
+                    toastr.error(err);
+                }
+            });
+        }
+    </script>
+}
+

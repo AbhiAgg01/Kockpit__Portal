@@ -1,0 +1,188 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    var i = 0;
+}
+@model KockpitPortal.ViewModels.SuperAdmin.tblServiceViewModel
+
+
+
+<div class="main">
+    <div class="admin-representatives-container">
+        <div class="admin-representatives-header">
+            <p>Services</p>
+            <div class="offering-input">
+                <button class="ko-btn-primary-lg" type="button" data-toggle="modal" data-target="#actionModal"
+                        onclick="initControl();" title="Add New Service">
+                    Add New Service
+                </button>
+            </div>
+        </div>
+        <table id="representatives-table">
+            <thead>
+                <tr>
+                    <td>SR No.</td>
+                    <td>Service Name</td>
+                    <td>Description</td>
+                    <td>CreatedOn</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.services != null && Model.services.Count > 0)
+                {
+                    foreach (var item in Model.services)
+                    {
+                        <tr>
+                            <td>@(i += 1)</td>
+                            <td>@item.ServiceName</td>
+                            <td>@item.Description</td>
+                            <td>@item.CreatedOn.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                <button nId="@item.Id"
+                                        serviceName="@item.ServiceName"
+                                        Description="@item.Description"
+                                        active="@item.ActiveStatus"
+                                        onclick="editModal(this)"
+                                        title="Edit Service">
+                                    <span class="iconify" data-icon="ep:edit"></span>
+                                </button>
+                                <a href="@Url.Action("Remove","Service", new { nId = item.Id })"
+                                   onclick="return confirmation();"
+                                   title="Remove Service">
+                                    <span class="iconify" data-icon="fluent:delete-20-regular"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="overlay" id="loader" style="display:none">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+</div>
+
+
+<div class="modal" tabindex="-1" id="actionModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Service</h5>
+                <button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close">
+                    <span class="iconify" data-icon="ep:close-bold"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Upsert" asp-controller="Service" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="service.Id" />
+                    <div class="input-group in-column form-margin">
+                        <label for="offering">Service Name<span style="color:indianred;">*</span></label>
+                        <input type="text" placeholder="Type here..." asp-for="service.ServiceName">
+                    </div>
+                    <div class="input-group in-column form-margin">
+                        <label for="cc-email">Discription<span style="color:indianred;">*</span></label>
+                        <textarea asp-for="service.Description" cols="30" rows="5" placeholder="Type here..."></textarea>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group form-margin">
+                            <input class="custom-checkbox" type="checkbox" asp-for="service.ActiveStatus">
+                            <label class="checkbox_label" for="service_ActiveStatus">
+                                <div class="check-icon">
+                                    <span class="iconify" data-icon="akar-icons:check"></span>
+                                </div>
+                                Active Status
+                            </label>
+                        </div>
+                    </div>
+                    <button class="ko-btn-primary-lg" onclick="return ValidateEntry();">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+                    toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+                    toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#actionModal").on('hidden.bs.modal', function () {
+                clearValidate();
+            });
+        });
+
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+            if ($('#service_ServiceName').val().trim().length == 0) {
+                $('#service_ServiceName').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#service_Description').val().trim().length == 0) {
+                $('#service_Description').parent().addClass('error');
+                allow = false;
+            }
+
+            if (allow) {
+                $("#loader").show();
+                $("#actionModal").modal('hide');
+            }
+            return allow;
+        }
+
+        function confirmation() {
+            if (confirm("Are you sure want to delete ?")) {
+                $("#loader").show();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function clearValidate() {
+            $('#service_ServiceName').parent().removeClass('error');
+            $('#service_Description').parent().removeClass('error');
+        }
+
+        function editModal(btn) {
+            var _Id = $(btn).attr("nId");
+            var _serviceName = $(btn).attr("serviceName");
+            var _Description = $(btn).attr("Description");
+            var _IsActive = $(btn).attr("active");
+
+            $("#service_Id").val(_Id);
+            $("#service_ServiceName").val(_serviceName);
+            $("#service_Description").val(_Description);
+            $("#service_ActiveStatus").prop("checked", _IsActive == "active" ? true : false);
+            $("#actionModal").modal("show");
+        }
+
+        function initControl() {
+            $("#service_Id").val("");
+            $('#service_ServiceName').val("");
+            $('#service_Description').val("");
+            $("#service_ActiveStatus").prop("checked",  true);
+        }
+
+    </script>
+}

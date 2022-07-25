@@ -1,0 +1,354 @@
+﻿@using KockpitPortal.Models.Cart;
+@{
+    ViewData["Title"] = "CheckOut";
+    List<tblCart> _cart = new List<tblCart>();
+    if (ViewBag.Products != null)
+        _cart =  ViewBag.Products;
+}
+
+<section class="main" style="font-size: 1.5rem;">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 form-group">
+                <div class="card card-default">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-12">
+                                <h4 class="card-title" style="font-size: 1.5rem;"><i class="fa fa-shopping-cart"></i> Cart</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <table id="tblCart" class="table table-responsive-lg">
+                                    <thead>
+                                        <tr>
+                                            <td>Plan</td>
+                                            <td>Price (Per License)</td>
+                                            <td>Licenses</td>
+                                            <td>Total Price</td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tblCart_body">
+                                        @if (_cart != null && _cart.Count() > 0)
+                                        {
+                                            foreach (var item in _cart)
+                                            {
+                                                <tr id="tr_@item.Id">
+                                                    <td style="display:none">@item.PlanId</td>
+                                                    <td>@item.OfferingName</td>
+                                                    <td class="tblplanPrice" id="price_@item.Id"> @item.Price</td>
+                                                    <td><input type='number' cartid=@item.Id onchange='fnCalTotalPerRow(this)' class='form-control' value='@item.TotalLicense' min="1" id="range_@item.Id" style=" font-size: 1.5rem;" /></td>
+                                                    <td>@(item.TotalLicense * item.Price)</td>
+                                                    <td><button style="border: none; background: none; color: #687C97;" id="rmv_@item.Id" type="button"  title="Remove" onclick="RemoveKey(this)" cartid=@item.Id><i class='fa fa-trash'></i></button></td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3">
+                                                Totals
+                                            </td>
+                                            <td colspan="2">
+                                                $ <label id="ctlTotals" class="text-bold">0.00</label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5">
+                                                <div style="float:right">
+                                                    <a href="@Url.Action("Index","PlanInfo")" id="linkAddMore" class="ko-btn-primary" title="Add More Plan">Add More Plans</a>
+                                                    <button type="button" class="ko-btn-success" id="btnPayment" data-toggle="modal" title="Proceed">Proceed to Payment</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overlay" id="loader" style="display:none">
+                        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="actionModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col-lg-12">
+                    <div class="row d-flex">
+                        <div class="col-lg-10">
+                            <h5 class="modal-title" id="exampleModalLabel"><b>Payment</b></h5>
+                        </div>
+                        <div class="col-lg-2">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    <div class="row d-flex">
+                        <b>Are you sure want to confirm the order</b>
+                        @*<div class="col-lg-4">
+                            Payment Methods:
+                            <img src="~/img/Paytm-Logo.png" style="height:23%; width:55%;" />
+                            <img src="~/img/PhonePe-Logo.png" style="height:23%; width:55%;" />
+                            <img src="~/img/Google_Pay-Logo.png" style="height:23%; width:55%;" />
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="row d-flex">
+                                <div class="col-lg-12 form-group">
+                                    <span class="text-info">
+                                        Total Amount To be Pay : $<label id="totAmount"></label>
+                                    </span>
+                                    <br />
+                                    <span class="text-info">
+                                        Mobile No : <label class="text-bold">9267947809</label>
+                                    </span>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Payment Method</label>
+                                    <select id="ctlPaymentMethod" class="fname form-control">
+                                        <option value="">[--Select--]</option>
+                                        <option value="Online Payment">Online Payment (UPI)</option>
+                                        <option value="Internet Banking">Internet Banking</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Payment Mode</label>
+                                    <select id="ctlPaymentMode" class="fname form-control">
+                                        <option value="">[--Select--]</option>
+                                        <option value="Paytm">Paytm</option>
+                                        <option value="PhonePay">PhonePay</option>
+                                        <option value="GooglePay">GooglePay</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Payment Transaction Number</label>
+                                    <input type="text" id="ctlTransactionNo" class="fname form-control" />
+                                </div>
+                            </div>
+                        </div>*@
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-12">
+                        <div class="row d-flex">
+                            <div class="col-lg-12">
+                                <div class="modal-button">
+                                    <button type="button" id="btnClose" class="ko-btn-danger" data-dismiss="modal" aria-label="Close">Cancel</button>
+                                    <button type="button" style="float:right" id="btnSubmit" class="ko-btn-primary"><b>Proceed</b></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            fnCalcTotals();
+            $(".cart-dropdown").html("");
+            $("#btnPayment").on("click", function () {
+                var isAllow = true;
+                $("#tblCart tbody tr").each(function () {
+                    var tableRow = $(this);
+                    var tot = $($("TD", tableRow).eq(3).find("input[type=number]")).val();
+                    if (tot == "") {
+                        isAllow = false;
+                    }
+                });
+                if (isAllow == false) {
+                    toastr.error("Please mention the number of licenses ");
+                } else {
+                    $("#totAmount").html($("#ctlTotals").html().trim());
+                    $("#actionModal").modal("show");
+                }
+            });
+
+            $("#btnSubmit").on("click", function () {
+                //$("#ctlPaymentMethod").removeClass("is-invalid");
+                //$("#ctlPaymentMode").removeClass("is-invalid");
+                //$("#ctlTransactionNo").removeClass("is-invalid");
+
+                //var _PaymentMethod = $("#ctlPaymentMethod").val();
+                //var _PaymentMode = $("#ctlPaymentMode").val();
+                //var _TransactionNo = $("#ctlTransactionNo").val();
+
+                //var allow = true;
+                //if (_PaymentMethod == "") {
+                //    $('#ctlPaymentMethod').addClass('is-invalid');
+                //    allow = false;
+                //}
+                //if (_PaymentMode == "") {
+                //    $('#ctlPaymentMode').addClass('is-invalid');
+                //    allow = false;
+                //}
+                //if (_TransactionNo == "") {
+                //    $('#ctlTransactionNo').addClass('is-invalid');
+                //    allow = false;
+                //}
+
+                
+                $("#loader").show();
+                $("#actionModal").modal("hide");
+                //code to submit request
+                var tblPlanRequest = {
+                    PaymentMethod: '[DEFAULT]',
+                    PaymentMode: '[DEFAULT]',
+                    PaymentTransactionNo: '[DEFAULT]',
+                };
+
+                var tblPlanRequestDetail = [];
+                $("#tblCart tbody tr").each(function () {
+                    var tableRow = $(this);
+                    var oDetail = {};
+                    oDetail.PlanId = $("TD", tableRow).eq(0).html().trim();
+                    oDetail.NoOfUsers = $($("TD", tableRow).eq(3).find("input[type=number]")).val();
+                    tblPlanRequestDetail.push(oDetail);
+                });
+
+                   
+                postForm("@Url.Action("Index", "PlanInfo")", {
+                    oMaster: JSON.stringify(tblPlanRequest),
+                    oDetail: JSON.stringify(tblPlanRequestDetail)
+                });
+                
+            });
+        });
+
+        function RemoveKey(button) {
+            var cartid = $(button).attr("cartid");
+            if (confirm("Are you sure want to remove this product from cart?")) {
+                var formData = new FormData();
+                formData.append("cId", cartid);
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("RemoveProduct", "Home")",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        $("#loader").hide();
+                        if (res.success == true) {
+                            var row = $(button).closest("TR");
+                            var table = $("#tblCart")[0];
+                            table.deleteRow(row[0].rowIndex);
+                            $("#productCount").text(($("#productCount").text() - 1));
+                            //var planId = $("TD", row).eq(0).html().trim();
+                            //var _plans = $("#linkAddMore").attr("cartPlans").split(",");
+                            //if (_plans != null && _plans.length > 0) {
+                            //    _plans.splice($.inArray(planId, _plans), 1);
+                            //}
+
+                            //console.log(_plans);
+                            //$("#linkAddMore").attr("cartPlans", _plans.join(","));
+                            fnCalcTotals();
+                            $("#div_" + cartid + "").remove();
+                        } else {
+                            toastr.error(res.msg)
+                        }
+                    },
+                    error: function (err) {
+                        toastr.error(err);
+                    }
+                });
+            }
+        }
+
+        function fnCalTotalPerRow(inp) {
+            var row = $(inp).closest("tr");
+            var _cartId = $(inp).attr("cartid");
+            var _users = $(inp).val();
+            var _planPrice = row.find(".tblplanPrice").text();
+
+            if (_users >= 1) {
+                var formData = new FormData();
+                formData.append("cId", _cartId);
+                formData.append("tLicencse", _users);
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("UpdateCart", "Home")",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        $("#loader").hide();
+                        if (res.success == true) {
+                            var _rowTotal = _users * _planPrice;
+
+                            $("TD", row).eq(4).html(_rowTotal);
+
+                            fnCalcTotals();
+                        } else {
+                            toastr.error(res.msg)
+                        }
+                    },
+                    error: function (err) {
+                        toastr.error(err);
+                    }
+                });
+            }
+
+
+            @*var frm = new FormData();
+                frm.append("planid", _planId);
+                $.ajax({
+                    url: "@Url.Action("GetPlanInfo", "PlanInfo")",
+                    type: "POST",
+                    data: frm,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+                        if (res.item1.success == true) {
+                            if (res.item2 != null) {
+                                var _planPrice = parseFloat(res.item2.planPrice);
+
+                            }
+                        } else {
+                            toastr.error(res.item1.msg);
+                        }
+                    },
+                    error: function (err) {
+                        toastr.error(err);
+                    }
+                });*@
+
+
+        }
+
+        function fnCalcTotals() {
+            var totals = 0;
+            $("#tblCart tbody tr").each(function () {
+                var tableRow = $(this);
+                var tot = parseFloat($("TD", tableRow).eq(4).html().trim());
+                totals += tot;
+            });
+
+            $("#ctlTotals").html(totals);
+        }
+
+
+    </script>
+
+}

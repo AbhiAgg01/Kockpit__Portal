@@ -1,0 +1,238 @@
+﻿@model KockpitPortal.ViewModels.SuperAdmin.tblModuleViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<section class="main">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-8">
+                        <h4 class="card-title">Modules</h4>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" style="float:right" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#actionModal"
+                                onclick="initControl();">
+                            <i class="fa fa-plus"></i> Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="col-md-12" style="overflow-x:scroll">
+                    <table id="tData" class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <td>Offering</td>
+                                <td>Module</td>
+                                <td>Description</td>
+                                <td>Default</td>
+                                <td>Action</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.modules != null && Model.modules.Count > 0)
+                            {
+                                foreach (var item in Model.modules)
+                                {
+                                    <tr>
+                                        <td>@item.ProjectName</td>
+                                        <td>@item.ModuleName</td>
+                                        <td>@item.Description</td>
+                                        <td>
+                                            @if (item.IsDefault)
+                                            {
+                                                <span class="badge badge-dark">YES</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-light">NO</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm" moduleid="@item.Id"
+                                                    projectid="@item.ProjectId"
+                                                    modulename="@item.ModuleName"
+                                                    description="@item.Description"
+                                                    default="@item.IsDefault"
+                                                    onclick="editModal(this)">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <a href="@Url.Action("Remove","Module", new { nId = item.Id })"
+                                               onclick="return confirmation();"
+                                               class="btn btn-danger btn-sm">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+
+
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="overlay" id="loader" style="display:none">
+                <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal form for add user starts here-->
+<div class="modal fade" id="actionModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col-lg-12">
+                    <div class="row d-flex">
+                        <div class="col-lg-10">
+                            <h5 class="modal-title" id="exampleModalLabel"><b>Module</b></h5>
+                        </div>
+                        <div class="col-lg-2">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form asp-action="Upsert" asp-controller="Module" method="post">
+                <input type="hidden" asp-for="module.Id" />
+                <div class="modal-body">
+                    <div class="row d-flex">
+                        <div class="col-lg-12">
+                            <div class="row d-flex">
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Offering</label>
+                                    <select asp-for="module.ProjectId" asp-items="ViewBag.ProjectList" class="fname form-control"></select>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Module</label>
+                                    <input type="text" asp-for="module.ModuleName" class="fname form-control" placeholder="Module Name">
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Description</label>
+                                    <textarea asp-for="module.Description" rows="5" class="fname form-control" placeholder="Description"></textarea>
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <input type="checkbox" asp-for="module.IsDefault" />
+                                    Default
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-12">
+                        <div class="row d-flex">
+                            <div class="col-lg-5">
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="modal-button">
+                                    <button type="submit" onclick="return ValidateEntry();" class="btn btn-primary"><b>Submit</b></button>
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+            toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+            toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#actionModal").on('hidden.bs.modal', function () {
+                clearValidate();
+            });
+
+            //var datatableHtml = '<div class="button-class"><button type="button" style="float:right" class="btn btn-primary" data-toggle="modal" data-target="#actionModal" onclick="initControl();"><span class="iconify" data-icon="ant-design:user-add-outlined" data-inline="false"></span> Add New Module</button></div>';
+            //$("div.toolbar").html(datatableHtml);
+        });
+
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+            if ($('#module_ProjectId').val().trim().length == 0) {
+                $('#module_ProjectId').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#module_ModuleName').val().trim().length == 0) {
+                $('#module_ModuleName').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#module_Description').val().trim().length == 0) {
+                $('#module_Description').addClass('is-invalid');
+                allow = false;
+            }
+
+            if (allow) {
+                $("#loader").show();
+                $("#actionModal").modal('hide');
+            }
+            return allow;
+        }
+
+        function confirmation() {
+            if (confirm("Are you sure want to delete this module ?")) {
+                $("#loader").show();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function editModal(btn) {
+            var _moduleId = $(btn).attr("moduleid");
+            var _projectId = $(btn).attr("projectid");
+            var _moduleName = $(btn).attr("modulename");
+            var _description = $(btn).attr("description");
+            var _default = $(btn).attr("default") == "default" ? true : false;
+            $("#module_Id").val(_moduleId);
+            $("#module_ProjectId").val(_projectId);
+            $("#module_ModuleName").val(_moduleName);
+            $("#module_Description").val(_description);
+            $("#module_IsDefault").attr("checked", _default);
+            $("#actionModal").modal("show");
+        }
+
+        function clearValidate() {
+            $('#module_ProjectId').removeClass('is-invalid');
+            $('#module_ModuleName').removeClass('is-invalid');
+            $('#module_Description').removeClass('is-invalid');
+        }
+
+        function initControl() {
+            $("#module_Id").val("");
+            $("#module_ProjectId").val("");
+            $("#module_ModuleName").val("");
+            $("#module_Description").val("");
+        }
+    </script>
+}
+
+

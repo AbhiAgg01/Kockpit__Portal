@@ -1,0 +1,609 @@
+﻿@model KockpitPortal.ViewModels.SuperAdmin.tblAMCViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    var ClientId = 0;
+}
+
+<div class="main">
+    <div class="amc-container">
+        <div class="amc-header">
+            <div class="header-left">
+                <p>AMC</p>
+            </div>
+            <div class="header-right">
+
+                <button class="ko-btn-primary-lg" data-toggle="modal" data-target="#addAmcModal" onclick="initControl()"
+                        title="Add AMC">
+                    Add New AMC
+                </button>
+            </div>
+        </div>
+        <div class="clients-list-wrapper">
+            @if (Model.plans != null && Model.plans.Count() > 0)
+            {
+                foreach (var item in Model.plans)
+                {
+                    @if (ClientId != item.ClientId)
+                    {
+                        { ClientId = item.ClientId; }
+                        <div class="client">
+                            <div class="client-header">
+                                <div class="info">
+                                    <img class="client-image" src="@Url.Content(item.Logo)" alt="">
+                                    <div class="client-name">@item.CompanyName</div>
+                                </div>
+                                <div class="icons">
+                                    <span class="iconify plus" data-icon="ant-design:plus-circle-outlined"></span>
+                                    <span class="iconify minus" data-icon="ant-design:minus-circle-outlined"></span>
+                                </div>
+                            </div>
+                            @foreach (var offerings in Model.plans)
+                            {
+                                @if (ClientId == offerings.ClientId)
+                                {
+                                    <div class="client-plan-details">
+                                        <div class="client-plan-header">
+                                            <span>@offerings.PlanName</span>
+                                            <span>@offerings.PurchaseDate.ToString("dd/MM/yyyy")</span>
+                                        </div>
+
+                                        @*@if(offerings.AMCId != null)
+                                        {
+                                            <div class="client-license-info form-group">
+                                                <p>Total License : <b>@offerings.TotalKeys</b></p>
+                                                <p>Assigned License : <b>@offerings.UsedKeys</b></p>
+                                                <p>Unassigned License : <b>@offerings.UnusedKeys</b></p>
+                                            </div>
+                                        }*@
+
+                                        @if (offerings.Iswarranty)
+                                        {
+                                            <div class="warranty-details">
+                                                    <span class="pill active">In Warranty</span>
+                                            </div>
+                                            @*if (DateTime.Today > offerings.WarrantyEndDate)
+                                            {
+                                                if (offerings.IsAMCExpired == true)
+                                                {
+
+                                                    <div class="warranty-details">
+                                                        <span class="pill inactive">AMC Expired</span>
+                                                    </div>
+                                                    if (offerings.IsAMCReissue != true)
+                                                    {
+                                                        <div class="warranty-details">
+                                                            <button class="ko-btn-primary" subscriptionId="@offerings.SubscriptionId" planId="@offerings.PlanId" ClientId="@offerings.ClientId" onclick="ReAssign(this);" title="Reassign AMC">Reassign AMC</button>
+                                                        </div>
+                                                    }
+                                                }
+                                                else if (offerings.ISAMCcancelled == true)
+                                                {
+                                                    <div class="warranty-details">
+                                                        <span class="pill inactive">AMC Cancelled</span>
+                                                    </div>
+                                                    if (offerings.IsAMCReissue != true)
+                                                    {
+                                                        <div class="warranty-details">
+                                                            <button class="ko-btn-primary" subscriptionId="@offerings.SubscriptionId" planId="@offerings.PlanId" ClientId="@offerings.ClientId" onclick="ReAssign(this);" title="Reassign AMC">Reassign AMC</button>
+                                                        </div>
+                                                    }
+                                                }
+                                                else if (offerings.IsAMCExpired == null)
+                                                {
+                                                    <div class="warranty-details">
+                                                        <button class="ko-btn-primary" subscriptionId="@offerings.SubscriptionId" planId="@offerings.PlanId" ClientId="@offerings.ClientId" amcId="@offerings.AMCId" onclick="AssignAMC(this);" title="Assign AMC">Assign AMC</button>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="warranty-details">
+                                                        <button class="ko-btn-primary" subscriptionId="@offerings.SubscriptionId" planId="@offerings.PlanId" ClientId="@offerings.ClientId" amcId="@offerings.AMCId" onclick="AssignAMC(this);" title="Update AMC">Update AMC</button>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                
+                                            }*@
+                                        }
+                                        else
+                                        {
+                                            if (offerings.IsAMCExpired == true)
+                                            {
+                                                <div class="warranty-details">
+                                                    <span class="pill inactive">AMC Expired</span>
+                                                </div>
+                                                if (offerings.IsAMCReissue != true)
+                                                {
+                                                    <div class="warranty-details">
+                                                        <button class="ko-btn-primary" subscriptionId="@offerings.SubscriptionId" planId="@offerings.PlanId" ClientId="@offerings.ClientId" onclick="ReAssign(this);" title="Reassign AMC">Reassign AMC</button>
+                                                    </div>
+                                                }
+                                            }
+                                            else if (offerings.ISAMCcancelled == true)
+                                            {
+                                                <div class="warranty-details">
+                                                    <span class="pill inactive">AMC Cancelled</span>
+                                                </div>
+                                                if (offerings.IsAMCReissue != true)
+                                                {
+                                                    <div class="warranty-details">
+                                                        <button class="ko-btn-primary" subscriptionId="@offerings.SubscriptionId" planId="@offerings.PlanId" ClientId="@offerings.ClientId" onclick="ReAssign(this);" title="Reassign AMC">Reassign AMC</button>
+                                                    </div>
+                                                }
+                                            }
+                                            else if (offerings.IsAMCExpired == null)
+                                            {
+                                                <div class="warranty-details">
+                                                    <button class="ko-btn-primary" subscriptionId="@offerings.SubscriptionId" planId="@offerings.PlanId" ClientId="@offerings.ClientId" amcId="@offerings.AMCId" onclick="AssignAMC(this);" title="Assign AMC">Assign AMC</button>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="warranty-details">
+                                                    <button class="ko-btn-primary" subscriptionId="@offerings.SubscriptionId" planId="@offerings.PlanId" ClientId="@offerings.ClientId" amcId="@offerings.AMCId" onclick="AssignAMC(this);" title="Update AMC">Update AMC</button>
+                                                </div>
+                                            }
+                                        }
+                                        <div class="client-license-info">
+                                            <p>Total License : <b>@offerings.TotalKeys</b></p>
+                                            <p>Assigned License : <b>@offerings.UsedKeys</b></p>
+                                            <p>Unassigned License : <b>@offerings.UnusedKeys</b></p>
+                                            <p>Expired License : <b>@offerings.ExpiredKeys</b></p>
+                                            <p>Transfered License : <b>@offerings.TransferedKeys</b></p>
+                                        </div>
+                                        @if(offerings.AMCId != 0)
+                                        {
+                                            <hr />
+                                            <div class="client-plan-header">
+                                                <span><b>AMC Start: </b> @offerings.AMCStartDate.Value.ToString("dd/MM/yyyy")</span>
+                                                <span><b>AMC End: </b>  @offerings.AMCEndDate.Value.ToString("dd/MM/yyyy")</span>
+                                                <span><b>Remaing Days: </b>  @offerings.RemainingDays </span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                }
+            }
+        </div>
+    </div>
+    <div class="overlay" id="loader" style="display:none;">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+</div>
+
+<div class="modal fade" id="addAmcModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add New AMC</h5>
+                <button type="button" data-dismiss="modal" aria-label="Close"><span class="iconify" data-icon="ep:close-bold"></span></button>
+            </div>
+            <div class="modal-body">
+                <div class="group">
+                    <label for="client">Client<span style="color:indianred;">*</span></label>
+                    <select asp-items="ViewBag.Users" id="selUsers">
+                    </select>
+                </div>                
+                <div class="input-row">
+                    <div class="">
+                        <input type="radio" name="rdbtype" value="Offerings" checked />
+                        <label for="projects">Offerings</label>
+                    </div>
+                    <div class="">                        
+                        <input type="radio" name="rdbtype" value="Service" />
+                        <label for="projects" class="label">Service</label>
+                    </div>
+                </div>
+                <div class="group offering_cntl">
+                    <label for="projects">Offerings<span style="color:indianred;">*</span></label>
+                    <select asp-items="ViewBag.Projects" id="selProject">
+                    </select>
+                </div>
+                <div class="group service_cntl" style="display:none">
+                    <label for="projects">Service<span style="color:indianred;">*</span></label>
+                    <select asp-items="ViewBag.Service" id="selService">
+                    </select>
+                </div>
+                <div class="group offering_cntl">
+                    <label for="plans">Plans<span style="color:indianred;">*</span></label>
+                    <select id="selPlan">
+                    </select>
+                </div>
+                <div class="input-row">
+                    <div class="group">
+                        <label for="amc-start-date">AMC Start Date<span style="color:indianred;">*</span></label>
+                        <input type="date" id="tStartDate">
+                    </div>
+                    <div class="group">
+                        <label for="amc-end-date">AMC End Date<span style="color:indianred;">*</span></label>
+                        <input type="date" id="tEndDate">
+                    </div>
+                </div>
+                <div class="group">
+                    <label for="bmd">Budgeted Man Days<span style="color:indianred;">*</span></label>
+                    <input type="number" id="tBudgetedMandays" />
+
+                    @*<textarea id="tBudgetedMandays" cols="30" rows="5"></textarea>*@
+                </div>
+                <div class="input-group checkbox-input">
+                    <input class="custom-checkbox" type="checkbox" id="cActive">
+                    <label for="cActive" style="color: #222B45; font-size:1.2rem; font-weight: 500;" class="checkbox_label">
+                        <div class="check-icon">
+                            <span class="iconify" data-icon="akar-icons:check"></span>
+                        </div>
+                        Active Status
+                    </label>
+                </div>
+                <button class="ko-btn-primary-lg" id="addAmc">Submit</button>
+            </div>
+            <!-- <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div> -->
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="actionModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><b>Assign AMC</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" asp-action="Index" asp-controller="Amc">
+                <input type="hidden" id="hidAMCID" asp-for="amc.Id" />
+                <input type="hidden" id="hidSubscribtionId" asp-for="amc.SubscriptionId" />
+                <input type="hidden" id="hidClientId" asp-for="amc.ClientId" />
+                <input type="hidden" id="hidPlanId" asp-for="amc.PlanId" />
+                <div class="modal-body">
+
+                    <div class="input-row">
+                        <div class="group">
+                            <label for="amc-start-date">AMC Start Date<span style="color:indianred;">*</span></label>
+                            <input type="date" asp-for="amc.AMCStartDate">
+                        </div>
+                        <div class="group">
+                            <label for="amc-end-date">AMC End Date<span style="color:indianred;">*</span></label>
+                            <input type="date" asp-for="amc.AMCEndDate">
+                        </div>
+                    </div>
+                    <div class="group">
+                        <label for="bmd">Budgeted Man Days<span style="color:indianred;">*</span></label>
+                        <input type="number" asp-for="amc.BudgetedManDays"  />
+                       @* <textarea asp-for="amc.BudgetedManDays" cols="30" rows="5"></textarea>*@
+                    </div>
+                    <div class="input-group checkbox-input form-margin">
+
+                        <input class="custom-checkbox" type="checkbox" asp-for="amc.ActiveStatus">
+                        <label for="amc_ActiveStatus" style="color: #222B45; font-size:1.2rem; font-weight: 500;" class="checkbox_label">
+                            <div class="check-icon">
+                                <span class="iconify" data-icon="akar-icons:check"></span>
+                            </div>
+                            Active Status
+                        </label>
+                    </div>
+                    <div class="input-group checkbox-input">
+                        <input class="custom-checkbox" type="checkbox" asp-for="amc.IsCancelled">
+                        <label for="amc_IsCancelled" style="color: #222B45; font-size:1.2rem; font-weight: 500;" class="checkbox_label">
+                            <div class="check-icon">
+                                <span class="iconify" data-icon="akar-icons:check"></span>
+                            </div>
+                            Cancel AMC
+                        </label>
+                    </div>
+                    <button class="ko-btn-primary-lg" id="btnSubmit" onclick="return ValidateEntry();">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts
+{
+    <script>
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+                    toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+                    toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#actionModal").on('hidden.bs.modal', function () {
+                clearValidate();
+            });
+
+        });
+
+        function AssignAMC(btn) {
+            clear();
+            $("#amc_ActiveStatus").prop("checked", true);
+            var _subscriptionId = $(btn).attr("subscriptionId");
+            var _planId = $(btn).attr("planId");
+            var _clientId = $(btn).attr("ClientId");
+            var _amcId = $(btn).attr("amcId");
+            $("#hidSubscribtionId").val(_subscriptionId);
+            $("#hidClientId").val(_clientId);
+            $("#hidPlanId").val(_planId);
+
+            $("#actionModal").modal('show');
+            $("#cancelDiv").hide();
+            GetData(_clientId, _planId, _subscriptionId, _amcId);
+        }
+
+        function ReAssign(btn) {
+            clear();
+            $("#amc_ActiveStatus").prop("checked", true);
+            var _subscriptionId = $(btn).attr("subscriptionId");
+            var _planId = $(btn).attr("planId");
+            var _clientId = $(btn).attr("ClientId");
+            $("#hidSubscribtionId").val(_subscriptionId);
+            $("#hidClientId").val(_clientId);
+            $("#hidPlanId").val(_planId);
+
+            $("#actionModal").modal('show');
+            $("#cancelDiv").hide();
+        }
+
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+            if ($('#amc_AMCStartDate').val().trim().length == 0) {
+                $('#amc_AMCStartDate').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#amc_AMCEndDate').val().trim().length == 0) {
+                $('#amc_AMCEndDate').parent().addClass('error');
+                allow = false;
+            }
+
+            if (allow && ($('#amc_AMCStartDate').val() >= $('#amc_AMCEndDate').val())) {
+                $('#amc_AMCStartDate').parent().addClass('error');
+                $('#amc_AMCEndDate').parent().addClass('error');
+                toastr.error("subscription end date must be greater then start date");
+                allow = false;
+            }
+
+            if ($('#amc_BudgetedManDays').val().trim().length == 0) {
+                $('#amc_BudgetedManDays').parent().addClass('error');
+                allow = false;
+            }
+
+            if (allow) {
+                $("#loader").show();
+                $("#actionModal").modal('hide');
+            }
+            return allow;
+        }
+
+        function clearValidate() {
+            $('#amc_AMCStartDate').parent().removeClass('error');
+            $('#amc_AMCEndDate').parent().removeClass('error');
+            $('#amc_BudgetedManDays').parent().removeClass('error');
+
+        }
+
+        function clear() {
+            $('#amc_AMCStartDate').val("");
+            $('#amc_AMCEndDate').val("");
+            $('#amc_BudgetedManDays').val("");
+            $("#amc_ActiveStatus").prop("checked", true);
+            $("#amc_IsCancelled").prop("checked", false);
+        }
+
+        function initControl() {
+            $("#cActive").prop('checked', true);
+            $("#selPlan").val("");
+            $("#selUsers").val("");
+            $("#selProject").val("");
+            $("#tStartDate").val("");
+            $("#tEndDate").val("");
+            $("#tBudgetedMandays").val('');
+        }
+
+        function CheckValidate() {
+            var allow = true;
+            if ($("input[name='rdbtype']:checked").val().toLowerCase() == "offerings") {
+                if ($("#selPlan").val() == "" || $("#selPlan").val() == null) {
+                    $("#selPlan").parent().addClass('error');
+                    allow = false;
+                }
+            }
+            if ($("#selUsers").val() == "" || $("#selUsers").val() == null) {
+                $("#selUsers").parent().addClass('error');
+                allow = false;
+            }
+            if ($("input[name='rdbtype']:checked").val().toLowerCase() == "offerings") {
+                if ($("#selProject").val() == "" || $("#selProject").val() == null) {
+                    $("#selProject").parent().addClass('error');
+                    allow = false;
+                }
+            }
+            if ($("input[name='rdbtype']:checked").val().toLowerCase() == "service") {
+                if ($("#selService").val() == "" || $("#selService").val() == null) {
+                    $("#selService").parent().addClass('error');
+                    allow = false;
+                }
+            }
+            if ($("#tStartDate").val() == "") {
+                $("#tStartDate").parent().addClass('error');
+                allow = false;
+            }
+            if ($("#tEndDate").val() == "") {
+                $("#tEndDate").parent().addClass('error');
+                allow = false;
+            }
+            if ($("#tBudgetedMandays").val() == "") {
+                $("#tBudgetedMandays").parent().addClass('error');
+                allow = false;
+            }
+            if (allow && ($('#tStartDate').val() >= $('#tEndDate').val())) {
+                $('#tStartDate').parent().addClass('error');
+                $('#tEndDate').parent().addClass('error');
+                toastr.error("subscription end date must be greater then start date");
+                allow = false;
+            }
+            return allow;
+        }
+
+        function RemoveValidate() {
+            $("#selPlan").parent().removeClass("error");
+            $("#selUsers").parent().removeClass("error");
+            $("#selProject").parent().removeClass("error");
+            $("#tStartDate").parent().removeClass("error");
+            $("#tEndDate").parent().removeClass("error");
+            $("#tBudgetedMandays").parent().removeClass("error");
+        }
+
+        $("#addAmc").click(function () {
+            if (CheckValidate()) {
+                RemoveValidate();
+
+                var _clientId = $("#selUsers").val();
+                var _projectId = $("#selProject").val();
+                var _planId = $("#selPlan").val();
+                var _startDate = $("#tStartDate").val();
+                var _endDate = $("#tEndDate").val();
+                var _budgetedMandDays = $("#tBudgetedMandays").val();
+                var _activeStatus = $("#cActive").is(":checked");
+                var _validity = $('#selPlan').find('option:selected').attr('validity');
+                var _ServiceId = $("#selService").val()
+
+                postForm("@Url.Action("AssignAMC", "Amc")", {
+                    "clientId": _clientId,
+                    "PlanId": _planId,
+                    "startDate": _startDate,
+                    "endDate": _endDate,
+                    "BudgetedMandays": _budgetedMandDays,
+                    "activeStatus": _activeStatus,
+                    "validity": _validity,
+                    "projectId": _projectId,
+                    "ServiceId": _ServiceId,
+                });
+            }
+        });
+
+        function GetData(clientId, planId, subscriptionId,amc) {
+            var frmData = new FormData();
+            frmData.append("ClientId", clientId);
+            frmData.append("planId", planId);
+            frmData.append("subscriptionId", subscriptionId);
+            frmData.append("amcId", amc);
+            $.ajax({
+                url: "@Url.Action("GetDetailsOfAMC", "Amc")",
+                type: "POST",
+                data: frmData,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    if (res.item1.success == true) {
+                        var enddate = new Date(res.item2.amcEndDate);
+                        var startdate = new Date(res.item2.amcStartDate);
+                        $("#hidAMCID").val(res.item2.id);
+                        $("#amc_AMCEndDate").val(enddate.getFullYear() + "-" + ("0" + (enddate.getMonth() + 1)).slice(-2) + "-" + ("0" + enddate.getDate()).slice(-2));
+                        $("#amc_AMCStartDate").val(startdate.getFullYear() + "-" + ("0" + (startdate.getMonth() + 1)).slice(-2) + "-" + ("0" + startdate.getDate()).slice(-2));
+                        $("#amc_BudgetedManDays").val(res.item2.budgetedManDays);
+                        $("#amc_ActiveStatus").prop("checked", res.item2.activeStatus);
+                        $("#cancelDiv").show();
+                        $("#amc_IsCancelled").prop("checked", res.item2.isCancelled);
+
+                        $("#btnSubmit").text("Update");
+                    }
+                    else {
+                        $("#btnSubmit").text("Submit");
+                        //toastr.error(res.item1.msg);
+                    }
+                },
+                error: function (err) {
+                    toastr.error(err);
+                }
+            });
+        }
+
+        $("#selProject").on('change', function () {
+            $("#selPlan").html("");
+            var id = $(this).val();
+
+            if (id != null && id != "") {
+                $("#loader").show();
+                var formData = new FormData();
+                formData.append("id", id);
+
+                $.ajax({
+                    url: "@Url.Action("GetPlansById", "Amc")",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (result) {
+                        if (result.item1.success) {
+                            $("#loader").hide();
+                            if (result.item2 != "" && result.item2.length > 0) {
+                                var _tbody = "<option value=''>[--Select--]</option>";
+                                for (var i = 0; i < result.item2.length; i++) {
+                                    _tbody += "<option validity='" + result.item2[i].validityDays + "' value='" + result.item2[i].id + "'>" + result.item2[i].planName + "</option>";
+                                }
+                                $("#selPlan").append(_tbody);
+                            }
+                        }
+                        else {
+                            toastr.error("no plans found for this offering");
+                        }
+                    },
+                    error: function (err) {
+                        toastr.error(err);
+                        $("#loader").hide();
+                    }
+                });
+            }
+        });
+
+        $("input[name='rdbtype']").change(function () {
+            // Do something interesting here
+            if ($(this).val().toLowerCase() == "service") {
+                $(".offering_cntl").css("display", "none");
+                $(".service_cntl").css("display", "block");
+            }
+            else if ($(this).val().toLowerCase() == "offerings") {
+                $(".service_cntl").css("display", "none");
+                $(".offering_cntl").css("display", "block");
+            }
+        });
+
+    </script>
+    <script>
+        const clients = document.querySelectorAll(".client-header");
+        console.log(clients);
+        clients.forEach(client => {
+            client.addEventListener("click", () => {
+                client.parentElement.classList.toggle("expand");
+            })
+        })
+    </script>
+}
+@*<span>
+        No Plans Found.
+    </span>
+    <hr />
+    <label><a href="@Url.Action("Index", "PlanInfo")" class="btn btn-primary">Purchase Plan</a></label>*@

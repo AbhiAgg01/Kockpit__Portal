@@ -1,0 +1,200 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    var i = 0;
+}
+@model KockpitPortal.ViewModels.SuperAdmin.tblOfferingCategoryViewModel
+
+
+
+<div class="main">
+    <div class="admin-representatives-container">
+        <div class="admin-representatives-header">
+            <p>Offering Category</p>
+            <div class="offering-input">
+                <button class="ko-btn-primary-lg" type="button" data-toggle="modal" data-target="#actionModal"
+                        onclick="initControl();" title="Add New Offering Category">
+                    Add New Offering Category
+                </button>
+            </div>
+        </div>
+        <table id="representatives-table">
+            <thead>
+                <tr>
+                    <td>SR No.</td>
+                    <td>Offering Category</td>
+                    <td>Description</td>
+                    <td>CreatedOn</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.offeringCategories != null && Model.offeringCategories.Count > 0)
+                {
+                    foreach (var item in Model.offeringCategories)
+                    {
+                        <tr>
+                            <td>@(i += 1)</td>
+                            <td>@item.OfferingCategory</td>
+                            <td>@item.Description</td>
+                            <td>@item.CreatedOn.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                <button nId="@item.Id"
+                                        offeringcategory="@item.OfferingCategory"
+                                        Description="@item.Description"
+                                        active="@item.ActiveStatus"
+                                        pro="@item.IsPro"
+                                        onclick="editModal(this)"
+                                        title="Edit Offering Category">
+                                    <span class="iconify" data-icon="ep:edit"></span>
+                                </button>
+                                <a href="@Url.Action("Remove","OfferingCategory", new { nId = item.Id })"
+                                   onclick="return confirmation();"
+                                   title="Remove Offering Category">
+                                    <span class="iconify" data-icon="fluent:delete-20-regular"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="overlay" id="loader" style="display:none">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+</div>
+
+
+<div class="modal" tabindex="-1" id="actionModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Offering Category</h5>
+                <button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close">
+                    <span class="iconify" data-icon="ep:close-bold"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Upsert" asp-controller="OfferingCategory" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="offeringCategory.Id" />
+                    <div class="input-group in-column form-margin">
+                        <label for="offering">Offering Category<span style="color:indianred;">*</span></label>
+                        <input type="text" placeholder="Type here..." asp-for="offeringCategory.OfferingCategory">
+                    </div>
+                    <div class="input-group in-column form-margin">
+                        <label for="cc-email">Discription<span style="color:indianred;">*</span></label>
+                        <textarea asp-for="offeringCategory.Description" cols="30" rows="5" placeholder="Type here..."></textarea>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group form-margin">
+                            <input class="custom-checkbox" type="checkbox" asp-for="offeringCategory.ActiveStatus">
+                            <label class="checkbox_label" for="offeringCategory_ActiveStatus">
+                                <div class="check-icon">
+                                    <span class="iconify" data-icon="akar-icons:check"></span>
+                                </div>
+                                Active Status
+                            </label>
+                        </div>
+                        <div class="input-group form-margin">
+                            <input class="custom-checkbox" type="checkbox" asp-for="offeringCategory.IsPro">
+                            <label class="checkbox_label" for="offeringCategory_IsPro">
+                                <div class="check-icon">
+                                    <span class="iconify" data-icon="akar-icons:check"></span>
+                                </div>
+                                 Pro
+                            </label>
+                        </div>
+                    </div>
+                    <button class="ko-btn-primary-lg" onclick="return ValidateEntry();">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+                    toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+                    toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#actionModal").on('hidden.bs.modal', function () {
+                clearValidate();
+            });
+        });
+
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+            if ($('#offeringCategory_OfferingCategory').val().trim().length == 0) {
+                $('#offeringCategory_OfferingCategory').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#offeringCategory_Description').val().trim().length == 0) {
+                $('#offeringCategory_Description').parent().addClass('error');
+                allow = false;
+            }
+
+            if (allow) {
+                $("#loader").show();
+                $("#actionModal").modal('hide');
+            }
+            return allow;
+        }
+
+        function confirmation() {
+            if (confirm("Are you sure want to delete ?")) {
+                $("#loader").show();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function clearValidate() {
+            $('#offeringCategory_OfferingCategory').parent().removeClass('error');
+            $('#offeringCategory_Description').parent().removeClass('error');
+        }
+
+        function editModal(btn) {
+            var _Id = $(btn).attr("nId");
+            var _OfferingCategory = $(btn).attr("offeringcategory");
+            var _Description = $(btn).attr("Description");
+            var _IsActive = $(btn).attr("active");
+            var _IsPro = $(btn).attr("pro");
+
+            $("#offeringCategory_Id").val(_Id);
+            $("#offeringCategory_OfferingCategory").val(_OfferingCategory);
+            $("#offeringCategory_Description").val(_Description);
+            $("#offeringCategory_ActiveStatus").prop("checked", _IsActive == "active" ? true : false);
+            $("#offeringCategory_IsPro").prop("checked", _IsPro == "pro" ? true : false);
+            $("#actionModal").modal("show");
+        }
+
+        function initControl() {
+            $("#offeringCategory_Id").val("");
+            $('#offeringCategory_OfferingCategory').val("");
+            $('#offeringCategory_Description').val("");
+            $("#offeringCategory_ActiveStatus").prop("checked",  true);
+        }
+
+    </script>
+}

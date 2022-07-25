@@ -1,0 +1,192 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+<br />
+<section class="content">
+    @using (Html.BeginForm("Index", "AssignOfferings", FormMethod.Post))
+    {
+        <div class="card card-outline card-cyan card-solid">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <span class="iconify nav__icon" data-icon="mdi:google-classroom" data-inline="false"></span>
+                    Assign Offerings
+                </h3>
+            </div>
+            <!-- form start -->
+            <div class="card-body pb-0">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <label>Employees</label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-12">
+                                <select class="fname form-control" id="selEmployee" asp-items="ViewBag.Employees">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row d-flex align-items-stretch" id="divOfferings"></div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:right">
+                            <button type="button" id="btnSave" class="btn btn-info btn-sm" style="display:none">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="overlay" id="loader" style="display:none">
+                <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+            </div>
+        </div>
+    }
+</section>
+@section scripts{
+    <script type="text/javascript">
+            $(function () {
+                @if(ViewData["error"] != null)
+                {
+                    <text>
+                        toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                    </text>
+                }
+                @if(ViewData["success"] != null)
+                {
+                    <text>
+                        toastr.success("@ViewData["success"]");
+                    </text>
+                }
+            })
+
+            function changeSelection(chk) {
+                $(chk).parent("div").parent("div").parent("div").removeClass("bg-white");
+                $(chk).parent("div").parent("div").parent("div").removeClass("bg-gray-light");
+                if ($(chk).prop("checked") == true) {
+                    $(chk).parent("div").parent("div").parent("div").addClass("bg-gray-light");
+                }
+                else if ($(chk).prop("checked") == false) {
+                    $(chk).parent("div").parent("div").parent("div").addClass("bg-white");
+                }
+            }
+
+        function changeSelection(chk) {
+            $(chk).parent("div").parent("div").parent("div").removeClass("bg-white");
+            $(chk).parent("div").parent("div").parent("div").removeClass("bg-gray-light");
+            if ($(chk).prop("checked") == true) {
+                $(chk).parent("div").parent("div").parent("div").addClass("bg-gray-light");
+            }
+            else if ($(chk).prop("checked") == false) {
+                $(chk).parent("div").parent("div").parent("div").addClass("bg-white");
+            }
+        }
+
+        $(document).ready(function () {
+            $("#selEmployee").change(function () {
+                var _EmployeeID = $(this).val();
+
+                $("#btnSave").hide();
+                $("#divOfferings").empty();
+
+                if (_EmployeeID === "")
+                    return;
+                var formData = new FormData();
+                formData.append("nEmpId", _EmployeeID);
+                $("#loader").show();
+                $.ajax({
+                    url: "@Url.Action("ListOfUnAssignedOfferings", "AssignOfferings")",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (result) {
+                        $("#loader").hide();
+                        if (result.item1.success) {
+                            $("#btnSave").show();
+                            var _tBody = "";
+                            for (var i = 0; i < result.item2.length; i++) {
+                                _tBody += '<div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch">';
+                                _tBody += (result.item2[i].empId == null || result.item2[i].empId != _EmployeeID) ? '<div class="card bg-white">' : '<div class="card bg-gray-light">';
+                                _tBody += '<div class="card-header border-bottom-0" style="height:30%">';
+                                _tBody += '<div class="card-tools icheck-success d-inline">';
+                                _tBody += (result.item2[i].empId == null) ? '<input type="checkbox" offeringId="' + result.item2[i].id + '" onchange="changeSelection(this)" id="chk' + result.item2[i].id + '">' : (result.item2[i].empId == _EmployeeID) ? '<input type="checkbox" offeringId="' + result.item2[i].id + '" checked onchange="changeSelection(this)" id="chk' + result.item2[i].id + '">' : '<input type="checkbox" offeringId="' + result.item2[i].id + '" onchange="changeSelection(this)" id="chk' + result.item2[i].id + '">';
+                                _tBody += '<label for="chk' + result.item2[i].id  +'"></label>';
+                                _tBody += '</div></div>';
+                                _tBody += '<div class="card-body pt-0" style="padding-bottom: 0px;padding-left: 1px;">';
+                                _tBody += '<div class="row"><div class="col-8">';
+                                _tBody += '<ul class="ml-4 mb-0 fa-ul text-muted">';
+                                _tBody += '<li><h2 class="lead"><b>' + result.item2[i].projectName + '</b></h2></li>';
+                                _tBody += '<li ><i class="fas fa-lg fa-info"></i>   ' + result.item2[i].description  +'</li>';
+                                _tBody += '</ul></div>';
+                                _tBody += '<div class="col-4 text-center">';
+                                _tBody += '<img src="../Theme/dist/img/service.png" alt="" class="img-circle img-fluid">';
+                                _tBody += '</div></div></div></div></div>';
+                            }
+                            $("#divOfferings").append(_tBody);
+
+                        } else {
+                            toastr.error(result.item1.msg);
+                        }
+                        //if (result.length > 0) {
+                        //    $("#btnSave").show();
+                        //    var _tBody = "";
+                        //    for (var i = 0; i < result.length; i++) {
+                        //        _tBody += '<div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch">';
+                        //        _tBody += (result[i].trainingBatchID == null) ? '<div class="card bg-white">' : '<div class="card bg-gray-light">';
+                        //        _tBody += '<div class="card-header border-bottom-0" style="height:30%">';
+                        //        _tBody += '<div class="card-tools icheck-success d-inline">';
+                        //        _tBody += (result[i].trainingBatchID == null) ? '<input type="checkbox" traineeid="' + result[i].id + '" onchange="changeSelection(this)" id="chk' + result[i].id + '">' : '<input type="checkbox" traineeid="' + result[i].id + '" onchange="changeSelection(this)" checked id="chk' + result[i].id + '">';
+                        //        _tBody += '<label for="chk' + result[i].id +'"></label>';
+                        //        _tBody += '</div></div>';
+                        //        _tBody += '<div class="card-body pt-0" style="padding-bottom: 0px;padding-left: 1px;">';
+                        //        _tBody += '<div class="row"><div class="col-8">';
+                        //        _tBody += '<ul class="ml-4 mb-0 fa-ul text-muted">';
+                        //        _tBody += '<li><h2 class="lead"><b>' + result[i].fullName +'</b></h2></li>';
+                        //        _tBody += '<li class="small"><i class="fas fa-lg fa-envelope"></i> ' + result[i].email +'</li>';
+                        //        _tBody += '</ul></div>';
+                        //        _tBody += '<div class="col-4 text-center">';
+                        //        _tBody += '<img src="../Theme/dist/img/user.png" alt="" class="img-circle img-fluid">';
+                        //        _tBody += '</div></div></div></div></div>';
+                        //    }
+                        //    $("#divOfferings").append(_tBody);
+                        //}
+                    },
+                    error: function (err) {
+                        toastr.error(err);
+                        $("#loader").hide();
+                    }
+                });
+
+            });
+
+            $("#btnSave").click(function () {
+                $("#loader").show();
+                var _objProjectAssign= [];
+                var vEmployeeId = $("#selEmployee option:selected").val().trim();
+                //divTrainees
+                $("#divOfferings input:checkbox:checked").each(function () {
+                    var _objProjectAssigns = {}
+                    _objProjectAssigns.Id = $(this).attr("offeringId");
+                    if ($(this).prop("checked") == true) {
+                        _objProjectAssigns.EmpId = vEmployeeId;
+                    }
+                    _objProjectAssign.push(_objProjectAssigns);
+                });
+                postForm("@Url.Action("Index", "AssignOfferings")", {
+                    "strDetails": JSON.stringify(_objProjectAssign),
+                    "nEmployeeId": vEmployeeId
+                });
+            });
+        });
+    </script>
+}

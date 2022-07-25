@@ -1,0 +1,368 @@
+﻿@model KockpitPortal.Models.SuperAdmin.tblUsers;
+@using Microsoft.AspNetCore.Http;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    if (Context.Session.GetString("SessionInfo_Role") == "SUPPORTREPRESENTATIVE")
+    {
+        Layout = "~/Views/Shared/_LayoutSupportRep.cshtml";
+    }
+    else if (Context.Session.GetString("SessionInfo_Role") == "SUPPORTMANAGER")
+    {
+        Layout = "~/Views/Shared/_LayoutSupportManager.cshtml";
+    }
+    else if (Context.Session.GetString("SessionInfo_Role") == "ADMIN" || Context.Session.GetString("SessionInfo_Role") == "SUBADMIN")
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    }
+}
+@*<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+    .meta {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif
+    }
+
+    body {
+        min-height: 100vh;
+        /*background: linear-gradient(to bottom, #000428, #004683)*/
+    }
+
+    .container {
+        margin-top: 100px
+    }
+
+        .container .row .col-lg-4 {
+            display: flex;
+            justify-content: center
+        }
+
+    .card-img {
+        position: relative;
+        padding: 0;
+        margin: 0 !important;
+        border-radius: 20px;
+        overflow: hidden;
+        max-width: 280px;
+        max-height: 340px;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2)
+    }
+
+        .card-img .card-image {
+            width: 100%;
+            max-height: 340px
+        }
+
+            .card-img .card-image img {
+                width: 100%;
+                max-height: 340px;
+                object-fit: cover
+            }
+
+        .card-img .card-content {
+            position: absolute;
+            bottom: -180px;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            min-height: 140px;
+            width: 100%;
+            transition: bottom .4s ease-in;
+            box-shadow: 0 -10px 10px rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.2)
+        }
+
+        .card-img:hover .card-content {
+            bottom: 0px
+        }
+
+            .card-img:hover .card-content h4,
+            .card-img:hover .card-content h5 {
+                transform: translateY(10px);
+                opacity: 1
+            }
+
+        .card-img .card-content h4,
+        .card-img .card-content h5 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            transition: 0.8s;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-40px);
+            transition-delay: 0.2s
+        }
+
+        .card-img .card-content h5 {
+            transition: 0.5s;
+            font-weight: 200;
+            font-size: 0.8rem;
+            letter-spacing: 2px
+        }
+
+        .card-img .card-content .social-icons {
+            list-style: none;
+            padding: 0
+        }
+
+            .card-img .card-content .social-icons li {
+                margin: 10px;
+                transition: 0.5s;
+                transition-delay: calc(0.15s * var(--i));
+                transform: translateY(50px)
+            }
+
+        .card-img:hover .card-content .social-icons li {
+            transform: translateY(20px)
+        }
+
+        .card-img .card-content .social-icons li a {
+            color: #fff
+        }
+
+            .card-img .card-content .social-icons li a span {
+                font-size: 1.3rem
+            }
+
+    .center {
+        margin: auto;
+        /*width: 50%;*/
+        /*border: 3px solid green;*/
+        padding: 10px;
+    }
+
+    @@media(max-width: 991.5px) {
+        .container {
+            margin-top: 20px
+        }
+
+            .container .row .col-lg-4 {
+                margin: 20px 0px
+            }
+    }
+</style>*@
+
+<div class="main">
+    <input type="hidden" id="userRole" value="@Model.Role" />
+    <div class="profile-container">
+        <form asp-controller="Profile" asp-action="Index" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Logo" />
+            <div class="profile-settings-header">
+                <p>Profile Settings</p>
+                <button type="submit" onclick="return ValidateEntry();">Save Profile</button>
+            </div>
+            <div class="profile-input-wrapper">
+                <div class="profile-picture-wrapper">
+                    <img class="profile-picture" src="@Url.Content(Model.Logo)" id="profilePic" alt="">
+                    <label for="profile-picture-input">
+                        <span class="iconify" data-icon="akar-icons:plus"></span>
+                    </label>
+                    <input id="profile-picture-input" type="file" onchange="readURL(this)" asp-for="file" accept="image/*">
+                </div>
+                <div class="profile-text-input">
+                    <div class="row">
+                        <div class="input-wrapper">
+                            <label for="lastname">Full Name</label>
+                            <input type="text" asp-for="CompanyName" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-wrapper">
+                            <label for="email">Email</label>
+                            <input type="email" asp-for="EmailId" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-wrapper">
+                            <label for="role">Role</label>
+                            <input type="text" asp-for="Role" readonly>
+                        </div>
+                        @if (Model.Role != "SUPERADMIN" && Model.Role != "SUBADMIN")
+                        {
+                            <div class="input-wrapper">
+                                <label for="employee-code">Employee Code</label>
+                                <input type="text" asp-for="EmpCode" readonly>
+                            </div>
+                        }
+                    </div>
+                    @if (Model.Role != "SUPERADMIN" && Model.Role != "SUBADMIN")
+                    {
+                        <div class="row">
+                            <div class="input-wrapper">
+                                <label for="mobile-number">Mobile Number</label>
+                                <input type="text" asp-for="ContactNo1">
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="alt-mobile-number">Altername Mobile Number</label>
+                                <input type="text" asp-for="Contact2">
+                            </div>
+                        </div>
+                        if (Model.Role == "ADMIN")
+                        {
+                            <div class="row">
+                                <div class="input-wrapper">
+                                    <label for="address">Address</label>
+                                    <textarea asp-for="Address" cols="30" rows="10"></textarea>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@*<div class="@(Context.Session.GetString("SessionInfo_Role") != "SUPERADMIN" ? "main" :"content2")  rounded bg-white mt-5 mb-5">
+    <div class="card">
+
+
+        <div class="row">
+
+            <div class="col-md-9 border-right">
+                <div class="p-3 py-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-right">Profile Settings</h4>
+                    </div>
+                    <form asp-action="Index" asp-controller="Profile" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="Logo" />
+                        <div class="row mt-3">
+                            <div class="col-md-12 form-group"><label class="labels">Full Name</label><input type="text" class="form-control" placeholder="first name" asp-for="CompanyName" readonly></div>
+                            <div class="col-md-12 form-group"><label class="labels">Email ID</label><input type="text" class="form-control" placeholder="enter email id" asp-for="EmailId" readonly></div>
+                            <div class="col-md-12 form-group"><label class="labels">Role</label><input type="text" class="form-control" placeholder="role" asp-for="Role" readonly></div>
+                            @if (Model.Role != "SUPERADMIN" && Model.Role != "SUBADMIN")
+                            {
+                                <div class="col-md-12 form-group"><label class="labels">@(Model.Role.Trim() == "ADMIN" ? "Client Code" : Model.Role.Trim() == "SUPPORTMANAGER" || Model.Role.Trim() == "SUPPORTREPRESENTATIVE" ? "Employee Code" : "")</label><input type="text" class="form-control" placeholder="User Code" asp-for="EmpCode" readonly></div>
+                                <div class="col-md-12 form-group"><label class="labels">Mobile Number</label><input type="text" class="form-control" placeholder="enter phone number" asp-for="ContactNo1"></div>
+                                <div class="col-md-12 form-group"><label class="labels">Alternate Mobile Number</label><input type="text" class="form-control" placeholder="enter alternate mobile number" asp-for="Contact2"></div>
+                                if (Model.Role == "ADMIN")
+                                {
+                                    <div class="col-md-12 form-group"><label class="labels">Address</label><input type="text" class="form-control" placeholder="enter address" asp-for="Address"></div>
+                                }
+                            }
+                            <div class="col-md-8 form-group"><label class="labels">Profile Image</label><input type="file" onchange="readURL(this)" class="form-control" asp-for="file" accept="image/*"></div>
+                            <div class="col-lg-4 form-group">
+                                <img src="" id="imgLogo" height="50%" width="80%" style="display:none;" />
+                            </div>
+                        </div>
+                        <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit" onclick="return ValidateEntry();">Save Profile</button></div>
+                    </form>
+                </div>
+            </div>
+          
+            <div class="col-md-3 center meta">
+                <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                    <div class="card card-img p-0">
+                        <div class="card-image">
+                            @if (Model.Logo != null)
+                            {
+                                <img src="@Url.Content(Model.Logo)" alt="">
+                            }
+                            else
+                            {
+                                <img src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg" />
+                            }
+                        </div>
+                        <div class="card-content d-flex flex-column align-items-center">
+                            <h4 class="pt-2">@Model.CompanyName</h4>
+                            <h5>@Model.Role</h5>
+                            <ul class="social-icons d-flex justify-content-center">
+                                <li style="--i:1"> <a href="#"> <span class="fab fa-facebook"></span> </a> </li>
+                                <li style="--i:2"> <a href="#"> <span class="fab fa-twitter"></span> </a> </li>
+                                <li style="--i:3"> <a href="#"> <span class="fab fa-instagram"></span> </a> </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+         
+        </div>
+    </div>
+</div>*@
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            @if (ViewData["error"] != null)
+            {
+                <text>
+            toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if (ViewData["success"] != null)
+            {
+                <text>
+            toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+        });
+
+        function ValidateEntry() {
+            var allow = true;
+            var role = $("#userRole").val();
+            if (role != "SUPERADMIN")
+            {
+                if ($("#ContactNo1").val().length < 10)
+                {
+                    $("#ContactNo1").addClass("error");
+                    allow = false;
+                }
+                if ($("#Contact2").val() != "" && $("#ContactNo1").val().length < 10) {
+                    $("#Contact2").addClass("error");
+                    allow = false;
+                }
+                if (allow && ValidateFileType() == false) {
+                    allow = false;
+                }
+            }
+            return allow;
+        }
+
+        function readURL(input) {
+            if (ValidateFileType()) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#profilePic')
+                            .attr('src', e.target.result);
+                        $('#profilePic').show();
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                } else {
+                    $('#profilePic').show();
+                }
+            }
+        }
+
+        function ValidateFileType() {
+            var validator = true;
+            var fileName = document.getElementById("profile-picture-input").value;
+            console.log(fileName);
+            if (fileName != null && fileName != "") {
+                var idxDot = fileName.lastIndexOf(".") + 1;
+                var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+                if (!(extFile == "jpg" || extFile == "jpeg" || extFile == "png" || extFile == "jfif")) {
+                    toastr.error("Only jpg/jpeg/jfif and png files are allowed!");
+                    validator = false;
+                }
+            }
+            return validator;
+        }
+    </script>
+}

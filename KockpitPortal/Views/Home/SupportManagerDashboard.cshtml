@@ -1,0 +1,52 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutSupportManager.cshtml";
+}
+
+
+<div class="main">
+    <div class="all-tickets-container">
+        <div class="ticket-cards-wrapper">
+            <div class="ticket-card unassigned-card">
+                <div class="icon">
+                    <span class="iconify" data-icon="clarity:warning-line"></span>
+                </div>
+                <div class="text">
+                    <p class="ticket-subtitle">Total Unassigned Ticket</p>
+                    <p class="ticket-count">@ViewBag.totalPending</p>
+                </div>
+                <a href="@Url.Action("ShowAllTickets", "RaiseIssue", new {tType = "Unassigned"})"><span class="iconify" data-icon="bi:arrow-right-circle"></span></a>
+            </div>
+            <div class="ticket-card active-card">
+                <div class="icon">
+                    <span class="iconify" data-icon="bi:check-circle"></span>
+                </div>
+                <div class="text">
+                    <p class="ticket-subtitle">My Open Tickets</p>
+                    <p class="ticket-count">@ViewBag.TotalAssignedToMe</p>
+                </div>
+                <a href="@Url.Action("ShowAllTickets", "RaiseIssue", new {tType = "MyOpen"})"><span class="iconify" data-icon="bi:arrow-right-circle"></span></a>
+            </div>
+            <div class="ticket-card closed-card">
+                <div class="icon">
+                    <span class="iconify" data-icon="bx:lock"></span>
+                </div>
+                <div class="text">
+                    <p class="ticket-subtitle">My Closed Tickets</p>
+                    <p class="ticket-count">@ViewBag.TotalCloseByMe</p>
+                </div>
+                <a href="@Url.Action("ShowAllTickets", "RaiseIssue", new {tType = "MyClose"})"><span class="iconify" data-icon="bi:arrow-right-circle"></span></a>
+            </div>
+            <div class="ticket-card assigned-card">
+                <div class="icon">
+                    <span class="iconify" data-icon="fluent:arrow-repeat-all-16-filled"></span>
+                </div>
+                <div class="text">
+                    <p class="ticket-subtitle">All Tickets</p>
+                    <p class="ticket-count">@ViewBag.AssignedtoOthers</p>
+                </div>
+                <a href="@Url.Action("ShowAllTickets", "RaiseIssue", new {tType = "All"})"> <span class="iconify" data-icon="bi:arrow-right-circle"></span></a>
+            </div>
+        </div>
+    </div>
+</div>
+

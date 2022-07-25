@@ -1,0 +1,1010 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Kockpit Portal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+    <link rel="stylesheet" href="~/Theme/plugins/toastr/toastr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+            font-weight: 400;
+        }
+
+        .login-wrapper {
+            min-height: 100vh;
+            max-height: 100vh;
+            display: -ms-grid;
+            display: grid;
+            -ms-grid-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
+        }
+
+            .login-wrapper > * {
+                height: 100%;
+            }
+
+        .login-form {
+            background: #fff;
+            padding: 6rem 0;
+            position: relative;
+        }
+
+            .login-form .back-icon {
+                text-decoration: none;
+                position: absolute;
+                top: 6rem;
+                left: 5rem;
+                border: 1px solid #b2b2b2;
+                border-radius: 0.625rem;
+                width: 3rem;
+                height: 3rem;
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-align: center;
+                -ms-flex-align: center;
+                align-items: center;
+                -webkit-box-pack: center;
+                -ms-flex-pack: center;
+                justify-content: center;
+            }
+
+                .login-form .back-icon:hover {
+                    border: 1px solid #3aa0ff;
+                    color: #3aa0ff;
+                }
+
+            .login-form .logo {
+                text-align: center;
+                font-weight: 700;
+                margin-bottom: 6rem;
+                padding-left: .5rem;
+            }
+
+            .login-form .form-text {
+                text-align: center;
+                color: #222;
+                margin-bottom: 4rem;
+            }
+
+                .login-form .form-text h2 {
+                    font-size: 1.875rem;
+                    font-weight: bold;
+                    margin-bottom: 1rem;
+                }
+
+                .login-form .form-text p {
+                    font-size: 1.3rem;
+                    color: #909090;
+                }
+
+            .login-form form {
+                width: clamp(400px, 60%, 28rem);
+                margin: 0 auto;
+            }
+
+                .login-form form > * {
+                    width: 100%;
+                }
+
+                .login-form form .input-wrapper {
+                    position: relative;
+                    margin-bottom: 2.25rem;
+                }
+
+            .login-form .input-wrapper label {
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-align: center;
+                -ms-flex-align: center;
+                align-items: center;
+                height: -webkit-max-content !important;
+                height: -moz-max-content !important;
+                height: max-content !important;
+                padding: 0 1rem;
+                color: #909090;
+                position: absolute;
+                top: -15%;
+                left: 0.375rem;
+                margin: auto 0;
+                background-color: #fff;
+                -webkit-transition: top 0.2s ease;
+                -o-transition: top 0.2s ease;
+                transition: top 0.2s ease;
+            }
+
+            .login-form .input-wrapper input {
+                width: 100%;
+                padding: 1.375rem;
+                border-radius: 0.625rem;
+                border: 1px solid #cdcdcd;
+                font-size: 0.875rem;
+                color: black;
+                font-weight: bold;
+                outline: none;
+            }
+
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            box-shadow: 0 0 0 50px #fff inset !important;
+        }
+
+        input:autofill,
+        input:autofill:hover,
+        input:autofill:active,
+        input:autofill:focus {
+            box-shadow: 0 0 0 50px #fff inset !important;
+        }
+
+                .login-form .input-wrapper input::placeholder {
+                    font-weight: 400;
+                    color: #b2b2b2;
+                }
+
+            .login-form form .input-wrapper .input-icon {
+                position: absolute;
+                right: 1.275rem;
+                top: 0;
+                bottom: 0;
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-align: center;
+                -ms-flex-align: center;
+                align-items: center;
+                -webkit-box-pack: center;
+                -ms-flex-pack: center;
+                justify-content: center;
+            }
+
+            .login-form .input-wrapper .toggle-password-visible {
+                cursor: pointer;
+            }
+
+            .login-form form .input-wrapper .toggle-password-visible .hide-pass {
+                display: none;
+            }
+
+            .login-form .input-wrapper .toggle-password-visible.active .show-pass {
+                display: none;
+            }
+
+            .login-form .input-wrapper .toggle-password-visible.active .hide-pass {
+                display: block;
+            }
+
+            .login-form form .input-wrapper .input-icon i {
+                color: #b2b2b2;
+                font-size: 1.2rem;
+            }
+
+            .login-form .input-wrapper input:focus {
+                border: 1px solid #3aa0ff;
+            }
+
+                .login-form .input-wrapper input:focus + label {
+                    color: #3aa0ff;
+                }
+
+                .login-form .input-wrapper input:focus ~ .input-icon i {
+                    color: #3aa0ff;
+                }
+
+            .login-form .input-wrapper input::-webkit-input-placeholder {
+                font-size: 0.875rem;
+            }
+
+            .login-form .input-wrapper input::-moz-placeholder {
+                font-size: 0.875rem;
+            }
+
+            .login-form .input-wrapper input:-ms-input-placeholder {
+                font-size: 0.875rem;
+            }
+
+            .login-form .input-wrapper input::-ms-input-placeholder {
+                font-size: 0.875rem;
+            }
+
+            .login-form .input-wrapper input::placeholder {
+                font-size: 0.875rem;
+            }
+
+            .login-form .input-wrapper.error .input-icon i {
+                color: #fc5a5a;
+            }
+
+            .login-form .input-wrapper.error input {
+                border: 1px solid #fc5a5a;
+            }
+
+                .login-form .input-wrapper.error input:focus + label {
+                    color: #fc5a5a;
+                }
+
+            .login-form .input-wrapper.error label {
+                color: #fc5a5a;
+            }
+
+            .login-form .input-wrapper.error input::-webkit-input-placeholder {
+                color: #fc5a5a;
+            }
+
+            .login-form .input-wrapper.error input::-moz-placeholder {
+                color: #fc5a5a;
+            }
+
+            .login-form .input-wrapper.error input:-ms-input-placeholder {
+                color: #fc5a5a;
+            }
+
+            .login-form .input-wrapper.error input::-ms-input-placeholder {
+                color: #fc5a5a;
+            }
+
+            .login-form .input-wrapper.error input::placeholder {
+                color: #fc5a5a;
+            }
+
+            .login-form .form-actions {
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-pack: justify;
+                -ms-flex-pack: justify;
+                justify-content: space-between;
+                margin-bottom: 2.75rem;
+            }
+
+                .login-form .form-actions .remember-me {
+                    display: -webkit-box;
+                    display: -ms-flexbox;
+                    display: flex;
+                    -webkit-box-align: center;
+                    -ms-flex-align: center;
+                    align-items: center;
+                    color: #909090;
+                    gap: 0.75rem;
+                }
+
+                .login-form .form-actions a {
+                    text-decoration: none;
+                    color: #909090;
+                }
+
+                    .login-form .form-actions a:hover {
+                        text-decoration: underline;
+                    }
+
+                .login-form .form-actions .remember-me input[type="checkbox"] {
+                    -webkit-appearance: none;
+                    -moz-appearance: none;
+                    appearance: none;
+                    background-color: #fff;
+                    margin: 0;
+                    font: inherit;
+                    color: #b2b2b2;
+                    width: 1.15rem;
+                    height: 1.15rem;
+                    border: 0.15rem solid #b2b2b2;
+                    border-radius: 0.15rem;
+                    -webkit-transform: translateY(-0.075rem);
+                    -ms-transform: translateY(-0.075rem);
+                    transform: translateY(-0.075rem);
+                    display: -ms-grid;
+                    display: grid;
+                    place-content: center;
+                }
+
+                    .login-form .form-actions .remember-me input[type="checkbox"]:checked {
+                        border: 0.15rem solid black;
+                        background-color: #000;
+                    }
+
+        input[type="checkbox"]::before {
+            content: "";
+            width: 0.65rem;
+            height: 0.65rem;
+            -webkit-transform: scale(0);
+            -ms-transform: scale(0);
+            transform: scale(0);
+            -webkit-transition: 120ms -webkit-transform ease-in-out;
+            transition: 120ms -webkit-transform ease-in-out;
+            -o-transition: 120ms transform ease-in-out;
+            transition: 120ms transform ease-in-out;
+            transition: 120ms transform ease-in-out, 120ms -webkit-transform ease-in-out;
+            -webkit-box-shadow: inset 1rem 1rem #fff;
+            box-shadow: inset 1rem 1rem #fff;
+            -webkit-transform-origin: bottom left;
+            -ms-transform-origin: bottom left;
+            transform-origin: bottom left;
+            -webkit-clip-path: polygon( 14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62% );
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+
+        input[type="checkbox"]:checked::before {
+            content: "";
+            -webkit-transform: scale(1);
+            -ms-transform: scale(1);
+            transform: scale(1);
+        }
+
+        .login-form form button {
+            font-size: 1.125rem;
+            font-weight: bold;
+            border-radius: 0.625rem;
+            border: none;
+            background-color: #3aa0ff;
+            padding: 1.375rem;
+            color: #fff;
+            transition: opacity .3s ease;
+        }
+
+            .login-form form button:hover {
+                opacity: .7;
+            }
+
+            .login-form form button:active {
+                opacity: 1;
+            }
+
+        .product-info {
+            padding: 6rem 0;
+            background: #3aa0ff;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-align: center;
+            align-items: flex-start;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+        }
+
+            .slide-container .blur-box {
+                width: 30vw;
+                height: 25vw;
+                border-radius: 0.625rem;
+                background-color: #ffffff22;
+                -webkit-backdrop-filter: blur(20px);
+                backdrop-filter: blur(20px);
+                z-index: 1;
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-align: center;
+                -ms-flex-align: center;
+                align-items: center;
+                -webkit-box-pack: center;
+                -ms-flex-pack: center;
+                justify-content: center;
+            }
+
+            .slide-container .circle {
+                position: absolute;
+                background-color: #fff;
+                border-radius: 50%;
+            }
+
+            .slide-container .circle-big {
+                width: 8vw;
+                height: 8vw;
+                left: -4vw;
+                top: 1vw;
+                z-index: -1;
+                -webkit-animation: moveCircleBig 20s infinite forwards;
+                animation: moveCircleBig 20s infinite forwards;
+            }
+
+            .slide-container .circle-small {
+                width: 4vw;
+                height: 4vw;
+                right: -2vw;
+                bottom: 1vw;
+                z-index: -1;
+                -webkit-animation: moveCircleSmall 20s infinite;
+                animation: moveCircleSmall 20s infinite;
+            }
+
+        @@-webkit-keyframes moveCircleBig {
+            0% {
+                -webkit-transform: translateY(0);
+                transform: translateY(0);
+            }
+
+            50% {
+                -webkit-transform: translateY(15vw);
+                transform: translateY(15vw);
+            }
+
+
+            100% {
+                -webkit-transform: translateY(0);
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes moveCircleBig {
+            0% {
+                -webkit-transform: translateY(0);
+                transform: translateY(0);
+            }
+
+            50% {
+                -webkit-transform: translateY(15vw);
+                transform: translateY(15vw);
+            }
+
+            100% {
+                -webkit-transform: translateY(0);
+                transform: translateY(0);
+            }
+        }
+
+        @@-webkit-keyframes moveCircleSmall {
+            0% {
+                -webkit-transform: translateY(0);
+                transform: translateY(0);
+            }
+
+
+            50% {
+                -webkit-transform: translateY(-18vw);
+                transform: translateY(-18vw);
+            }
+
+            100% {
+                -webkit-transform: translateY(0);
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes moveCircleSmall {
+            0% {
+                -webkit-transform: translateY(0);
+                transform: translateY(0);
+            }
+
+
+            50% {
+                -webkit-transform: translateY(-18vw);
+                transform: translateY(-18vw);
+            }
+
+            100% {
+                -webkit-transform: translateY(0);
+                transform: translateY(0);
+            }
+        }
+
+        .slide-container .slide {
+            display: none;
+            /* visibility: hidden; */
+        }
+
+            .slide-container .slide.active {
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-align: center;
+                -ms-flex-align: center;
+                align-items: center;
+                -webkit-box-pack: center;
+                -ms-flex-pack: center;
+                justify-content: center;
+            }
+
+            .slide-container .slide .icon {
+                width: 10vw;
+                height: 10vw;
+                -webkit-transition: -webkit-transform 0.3s ease;
+                transition: -webkit-transform 0.3s ease;
+                -o-transition: transform 0.3s ease;
+                transition: transform 0.3s ease;
+                transition: transform 0.3s ease, -webkit-transform 0.3s ease;
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-align: center;
+                -ms-flex-align: center;
+                align-items: center;
+                -webkit-box-pack: center;
+                -ms-flex-pack: center;
+                justify-content: center;
+            }
+
+                .slide-container .slide .icon img {
+                    max-width: 100%;
+                    max-height: 100%;
+                    -o-object-fit: contain;
+                    object-fit: contain;
+                }
+
+
+                .slide-container .slide .icon i {
+                    font-size: 8rem;
+                }
+
+            .slide-container .slide.active .icon {
+                -webkit-animation: growIcon 0.5s ease;
+                animation: growIcon 0.5s ease;
+            }
+
+        @@-webkit-keyframes growIcon {
+            0% {
+                opacity: 0;
+                -webkit-transform: scale(0);
+                transform: scale(0);
+            }
+
+            100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @@keyframes growIcon {
+            0% {
+                opacity: 0;
+                -webkit-transform: scale(0);
+                transform: scale(0);
+            }
+
+            100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .slider .slide-text-wrapper {
+            margin-top: 4rem;
+            max-width: 30vw;
+            text-align: center;
+        }
+
+        .slider .slide-text {
+            display: none;
+        }
+
+            .slider .slide-text.active {
+                display: block;
+                -webkit-animation: slideTextAnim 1s ease;
+                animation: slideTextAnim 1s ease;
+            }
+
+            .slider .slide-text h2 {
+                font-size: 1.875rem;
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+
+            .slider .slide-text p {
+                font-size: 1.125rem;
+            }
+
+        .slide-indicators {
+            margin-top: 4rem;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            gap: 0.5rem;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+        }
+
+            .slide-indicators .indicator {
+                width: 2rem;
+                height: 0.25rem;
+                border-radius: 1rem;
+                background-color: #fff;
+                opacity: 0.5;
+                -webkit-transition: opacity 0.3s ease;
+                -o-transition: opacity 0.3s ease;
+                transition: opacity 0.3s ease;
+            }
+
+                .slide-indicators .indicator.active {
+                    opacity: 1;
+                }
+
+        @@-webkit-keyframes slideTextAnim {
+            0% {
+                opacity: 0;
+                -webkit-transform: translateX(100%) scale(0.5);
+                transform: translateX(100%) scale(0.5);
+            }
+
+            100% {
+                opacity: 1;
+                -webkit-transform: translateX(0) scale(1);
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @@keyframes slideTextAnim {
+            0% {
+                opacity: 0;
+                -webkit-transform: translateX(100%) scale(0.5);
+                transform: translateX(100%) scale(0.5);
+            }
+
+            100% {
+                opacity: 1;
+                -webkit-transform: translateX(0) scale(1);
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @@media screen and (min-width: 1000px) and (max-width: 1600px) {
+            html {
+                font-size: 70%;
+            }
+        }
+
+        @@media screen and (min-width: 1600px) {
+            html {
+                font-size: 14px;
+            }
+        }
+
+        @@media screen and (min-width: 1800px) {
+            html {
+                font-size: 16px;
+            }
+        }
+
+        @@media screen and (min-width: 2000px) {
+            html {
+                font-size: 18px;
+            }
+        }
+
+        @@media screen and (min-width: 2200px) {
+            html {
+                font-size: 20px;
+            }
+        }
+
+        @@media screen and (min-width: 2400px) {
+            html {
+                font-size: 24px;
+            }
+        }
+
+        @@media screen and (max-width: 1000px) {
+            html {
+                font-size: 12px;
+            }
+
+            .login-wrapper {
+                -ms-grid-columns: 1fr;
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+
+            .product-info {
+                display: none;
+            }
+        }
+
+        @@media screen and (max-width: 768px) {
+            form {
+                width: 100% !important;
+            }
+        }
+
+        @@media screen and (max-width: 360px) {
+            html {
+                font-size: 10px;
+            }
+        }
+    </style>
+    <style>
+        #toast-container > div {
+            position: relative;
+            pointer-events: auto;
+            overflow: hidden;
+            margin: 0 0 6px;
+            padding: 15px 15px 15px 50px;
+            width: 300px;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+            background-position: 15px center;
+            background-repeat: no-repeat;
+            -moz-box-shadow: 0 0 12px #999;
+            -webkit-box-shadow: 0 0 12px #999;
+            box-shadow: 0 0 12px #999;
+            /*color: #FFF;*/
+            opacity: 1;
+            -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+            filter: alpha(opacity=100);
+        }
+
+        #toast-container > .toast > .toast-title {
+            display: none;
+        }
+
+        #toast-container > .new-error {
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAHOSURBVEhLrZa/SgNBEMZzh0WKCClSCKaIYOED+AAKeQQLG8HWztLCImBrYadgIdY+gIKNYkBFSwu7CAoqCgkkoGBI/E28PdbLZmeDLgzZzcx83/zZ2SSXC1j9fr+I1Hq93g2yxH4iwM1vkoBWAdxCmpzTxfkN2RcyZNaHFIkSo10+8kgxkXIURV5HGxTmFuc75B2RfQkpxHG8aAgaAFa0tAHqYFfQ7Iwe2yhODk8+J4C7yAoRTWI3w/4klGRgR4lO7Rpn9+gvMyWp+uxFh8+H+ARlgN1nJuJuQAYvNkEnwGFck18Er4q3egEc/oO+mhLdKgRyhdNFiacC0rlOCbhNVz4H9FnAYgDBvU3QIioZlJFLJtsoHYRDfiZoUyIxqCtRpVlANq0EU4dApjrtgezPFad5S19Wgjkc0hNVnuF4HjVA6C7QrSIbylB+oZe3aHgBsqlNqKYH48jXyJKMuAbiyVJ8KzaB3eRc0pg9VwQ4niFryI68qiOi3AbjwdsfnAtk0bCjTLJKr6mrD9g8iq/S/B81hguOMlQTnVyG40wAcjnmgsCNESDrjme7wfftP4P7SP4N3CJZdvzoNyGq2c/HWOXJGsvVg+RA/k2MC/wN6I2YA2Pt8GkAAAAASUVORK5CYII=) !important;
+            background-color: #dc3545;
+            /*min-width: 96%;*/
+            margin-top: 1rem;
+        }
+        .toast-success {
+            background-color: #51a351 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="login-wrapper" style="overflow:hidden">
+        <div class="login-form">
+            <div class="logo">
+                <img src="~/assets/logo-new.svg" alt="Kockpit Logo">
+            </div>
+            @using (Html.BeginForm("Index", "Login", FormMethod.Post, new { id = "formLogin", name = "formLogin", autocomplete = "off" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <input type="hidden" id="continue" name="continue" value="@ViewBag.Scontinue" />
+                <div class="form-text">
+                    <h2>Login</h2>
+                    <p>Sign in by entering your account here.</p>
+                </div>
+                <div class="input-wrapper">
+                    <input type="text" id="email" name="email" autocomplete="off" placeholder="Username" />
+                    <label for="email">Email</label>
+                    <div class="input-icon">
+                        <i class="bi bi-envelope-fill"></i>
+                    </div>
+                </div>
+                <div class="input-wrapper">
+                    <div class="input-icon toggle-password-visible">
+                        <i class="bi bi-eye-fill show-pass"></i>
+                        <i class="bi bi-eye-slash-fill hide-pass"></i>
+                    </div>
+                    <input type="password" id="password" name="password" autocomplete="off" placeholder="Enter Password">
+                    <label for="password">Password</label>
+                </div>
+                <div class="form-actions">
+                    @*<div class="remember-me">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Remember me</label>
+                    </div>*@
+                    <a asp-action="ForgotPassword" asp-controller="Login">Forgot Password?</a>
+                </div>
+                <button type="button" id="btnLogin">Login</button>
+            }
+        </div>
+
+        <div class="product-info">
+            <div class="slider">
+                <div class="slide-container">
+                    <div class="blur-box">
+                        <div class="slide active">
+                            <div class="icon">
+                                <img src="~/assets/nucleus.svg" alt="">
+                            </div>
+                        </div>
+                        <div class="slide">
+                            <div class="icon">
+                                <img src="~/assets/konnect.svg" alt="">
+                            </div>
+                        </div>
+                        <div class="slide">
+                            <div class="icon">
+                                <img src="~/assets/bxray.svg" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="circle circle-small"></div>
+                    <div class="circle circle-big"></div>
+                </div>
+                <div class="slide-text-wrapper">
+                    <div class="slide-text active">
+                        <h2>Nucleus</h2>
+                        <p>Platform for Big data Solutions for easy management.</p>
+                    </div>
+                    <div class="slide-text">
+                        <h2>Konnect</h2>
+                        <p>
+                            Analyze and share reports with a single click.
+                        </p>
+                    </div>
+                    <div class="slide-text">
+                        <h2>Business X-Ray</h2>
+                        <p>Real-Time tracking of various processes for any TAT.</p>
+                    </div>
+                </div>
+                <div class="slide-indicators">
+                    <div class="indicator active"></div>
+                    <div class="indicator"></div>
+                    <div class="indicator"></div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Theme/plugins/toastr/toastr.min.js"></script>
+
+    <script type="text/javascript">
+
+        const allSlides = Array.from(document.querySelectorAll(".slide"));
+        const allSlidesText = Array.from(document.querySelectorAll(".slide-text"));
+        const allIndicators = Array.from(document.querySelectorAll(".indicator"));
+        let activeSlide = 0;
+
+        setInterval(() => {
+            // console.log("running");
+            if (activeSlide === allSlides.length - 1) {
+                removeActive();
+                activeSlide = 0;
+                addActive();
+            } else {
+                removeActive();
+                activeSlide++;
+                addActive();
+            }
+        }, 5000);
+
+        function removeActive() {
+            allSlides[activeSlide].classList.remove("active");
+            allSlidesText[activeSlide].classList.remove("active");
+            allIndicators[activeSlide].classList.remove("active");
+        }
+
+        function addActive() {
+            allSlides[activeSlide].classList.add("active");
+            allSlidesText[activeSlide].classList.add("active");
+            allIndicators[activeSlide].classList.add("active");
+        }
+
+        const inputs = document.querySelectorAll("input");
+
+        inputs.forEach(item => {
+            item.addEventListener("click", () => {
+                item.nextElementSibling.classList.add("active");
+            });
+        });
+
+        const togglePasswordVisibility = document.querySelectorAll(".toggle-password-visible");
+
+        togglePasswordVisibility.forEach(item => {
+            item.addEventListener("click", () => {
+                item.nextElementSibling.focus();
+                if (item.classList.contains("active")) {
+                    item.classList.remove("active");
+                    item.nextElementSibling.type = 'password';
+                } else {
+                    item.classList.add("active");
+                    item.nextElementSibling.type = 'text';
+                }
+            });
+        });
+
+    </script>
+
+
+
+
+    <script type="text/javascript">
+        $(function () {
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+
+            $("#btnLogin").html("Login");
+
+            @if (ViewData["error"] != null)
+            {
+                <text>
+                    toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if (ViewData["success"] != null)
+            {
+                <text>
+                    toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#btnLogin").on('click', function (e) {
+                e.preventDefault();
+                $('#email').parent().removeClass('error');
+                $('#password').parent().removeClass('error');
+                var allow = true;
+                if ($('#email').val().trim().length == 0) {
+                    $('#email').parent().addClass('error');
+                    allow = false;
+                }
+                if ($('#password').val().trim().length == 0) {
+                    $('#password').parent().addClass('error');
+                    allow = false;
+                }
+                if (!allow) {
+                    toastr.error("Please enter valid email/password.", "Error", { "iconClass": 'new-error' });
+                } else {
+                    $(this).html("<i class='fa fa-spinner fa-spin'></i>");
+                    $("#formLogin").submit();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        function postForm(path, params, method) {
+            method = method || 'post';
+            var form = document.createElement('form');
+            form.setAttribute('method', method);
+            form.setAttribute('action', path);
+            for (var key in params) {
+                if (params.hasOwnProperty(key)) {
+                    var hiddenField = document.createElement('input');
+                    hiddenField.setAttribute('type', 'hidden');
+                    hiddenField.setAttribute('name', key);
+                    hiddenField.setAttribute('value', params[key]);
+                    form.appendChild(hiddenField);
+                }
+            }
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+
+</body>
+</html>

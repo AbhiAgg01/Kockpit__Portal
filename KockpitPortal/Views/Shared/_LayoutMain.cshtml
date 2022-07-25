@@ -1,0 +1,712 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using System.Data;
+@using KockpitPortal.Models.Notification;
+@using KockpitPortal.Models.Cart;
+
+@{
+    List<tblCart> _products = new List<tblCart>();
+    List<tblNotification> _notifications = new List<tblNotification>();
+    string data = Context.Session.GetString("Notification");
+    @if (data != null)
+        _notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<List<tblNotification>>(data);
+
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@((ViewData["PageTitle"] == null ? "Kockpit Portal" : ViewData["PageTitle"].ToString().Split().LastOrDefault()))</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/Theme/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/Theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Theme/plugins/toastr/toastr.min.css">
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/Theme/dist/css/adminlte.min.css">
+    <script src="https://code.iconify.design/2/2.1.0/iconify.min.js"></script>
+    <link href="~/Theme/plugins/fstdropdown-master/fstdropdown.css" rel="stylesheet" />
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <div class="menu-toggle">
+                <span class="iconify menu-toggle-icon" data-icon="heroicons-outline:menu-alt-2"></span>
+            </div>
+            <h2 class="header-heading">@ViewData["PageTitle"]</h2>
+        </div>
+        <div class="header-right">
+            <div class="header-btn full-screen-toggle" tabindex="1">
+                <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
+                    <g id="Group_3145" data-name="Group 3145" transform="translate(-1504 -40)">
+                        <g id="Layer_29" data-name="Layer 29" transform="translate(1502 38)">
+                            <path id="Path_15864" data-name="Path 15864"
+                                  d="M2,7.5v-4A1.5,1.5,0,0,1,3.5,2h4a.5.5,0,0,1,0,1h-4a.5.5,0,0,0-.5.5v4a.5.5,0,0,1-1,0Zm21-4v4a.5.5,0,0,1-1,0v-4a.5.5,0,0,0-.5-.5h-4a.5.5,0,0,1,0-1h4A1.5,1.5,0,0,1,23,3.5Zm0,14v4A1.5,1.5,0,0,1,21.5,23h-4a.5.5,0,0,1,0-1h4a.5.5,0,0,0,.5-.5v-4a.5.5,0,0,1,1,0Zm-15,5a.5.5,0,0,1-.5.5h-4A1.5,1.5,0,0,1,2,21.5v-4a.5.5,0,0,1,1,0v4a.5.5,0,0,0,.5.5h4A.5.5,0,0,1,8,22.5Z"
+                                  fill="#687c97" />
+                        </g>
+                    </g>
+                </svg>
+                <div class="header-tooltip">Fullscreen</div>
+            </div>
+
+
+            <div class="header-btn notifications" tabindex="1">
+                <span class="iconify" data-icon="clarity:bell-line"></span>
+                @if (_notifications != null && _notifications.Count() > 0)
+                {
+                    <div class="notification-dot"></div>
+                }
+                <div class="header-tooltip">Notification</div>
+                <div class="notification-dropdown">
+                    @if (_notifications != null && _notifications.Count() > 0)
+                    {
+                        @foreach (var item in _notifications)
+                        {
+
+                            if (string.Equals(item.Subject, "License Request", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                <div class="notification">
+                                    <a class="message-head" href="@Url.Action("Index","PlanRequest", new {  id = item.Id })">@item.Subject</a>
+                                    <p class="message-body">@item.Message</p>
+                                </div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <div class="notification text-center">
+                            <p class="message-head">Notifications</p>
+                            <p class="message-body">No Notification Available</p>
+                        </div>
+                    }
+                    <hr />
+                    <a class="checkout-page-link" href="@Url.Action("Index", "Notification")">See All</a>
+                </div>
+            </div>
+
+
+
+            <div class="user">
+                <p class="name">
+                    <span>@Context.Session.GetString("SessionInfo_CompanyName")</span>
+                </p>
+                <div class="header-btn" tabindex="1">
+                    <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="18.693" height="19.028"
+                         viewBox="0 0 18.693 19.028">
+                        <g id="Group_3149" data-name="Group 3149" transform="translate(-1831 -39.676)">
+                            <g id="user" transform="translate(1807.079 12.676)">
+                                <path id="Path_15865" data-name="Path 15865"
+                                      d="M51.727,32.363a5.363,5.363,0,1,0-5.363,5.363A5.364,5.364,0,0,0,51.727,32.363Zm-9.328,0a3.964,3.964,0,1,1,3.964,3.964A3.961,3.961,0,0,1,42.4,32.363Z"
+                                      transform="translate(-13.096 0)" fill="#687c97" />
+                                <path id="Path_15866" data-name="Path 15866"
+                                      d="M24.29,87.343a.658.658,0,0,0,.35.093.676.676,0,0,0,.606-.35,9.228,9.228,0,0,1,16.067,0,.7.7,0,0,0,1.213-.7,10.649,10.649,0,0,0-18.515,0,.7.7,0,0,0,.28.956Z"
+                                      transform="translate(0 -41.408)" fill="#687c97" />
+                            </g>
+                        </g>
+                    </svg>
+                    <div class="header-tooltip">User</div>
+                </div>
+                <div class="header-dropdown">
+                    <a href="@Url.Action("Index","Profile")">
+                        <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="11.469"
+                             height="11.675" viewBox="0 0 11.469 11.675">
+                            <g id="user" transform="translate(-23.922 -27)">
+                                <path id="Path_15865" data-name="Path 15865"
+                                      d="M47.581,30.291a3.291,3.291,0,1,0-3.291,3.291A3.291,3.291,0,0,0,47.581,30.291Zm-5.723,0a2.432,2.432,0,1,1,2.432,2.432A2.43,2.43,0,0,1,41.858,30.291Z"
+                                      transform="translate(-14.635)" fill="#3aa0ff" />
+                                <path id="Path_15866" data-name="Path 15866"
+                                      d="M24.147,84.892a.4.4,0,0,0,.215.057.415.415,0,0,0,.372-.215,5.662,5.662,0,0,1,9.858,0,.429.429,0,1,0,.744-.429,6.533,6.533,0,0,0-11.36,0,.43.43,0,0,0,.172.587Z"
+                                      transform="translate(0 -46.274)" fill="#3aa0ff" />
+                            </g>
+                        </svg></span>Profile
+                    </a>
+                    <a href="@Url.Action("Index","ChangePassword")">
+                        <svg class="iconify" width="11.469" height="11.469" xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 13.92 14.3">
+                            <g id="Layer_2" data-name="Layer 2">
+                                <g id="Layer_1-2" data-name="Layer 1">
+                                    <path d="M13.57,8.14,13,7.78a.71.71,0,0,1-.26-1A.62.62,0,0,1,13,6.54l.62-.35a.68.68,0,0,0,.33-.74,7.47,7.47,0,0,0-.31-1,.67.67,0,0,0-.7-.4l-.72.07a.71.71,0,0,1-.78-.63.68.68,0,0,1,.06-.37l.29-.66a.68.68,0,0,0-.17-.8,7,7,0,0,0-.83-.6.66.66,0,0,0-.81.09l-.53.47a.7.7,0,0,1-1,0,.74.74,0,0,1-.17-.33L8.08.56A.67.67,0,0,0,7.48,0L7,0,6.45,0a.68.68,0,0,0-.6.54l-.15.7a.71.71,0,0,1-.84.56.75.75,0,0,1-.34-.18L4,1.16a.66.66,0,0,0-.8-.08,7,7,0,0,0-.83.6.67.67,0,0,0-.17.8l.29.65a.71.71,0,0,1-.36.94.78.78,0,0,1-.37.06L1,4.05a.68.68,0,0,0-.7.4,7,7,0,0,0-.32,1,.67.67,0,0,0,.33.74L1,6.53a.72.72,0,0,1,.27,1A.78.78,0,0,1,1,7.77l-.62.35A.68.68,0,0,0,0,8.86a6.6,6.6,0,0,0,.32,1,.66.66,0,0,0,.7.4l.71-.07a.7.7,0,0,1,.78.63.67.67,0,0,1,0,.37l-.29.65a.67.67,0,0,0,.16.79,8.44,8.44,0,0,0,.83.61A.69.69,0,0,0,4,13.13l.53-.48a.71.71,0,0,1,1,0A.8.8,0,0,1,5.7,13l.14.7a.69.69,0,0,0,.6.55l.52,0,.51,0a.67.67,0,0,0,.6-.55l.15-.7a.71.71,0,0,1,.84-.55.65.65,0,0,1,.34.17l.53.48a.68.68,0,0,0,.8.09,10,10,0,0,0,.84-.61.68.68,0,0,0,.17-.78l-.29-.65a.71.71,0,0,1,.36-.94.57.57,0,0,1,.36-.06l.72.08a.69.69,0,0,0,.7-.4,8.57,8.57,0,0,0,.31-1A.67.67,0,0,0,13.57,8.14ZM13,9.54l-.69-.08a1.35,1.35,0,0,0-.74.12,1.43,1.43,0,0,0-.72,1.89l.29.63a7.9,7.9,0,0,1-.68.5l-.52-.47a1.43,1.43,0,0,0-2.36.77l-.14.68H6.55l-.14-.68a1.43,1.43,0,0,0-2.36-.77l-.52.47a7.9,7.9,0,0,1-.68-.5l.29-.63a1.44,1.44,0,0,0-1.47-2L1,9.54a5.7,5.7,0,0,1-.25-.8l.6-.35a1.42,1.42,0,0,0,.53-.53,1.44,1.44,0,0,0-.53-1.95l-.6-.34A5.31,5.31,0,0,1,1,4.77l.69.07a1.39,1.39,0,0,0,.75-.12,1.42,1.42,0,0,0,.71-1.89L2.85,2.2a5.6,5.6,0,0,1,.68-.49L4,2.17a1.39,1.39,0,0,0,.68.35A1.43,1.43,0,0,0,6.41,1.4L6.55.73,7,.71l.42,0,.14.67a1.38,1.38,0,0,0,.34.67,1.43,1.43,0,0,0,2,.1l.52-.46a7.76,7.76,0,0,1,.68.49l-.29.63a1.56,1.56,0,0,0-.12.74,1.43,1.43,0,0,0,1.58,1.27L13,4.76a8.27,8.27,0,0,1,.26.8l-.6.35a1.5,1.5,0,0,0-.53.53,1.42,1.42,0,0,0,.53,2l.6.35A7.46,7.46,0,0,1,13,9.54Z"
+                                          style="fill:#fc6" />
+                                    <g id="Path_15863" data-name="Path 15863">
+                                        <path d="M3.39,6.58a.35.35,0,0,1,.4-.28h0a.42.42,0,0,1,.29.46A2.86,2.86,0,1,0,7.33,4.31a2.89,2.89,0,0,0-2.49.91.4.4,0,0,1-.53.08.36.36,0,0,1-.11-.48l0,0a3.59,3.59,0,1,1-.84,1.79Z"
+                                              style="fill:#ffb369" />
+                                    </g>
+                                </g>
+                            </g>
+                        </svg>
+                        Change Password
+                    </a>
+                    <a data-toggle="modal" data-target="#logoutModal" style="cursor:pointer;">
+                        <svg class="iconify" id="_1._Icons_Line_ab-testing"
+                             data-name="1. Icons / Line /  ab-testing" xmlns="http://www.w3.org/2000/svg" width="10.667"
+                             height="13.334" viewBox="0 0 10.667 13.334">
+                            <path id="file-export"
+                                  d="M9,13.334H1.667A1.668,1.668,0,0,1,0,11.668v-10A1.669,1.669,0,0,1,1.667,0h6A.329.329,0,0,1,7.9.1L10.57,2.765a.327.327,0,0,1,.1.254V4.334a.333.333,0,1,1-.667,0v-1H7.667A.334.334,0,0,1,7.333,3V.667H1.667a1,1,0,0,0-1,1v10a1,1,0,0,0,1,1H9a1,1,0,0,0,1-1V10.334a.333.333,0,0,1,.667,0v1.334A1.668,1.668,0,0,1,9,13.334ZM8,1.139V2.668H9.529Zm.334,8.2a.333.333,0,0,1-.236-.57L9.529,7.334h-5.2a.333.333,0,1,1,0-.667h5.2L8.1,5.237a.334.334,0,1,1,.472-.472l2,2a.334.334,0,0,1,0,.472l-2,2A.331.331,0,0,1,8.333,9.335Z"
+                                  fill="#fc5a5a" />
+                        </svg>Log Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="sidebar">
+        <div class="sidebar-close-btn">
+            <span class="iconify" data-icon="bi:x"></span>
+        </div>
+        <a href="@Url.Action("Index","Home")" class="logo">
+            <img src="~/assets/kockpit-logo.svg" alt="logo">
+            <p>Kockpit</p>
+        </a>
+        <div class="menu">
+            <ul>
+                <li>
+                    <a class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA001" ? "active" : "" : "")" href="@Url.Action("Index","Home")">
+                        <svg class="iconify dashboard" xmlns="http://www.w3.org/2000/svg" width="15.339" height="15.339" viewBox="0 0 15.339 15.339">
+                            <g id="dashboard_1_" data-name="dashboard (1)" transform="translate(-1 -1)">
+                                <path id="Path_16032" data-name="Path 16032" d="M19.275,7.972H13.7a.7.7,0,0,1-.7-.7V1.7a.7.7,0,0,1,.7-.7h5.578a.7.7,0,0,1,.7.7V7.275A.7.7,0,0,1,19.275,7.972ZM14.394,6.578h4.183V2.394H14.394Z" transform="translate(-3.633)" fill="#687c97" />
+                                <path id="Path_16033" data-name="Path 16033" d="M16.486,19.972a3.486,3.486,0,1,1,3.486-3.486,3.486,3.486,0,0,1-3.486,3.486Zm0-5.578a2.092,2.092,0,1,0,2.092,2.092A2.092,2.092,0,0,0,16.486,14.394Z" transform="translate(-3.633 -3.633)" fill="#687c97" />
+                                <path id="Path_16034" data-name="Path 16034" d="M7.275,13H1.7a.7.7,0,0,0-.7.7v5.578a.7.7,0,0,0,.7.7H7.275a.7.7,0,0,0,.7-.7V13.7A.7.7,0,0,0,7.275,13Zm-.7,5.578H2.394V14.394H6.578Z" transform="translate(0 -3.633)" fill="#687c97" />
+                                <path id="Path_16035" data-name="Path 16035" d="M7.275,7.972H1.7a.7.7,0,0,1-.7-.7V1.7A.7.7,0,0,1,1.7,1H7.275a.7.7,0,0,1,.7.7V7.275A.7.7,0,0,1,7.275,7.972ZM2.394,6.578H6.578V2.394H2.394Z" fill="#687c97" />
+                            </g>
+                        </svg>
+                        <p>Dashboard</p>
+                        <div class="menu-tooltip">Dashboard</div>
+                    </a>
+                </li>
+                <li>
+                    <a class="menu-item has-dropdown @(ViewData["PageId"] != null && (ViewData["PageId"].ToString() == "SA002" || ViewData["PageId"].ToString() == "SA003" || ViewData["PageId"].ToString() == "SA004"  || ViewData["PageId"].ToString() == "SA005"|| ViewData["PageId"].ToString() == "SA012" || ViewData["PageId"].ToString() == "SA013") ? "dropdown-expanded" : "" )">
+                        <svg class="iconify master" xmlns="http://www.w3.org/2000/svg" width="17" height="17.001" viewBox="0 0 17 17.001">
+                            <g id="leadership" transform="translate(0)">
+                                <path id="Path_15999" data-name="Path 15999" d="M95.573,165.316a.664.664,0,0,0-.492.8.307.307,0,0,1-.3.377H86.632a.307.307,0,0,1-.3-.377,4.506,4.506,0,0,1,7.424-2.256.664.664,0,1,0,.9-.977,5.793,5.793,0,0,0-1.725-1.1,3.32,3.32,0,1,0-4.445,0,5.816,5.816,0,0,0-3.446,4.021,1.636,1.636,0,0,0,1.592,2.013h8.149a1.636,1.636,0,0,0,1.592-2.013.664.664,0,0,0-.8-.492Zm-4.867-7.987a1.992,1.992,0,1,1-1.992,1.992,1.995,1.995,0,0,1,1.992-1.992Z" transform="translate(-82.173 -150.82)" fill="#687c97" />
+                                <path id="Path_16000" data-name="Path 16000" d="M15.008,6.176h-.334a.206.206,0,0,1-.2-.133.255.255,0,0,1,.032-.265l.236-.236a1.994,1.994,0,0,0,0-2.817l-.47-.47a1.992,1.992,0,0,0-2.817,0l-.236.236a.242.242,0,0,1-.256.039.222.222,0,0,1-.141-.2V1.992A2,2,0,0,0,8.832,0H8.168A2,2,0,0,0,6.176,1.992v.334a.222.222,0,0,1-.141.2.242.242,0,0,1-.256-.039l-.236-.236a1.992,1.992,0,0,0-2.817,0l-.47.47a2,2,0,0,0,0,2.817l.236.236a.255.255,0,0,1,.032.265.206.206,0,0,1-.2.133H1.992A2,2,0,0,0,0,8.168v.664a2,2,0,0,0,1.992,1.992h.334a.222.222,0,0,1,.2.141l0,.011a.664.664,0,1,0,1.227-.507l0-.011A1.546,1.546,0,0,0,2.327,9.5H1.992a.665.665,0,0,1-.664-.664V8.168A.665.665,0,0,1,1.992,7.5h.334a1.546,1.546,0,0,0,1.431-.962l0-.01a1.546,1.546,0,0,0-.331-1.693L3.194,4.6a.665.665,0,0,1,0-.939l.47-.47a.643.643,0,0,1,.939,0l.237.237a1.547,1.547,0,0,0,1.694.33l.008,0A1.546,1.546,0,0,0,7.5,2.327V1.992a.665.665,0,0,1,.664-.664h.664a.665.665,0,0,1,.664.664v.334a1.546,1.546,0,0,0,.962,1.431l.008,0a1.547,1.547,0,0,0,1.694-.33l.237-.237a.643.643,0,0,1,.939,0l.47.47a.665.665,0,0,1,0,.939l-.236.236a1.546,1.546,0,0,0-.331,1.693l0,.01a1.546,1.546,0,0,0,1.431.962h.334a.665.665,0,0,1,.664.664v.664a.665.665,0,0,1-.664.664h-.334a1.546,1.546,0,0,0-1.431.962l0,.011a.664.664,0,1,0,1.227.507l0-.011a.222.222,0,0,1,.2-.141h.334A2,2,0,0,0,17,8.832V8.168a2,2,0,0,0-1.992-1.992Z" fill="#687c97" />
+                            </g>
+                        </svg>
+                        <p>Master</p>
+                        <svg class="iconify dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="13.769" height="7.341" viewBox="0 0 13.769 7.341">
+                            <g id="back" transform="translate(-0.001 61.454) rotate(-90)">
+                                <path id="Chevron_Right" d="M54.308,7.377l6,6.19a.66.66,0,0,0,.953,0,.71.71,0,0,0,0-.982l-5.52-5.7,5.519-5.7a.711.711,0,0,0,0-.983A.66.66,0,0,0,60.3.2l-6,6.19A.718.718,0,0,0,54.308,7.377Z" transform="translate(0 0)" fill="#687c97" />
+                            </g>
+                        </svg>
+                        <div class="menu-tooltip">Master</div>
+                    </a>
+                    <ul class="sidebar-dropdown-menu">
+                        <li>
+                            <a class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA012" ? "active" : "" : "")" href="@Url.Action("Index", "OfferingCategory")">
+                                <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="17" height="16.996" viewBox="0 0 17 16.996">
+                                    <path id="online-order" d="M17,5.047v3.32a.664.664,0,0,1-1.328,0V5.047A1.344,1.344,0,0,0,14.9,3.824a.664.664,0,0,1,.554-1.207A2.676,2.676,0,0,1,17,5.047Zm-.664,5.977a.664.664,0,0,0-.664.664,1.33,1.33,0,0,1-1.328,1.328H2.656a1.33,1.33,0,0,1-1.328-1.328V5.047A1.333,1.333,0,0,1,2.1,3.839a.664.664,0,0,0-.554-1.207A2.664,2.664,0,0,0,0,5.047v6.641a2.659,2.659,0,0,0,2.656,2.656h5.18v1.328H5.512a.662.662,0,1,0,0,1.324h5.977a.662.662,0,1,0,0-1.324H9.164V14.344h5.18A2.659,2.659,0,0,0,17,11.688.664.664,0,0,0,16.336,11.023ZM3.918,8.434V3.354a.664.664,0,0,1,.664-.664H6.574v-.7a1.992,1.992,0,0,1,3.984,0v.7h1.992a.664.664,0,0,1,.664.664v5.08a1.994,1.994,0,0,1-1.992,1.992H5.91A1.994,1.994,0,0,1,3.918,8.434ZM7.9,2.689H9.23v-.7a.664.664,0,1,0-1.328,0ZM5.246,8.434A.665.665,0,0,0,5.91,9.1h5.313a.665.665,0,0,0,.664-.664V4.018H10.559v.664a.664.664,0,0,1-1.328,0V4.018H7.9v.664a.664.664,0,1,1-1.328,0V4.018H5.246Zm0,0" fill="#687c97" />
+                                </svg>
+                                <p>Offering Category</p>
+                                <div class="menu-tooltip">Offering Category</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA002" ? "active" : "" : "")" href="@Url.Action("Index", "Project")">
+                                <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="17" height="16.996" viewBox="0 0 17 16.996">
+                                    <path id="online-order" d="M17,5.047v3.32a.664.664,0,0,1-1.328,0V5.047A1.344,1.344,0,0,0,14.9,3.824a.664.664,0,0,1,.554-1.207A2.676,2.676,0,0,1,17,5.047Zm-.664,5.977a.664.664,0,0,0-.664.664,1.33,1.33,0,0,1-1.328,1.328H2.656a1.33,1.33,0,0,1-1.328-1.328V5.047A1.333,1.333,0,0,1,2.1,3.839a.664.664,0,0,0-.554-1.207A2.664,2.664,0,0,0,0,5.047v6.641a2.659,2.659,0,0,0,2.656,2.656h5.18v1.328H5.512a.662.662,0,1,0,0,1.324h5.977a.662.662,0,1,0,0-1.324H9.164V14.344h5.18A2.659,2.659,0,0,0,17,11.688.664.664,0,0,0,16.336,11.023ZM3.918,8.434V3.354a.664.664,0,0,1,.664-.664H6.574v-.7a1.992,1.992,0,0,1,3.984,0v.7h1.992a.664.664,0,0,1,.664.664v5.08a1.994,1.994,0,0,1-1.992,1.992H5.91A1.994,1.994,0,0,1,3.918,8.434ZM7.9,2.689H9.23v-.7a.664.664,0,1,0-1.328,0ZM5.246,8.434A.665.665,0,0,0,5.91,9.1h5.313a.665.665,0,0,0,.664-.664V4.018H10.559v.664a.664.664,0,0,1-1.328,0V4.018H7.9v.664a.664.664,0,1,1-1.328,0V4.018H5.246Zm0,0" fill="#687c97" />
+                                </svg>
+                                <p>Offerings</p>
+                                <div class="menu-tooltip">Offerings</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA013" ? "active" : "" : "")" href="@Url.Action("Index", "Service")">
+                                <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="17" height="16.996" viewBox="0 0 17 16.996">
+                                    <path id="online-order" d="M17,5.047v3.32a.664.664,0,0,1-1.328,0V5.047A1.344,1.344,0,0,0,14.9,3.824a.664.664,0,0,1,.554-1.207A2.676,2.676,0,0,1,17,5.047Zm-.664,5.977a.664.664,0,0,0-.664.664,1.33,1.33,0,0,1-1.328,1.328H2.656a1.33,1.33,0,0,1-1.328-1.328V5.047A1.333,1.333,0,0,1,2.1,3.839a.664.664,0,0,0-.554-1.207A2.664,2.664,0,0,0,0,5.047v6.641a2.659,2.659,0,0,0,2.656,2.656h5.18v1.328H5.512a.662.662,0,1,0,0,1.324h5.977a.662.662,0,1,0,0-1.324H9.164V14.344h5.18A2.659,2.659,0,0,0,17,11.688.664.664,0,0,0,16.336,11.023ZM3.918,8.434V3.354a.664.664,0,0,1,.664-.664H6.574v-.7a1.992,1.992,0,0,1,3.984,0v.7h1.992a.664.664,0,0,1,.664.664v5.08a1.994,1.994,0,0,1-1.992,1.992H5.91A1.994,1.994,0,0,1,3.918,8.434ZM7.9,2.689H9.23v-.7a.664.664,0,1,0-1.328,0ZM5.246,8.434A.665.665,0,0,0,5.91,9.1h5.313a.665.665,0,0,0,.664-.664V4.018H10.559v.664a.664.664,0,0,1-1.328,0V4.018H7.9v.664a.664.664,0,1,1-1.328,0V4.018H5.246Zm0,0" fill="#687c97" />
+                                </svg>
+                                <p>Service</p>
+                                <div class="menu-tooltip">Service</div>
+                            </a>
+                        </li>
+                        @*<li>
+                                <a class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA003" ? "active" : "" : "")" href="@Url.Action("Index", "Module")">
+                                    <span class="iconify" data-icon="clarity:group-line"></span>
+                                    <p>Modules</p>
+                                    <div class="tooltip">Modules</div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA004" ? "active" : "" : "")" href="@Url.Action("Index", "FormCategory")">
+                                    <span class="iconify" data-icon="clarity:group-line"></span>
+                                    <p>FormCategory</p>
+                                    <div class="tooltip">FormCategory</div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA005" ? "active" : "" : "")" href="@Url.Action("Index", "Form")">
+                                    <span class="iconify" data-icon="clarity:group-line"></span>
+                                    <p>Form</p>
+                                    <div class="tooltip">Form</div>
+                                </a>
+                            </li>*@
+                    </ul>
+                </li>
+                <li>
+                    <a class="menu-item has-dropdown @(ViewData["PageId"] != null && (ViewData["PageId"].ToString() == "SA006" || ViewData["PageId"].ToString() == "SA007" ) ? "dropdown-expanded" : "" )">
+                        <svg class="iconify user-mgmt" xmlns="http://www.w3.org/2000/svg" width="14.547" height="14.547" viewBox="0 0 14.547 14.547">
+                            <path id="support" d="M4.267,7.131A4.164,4.164,0,0,1,3.068,4.2,4.2,4.2,0,1,1,8.259,8.293,1.136,1.136,0,1,1,8.233,7.12,3.069,3.069,0,1,0,4.2,4.2,3.034,3.034,0,0,0,5.08,6.336a.568.568,0,1,1-.812.795Zm9.126,2.1a6.814,6.814,0,0,0-1.738-1.088.568.568,0,0,0-.461,1.039,5.683,5.683,0,0,1,1.449.9,2.266,2.266,0,0,1,.768,1.7v1.051a.569.569,0,0,1-.568.568H1.7a.569.569,0,0,1-.568-.568V11.791a2.266,2.266,0,0,1,.768-1.7,6.586,6.586,0,0,1,2.73-1.355.568.568,0,1,0-.286-1.1,7.72,7.72,0,0,0-3.194,1.6A3.4,3.4,0,0,0,0,11.791v1.051a1.707,1.707,0,0,0,1.7,1.7H12.842a1.707,1.707,0,0,0,1.7-1.7V11.791A3.4,3.4,0,0,0,13.393,9.234Zm0,0" fill="#687c97" />
+                        </svg>
+                        <p>User Management</p>
+                        <svg class="iconify dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="13.769" height="7.341" viewBox="0 0 13.769 7.341">
+                            <g id="back" transform="translate(-0.001 61.454) rotate(-90)">
+                                <path id="Chevron_Right" d="M54.308,7.377l6,6.19a.66.66,0,0,0,.953,0,.71.71,0,0,0,0-.982l-5.52-5.7,5.519-5.7a.711.711,0,0,0,0-.983A.66.66,0,0,0,60.3.2l-6,6.19A.718.718,0,0,0,54.308,7.377Z" transform="translate(0 0)" fill="#687c97" />
+                            </g>
+                        </svg>
+                        <div class="menu-tooltip">User Management</div>
+                    </a>
+                    <ul class="sidebar-dropdown-menu">
+                        <li>
+                            <a href="@Url.Action("Index", "Employee")" class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA006" ? "active" : "" : "")">
+                                <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17">
+                                    <g id="cog" transform="translate(0)">
+                                        <path id="Path_16030" data-name="Path 16030" d="M106.763,101.638a5.125,5.125,0,1,0,5.125,5.125A5.131,5.131,0,0,0,106.763,101.638Zm-.932,4.99h1.863v.649a.93.93,0,0,1-.929.929h0a.93.93,0,0,1-.929-.929v-.649Zm1.6,3.874v-1.067a2.262,2.262,0,0,0,1.6-2.159v-1.313a.664.664,0,0,0-.562-.656v-.578a.664.664,0,0,0-1.328,0v.57h-.739v-.57a.664.664,0,0,0-1.328,0v.578a.664.664,0,0,0-.562.656v1.313a2.262,2.262,0,0,0,1.6,2.159V110.5a3.8,3.8,0,1,1,1.328,0Z" transform="translate(-98.263 -98.263)" fill="#687c97" />
+                                        <path id="Path_16031" data-name="Path 16031" d="M15.911,6.705a7.519,7.519,0,0,0-.9-2.176,1.705,1.705,0,0,0-.355-1.9l-.287-.287a1.7,1.7,0,0,0-1.9-.355,7.52,7.52,0,0,0-2.176-.9A1.705,1.705,0,0,0,8.7,0H8.3A1.7,1.7,0,0,0,6.705,1.089a7.519,7.519,0,0,0-2.176.9,1.705,1.705,0,0,0-1.9.355l-.287.287a1.705,1.705,0,0,0-.355,1.9,7.52,7.52,0,0,0-.9,2.176A1.705,1.705,0,0,0,0,8.3V8.7a1.705,1.705,0,0,0,1.089,1.592,7.519,7.519,0,0,0,.9,2.176,1.705,1.705,0,0,0,.355,1.9l.287.287a1.705,1.705,0,0,0,1.9.355,7.521,7.521,0,0,0,2.176.9A1.705,1.705,0,0,0,8.3,17H8.7a1.705,1.705,0,0,0,1.592-1.089,7.555,7.555,0,0,0,2.177-.9.664.664,0,1,0-.693-1.133,6.233,6.233,0,0,1-2.134.816.664.664,0,0,0-.524.492l-.05.2a.379.379,0,0,1-.368.287H8.3a.379.379,0,0,1-.368-.287l-.05-.2a.664.664,0,0,0-.524-.492,6.223,6.223,0,0,1-2.422-1,.664.664,0,0,0-.718-.023l-.179.107a.379.379,0,0,1-.463-.057l-.287-.287a.379.379,0,0,1-.057-.463l.107-.179a.664.664,0,0,0-.023-.718,6.223,6.223,0,0,1-1-2.422.664.664,0,0,0-.492-.524l-.2-.05A.379.379,0,0,1,1.328,8.7V8.3a.379.379,0,0,1,.287-.368l.2-.05a.664.664,0,0,0,.492-.524,6.223,6.223,0,0,1,1-2.422.664.664,0,0,0,.023-.718l-.107-.179a.379.379,0,0,1,.057-.463l.287-.287a.379.379,0,0,1,.463-.057l.179.107a.664.664,0,0,0,.718-.023,6.223,6.223,0,0,1,2.422-1,.664.664,0,0,0,.524-.492l.05-.2A.379.379,0,0,1,8.3,1.328H8.7a.379.379,0,0,1,.368.287l.05.2a.664.664,0,0,0,.524.492,6.223,6.223,0,0,1,2.422,1,.664.664,0,0,0,.718.023l.179-.107a.379.379,0,0,1,.463.057l.287.287a.379.379,0,0,1,.057.463l-.107.179a.664.664,0,0,0,.023.718,6.223,6.223,0,0,1,1,2.422.664.664,0,0,0,.492.524l.2.05a.379.379,0,0,1,.287.368V8.7a.379.379,0,0,1-.287.368l-.2.05a.664.664,0,0,0-.492.524,6.235,6.235,0,0,1-.795,2.1.664.664,0,1,0,1.138.685,7.556,7.556,0,0,0,.876-2.134A1.705,1.705,0,0,0,17,8.7V8.3a1.705,1.705,0,0,0-1.089-1.592Z" fill="#687c97" />
+                                    </g>
+                                </svg>
+                                <p>Support Person</p>
+                                <div class="menu-tooltip">Support Person</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA007" ? "active" : "" : "")" href="@Url.Action("Index", "UserManagement")">
+                                <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="15.617" height="15.617" viewBox="0 0 15.617 15.617">
+                                    <g id="businessman_2_" data-name="businessman (2)" transform="translate(0)">
+                                        <g id="Group_5411" data-name="Group 5411" transform="translate(0)">
+                                            <g id="Group_5410" data-name="Group 5410">
+                                                <path id="Path_16011" data-name="Path 16011" d="M346.176,423.281a.61.61,0,1,0-1.194.249.637.637,0,0,1-.129.534.62.62,0,0,1-.488.232H341.61a.61.61,0,1,0,0,1.22h2.755a1.853,1.853,0,0,0,1.812-2.235Z" transform="translate(-330.599 -409.899)" fill="#687c97" />
+                                                <path id="Path_16012" data-name="Path 16012" d="M8.428,8.32a6.711,6.711,0,0,1,4.963,2.952.61.61,0,1,0,1.013-.679,7.935,7.935,0,0,0-4.112-3.124,4.148,4.148,0,1,0-4.965,0A7.933,7.933,0,0,0,.04,13.382a1.853,1.853,0,0,0,1.812,2.235H4.515a.61.61,0,0,0,0-1.22H1.852a.62.62,0,0,1-.488-.232.637.637,0,0,1-.129-.534,6.742,6.742,0,0,1,5.893-5.3l-1.165,5.3a.61.61,0,0,0,.164.562l1.22,1.22a.61.61,0,0,0,.863,0l1.22-1.22a.61.61,0,0,0,.164-.562ZM4.881,4.148A2.928,2.928,0,1,1,7.954,7.073H7.809l-.143,0A2.932,2.932,0,0,1,4.881,4.148Zm2.9,9.966-.553-.553.553-2.514.553,2.514Z" transform="translate(0)" fill="#687c97" />
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg>
+                                <p>Clients</p>
+                                <div class="menu-tooltip">Clients</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="menu-item has-dropdown @(ViewData["PageId"] != null && (ViewData["PageId"].ToString() == "SA008" || ViewData["PageId"].ToString() == "SA009" ) ? "dropdown-expanded" : "" )">
+                        <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="17" height="15.881" viewBox="0 0 17 15.881">
+                            <g id="user_5_" data-name="user (5)" transform="translate(0 -16.845)">
+                                <path id="Path_16018" data-name="Path 16018" d="M122.844,169.611a.664.664,0,0,0,.664.664h5.511a.665.665,0,0,0,.664-.665A3.368,3.368,0,0,0,128,166.7a2.164,2.164,0,1,0-3.475,0A3.369,3.369,0,0,0,122.844,169.611Zm3.42-5.041a.837.837,0,1,1-.836.837A.837.837,0,0,1,126.264,164.57Zm-.054,3h.107a2.041,2.041,0,0,1,1.927,1.375h-3.962A2.041,2.041,0,0,1,126.21,167.572Z" transform="translate(-118.765 -141.536)" fill="#687c97" />
+                                <path id="Path_16019" data-name="Path 16019" d="M17,20.552a3.7,3.7,0,0,0-6.635-2.266,7.505,7.505,0,1,0,1.107,13.3.664.664,0,0,0-.705-1.125A6.174,6.174,0,1,1,9.751,19.47a3.708,3.708,0,0,0,3.544,4.789q.15,0,.3-.012a6.244,6.244,0,0,1,.076.975,6.178,6.178,0,0,1-.82,3.079A.664.664,0,1,0,14,28.964a7.533,7.533,0,0,0,.882-5.062A3.712,3.712,0,0,0,17,20.552Zm-3.705,2.379a2.379,2.379,0,1,1,2.377-2.379,2.381,2.381,0,0,1-2.377,2.379Z" fill="#687c97" />
+                                <path id="Path_16020" data-name="Path 16020" d="M381.077,99.431a.664.664,0,0,0-.664.664v.6a.664.664,0,0,0,1.328,0v-.6A.664.664,0,0,0,381.077,99.431Z" transform="translate(-367.782 -79.844)" fill="#687c97" />
+                            </g>
+                        </svg>
+                        <p>Plan Management</p>
+                        <svg class="iconify dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="13.769" height="7.341" viewBox="0 0 13.769 7.341">
+                            <g id="back" transform="translate(-0.001 61.454) rotate(-90)">
+                                <path id="Chevron_Right" d="M54.308,7.377l6,6.19a.66.66,0,0,0,.953,0,.71.71,0,0,0,0-.982l-5.52-5.7,5.519-5.7a.711.711,0,0,0,0-.983A.66.66,0,0,0,60.3.2l-6,6.19A.718.718,0,0,0,54.308,7.377Z" transform="translate(0 0)" fill="#687c97" />
+                            </g>
+                        </svg>
+                        <div class="menu-tooltip">Plan Management</div>
+                    </a>
+                    <ul class="sidebar-dropdown-menu">
+                        <li>
+                            <a href="@Url.Action("Index", "Plan")" class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA008" ? "active" : "" : "")">
+                                <svg class="iconify plan" xmlns="http://www.w3.org/2000/svg" width="17" height="14.806" viewBox="0 0 17 14.806">
+                                    <path id="testing" d="M16.8,45.391l-1.092-2V41.639a.664.664,0,0,0-1.328,0v1.227H2.689v-8.5H14.376v3.918a.664.664,0,1,0,1.328,0V33.7a.664.664,0,0,0-.664-.664H2.025a.664.664,0,0,0-.664.664v9.567L.2,45.391a1.625,1.625,0,0,0,.034,1.622,1.682,1.682,0,0,0,1.459.833H15.337A1.66,1.66,0,0,0,16.8,45.391Zm-1.171.964a.329.329,0,0,1-.288.164H10.788a.663.663,0,0,0-.662-.629H6.839a.663.663,0,0,0-.662.629H1.694a.369.369,0,0,1-.316-.182.3.3,0,0,1-.011-.308l1-1.834H14.628l1,1.834A.32.32,0,0,1,15.625,46.355ZM13.05,37.091a.664.664,0,0,1-.664.664H9.564a.664.664,0,1,1,0-1.328h2.822A.664.664,0,0,1,13.05,37.091Zm-5.19-.713L6.637,37.924a1.16,1.16,0,0,1-.825.43l-.076,0a1.16,1.16,0,0,1-.8-.319l-.018-.018-.712-.731a.664.664,0,0,1,.951-.927l.563.578,1.1-1.386a.664.664,0,0,1,1.042.824Zm5.19,4.465a.664.664,0,0,1-.664.664H9.564a.664.664,0,0,1,0-1.328h2.822A.664.664,0,0,1,13.05,40.842Zm-5.19-.717L6.64,41.668l0,0a1.16,1.16,0,0,1-.825.43l-.076,0a1.16,1.16,0,0,1-.8-.319l-.017-.016-.712-.727a.664.664,0,0,1,.949-.929l.564.576,1.1-1.387a.664.664,0,0,1,1.042.824Z" transform="translate(-0.001 -33.04)" fill="#687c97" />
+                                </svg>
+                                <p>Plan</p>
+                                <div class="menu-tooltip">Plan</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA009" ? "active" : "" : "")" href="@Url.Action("Index", "PlanRequest")">
+                                <svg class="iconify plan-req" xmlns="http://www.w3.org/2000/svg" width="16.022" height="14.27" viewBox="0 0 16.022 14.27">
+                                    <g id="id-card" transform="translate(0 -28)">
+                                        <g id="Group_5413" data-name="Group 5413" transform="translate(0 28)">
+                                            <g id="Group_5412" data-name="Group 5412">
+                                                <path id="Path_16013" data-name="Path 16013" d="M82.907,210a1.876,1.876,0,0,0-1.518,2.981,2.951,2.951,0,0,0-1.371,1.923,1.02,1.02,0,0,0,1,1.23h3.812a1.02,1.02,0,0,0,1-1.23,2.952,2.952,0,0,0-1.393-1.936A1.876,1.876,0,0,0,82.907,210Zm0,1.252a.626.626,0,1,1-.626.626A.627.627,0,0,1,82.907,211.252Zm1.611,3.63H81.327a1.707,1.707,0,0,1,1.58-1.073h.031A1.707,1.707,0,0,1,84.518,214.882Z" transform="translate(-77.493 -204.305)" fill="#687c97" />
+                                                <path id="Path_16014" data-name="Path 16014" d="M15.4,116.637a.626.626,0,0,0-.626.626,1.253,1.253,0,0,1-1.252,1.252H2.5a1.253,1.253,0,0,1-1.252-1.252V110.5A1.253,1.253,0,0,1,2.5,109.252H4.256a.626.626,0,1,0,0-1.252H2.5A2.506,2.506,0,0,0,0,110.5v6.759a2.506,2.506,0,0,0,2.5,2.5H13.519a2.506,2.506,0,0,0,2.5-2.5A.626.626,0,0,0,15.4,116.637Z" transform="translate(0 -105.497)" fill="#687c97" />
+                                                <path id="Path_16015" data-name="Path 16015" d="M203.385,30.5h-3.63V28.626a.626.626,0,0,0-.626-.626h-2.5a.626.626,0,0,0-.626.626v2.5a1.877,1.877,0,0,0,3.648.626h3.738a1.253,1.253,0,0,1,1.252,1.252v3.63a.626.626,0,1,0,1.252,0v-3.63A2.506,2.506,0,0,0,203.385,30.5Zm-4.882.626a.626.626,0,1,1-1.252,0V29.252H198.5Z" transform="translate(-189.867 -28)" fill="#687c97" />
+                                                <path id="Path_16016" data-name="Path 16016" d="M302.626,321.374h1.565a.626.626,0,1,0,0-1.252h-1.565a.626.626,0,0,0,0,1.252Z" transform="translate(-292.55 -310.981)" fill="#687c97" />
+                                                <path id="Path_16017" data-name="Path 16017" d="M302.626,251.374h2.816a.626.626,0,0,0,0-1.252h-2.816a.626.626,0,0,0,0,1.252Z" transform="translate(-292.55 -243.171)" fill="#687c97" />
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg>
+                                <p>Plan Request</p>
+                                <div class="menu-tooltip">Plan Request</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="menu-item has-dropdown @(ViewData["PageId"] != null && (ViewData["PageId"].ToString() == "SA010" || ViewData["PageId"].ToString() == "SA011" ) ? "dropdown-expanded" : "" )">
+                        <svg class="iconify" id="headset" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17">
+                            <g id="Group_5409" data-name="Group 5409" transform="translate(0 0)">
+                                <g id="Group_5408" data-name="Group 5408">
+                                    <path id="Path_16004" data-name="Path 16004" d="M3.984,6.74H2.672a5.845,5.845,0,0,1,11.31-1.6.664.664,0,1,0,1.246-.461A7.173,7.173,0,0,0,1.329,7.1,2.657,2.657,0,0,0,0,9.4v2.258a2.659,2.659,0,0,0,2.656,2.656H3.984a.664.664,0,0,0,.664-.664V7.4A.664.664,0,0,0,3.984,6.74ZM3.32,12.982H2.656a1.33,1.33,0,0,1-1.328-1.328V9.4A1.33,1.33,0,0,1,2.656,8.068H3.32Z" transform="translate(0 0)" fill="#687c97" />
+                                    <path id="Path_16005" data-name="Path 16005" d="M223.172,203h-1.328a.664.664,0,0,0-.664.664V210.6a.665.665,0,0,1-.664.664H218.49v.021a1.328,1.328,0,1,0,0,1.286v.021h2.025a1.994,1.994,0,0,0,1.992-1.992v-.033h.664a2.659,2.659,0,0,0,2.656-2.656v-2.258A2.659,2.659,0,0,0,223.172,203Zm1.328,4.914a1.33,1.33,0,0,1-1.328,1.328h-.664v-4.914h.664a1.33,1.33,0,0,1,1.328,1.328Z" transform="translate(-208.828 -196.26)" fill="#687c97" />
+                                </g>
+                            </g>
+                        </svg>
+                        <p>Help & Support</p>
+                        <svg class="iconify dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="13.769" height="7.341" viewBox="0 0 13.769 7.341">
+                            <g id="back" transform="translate(-0.001 61.454) rotate(-90)">
+                                <path id="Chevron_Right" d="M54.308,7.377l6,6.19a.66.66,0,0,0,.953,0,.71.71,0,0,0,0-.982l-5.52-5.7,5.519-5.7a.711.711,0,0,0,0-.983A.66.66,0,0,0,60.3.2l-6,6.19A.718.718,0,0,0,54.308,7.377Z" transform="translate(0 0)" fill="#687c97" />
+                            </g>
+                        </svg>
+
+                        <div class="menu-tooltip">Help & Support</div>
+                    </a>
+                    <ul class="sidebar-dropdown-menu">
+                        <li>
+                            <a href="@Url.Action("Index", "Amc")" class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA010" ? "active" : "" : "")">
+                                <svg class="iconify amc" xmlns="http://www.w3.org/2000/svg" width="18" height="14.371" viewBox="0 0 18 14.371">
+                                    <g id="folder" transform="translate(0 -51.607)">
+                                        <path id="Path_16027" data-name="Path 16027" d="M18,55.51a3.9,3.9,0,0,0-7.727-.78H6.792a2.252,2.252,0,0,0-2.135-1.545H2.248A2.251,2.251,0,0,0,0,55.433v8.3a2.251,2.251,0,0,0,2.248,2.248h10.3A2.251,2.251,0,0,0,14.8,63.728a.7.7,0,0,0-1.406,0,.843.843,0,0,1-.842.842H2.248a.843.843,0,0,1-.842-.842v-8.3a.843.843,0,0,1,.842-.842H4.657a.843.843,0,0,1,.842.842.7.7,0,0,0,.7.7h4.044a3.913,3.913,0,0,0,3.149,3.214v.862a.7.7,0,0,0,1.406,0V59.35A3.909,3.909,0,0,0,18,55.51Zm-3.9,2.5a2.5,2.5,0,1,1,2.5-2.5A2.5,2.5,0,0,1,14.1,58.007Z" transform="translate(0 0)" fill="#687c97" />
+                                        <path id="Path_16028" data-name="Path 16028" d="M381.694,133.63a.7.7,0,0,0-.7.7v.633a.7.7,0,1,0,1.406,0v-.633A.7.7,0,0,0,381.694,133.63Z" transform="translate(-367.597 -79.139)" fill="#687c97" />
+                                        <path id="Path_16029" data-name="Path 16029" d="M134.008,333.609a.7.7,0,0,0,0,1.406h4.021a.7.7,0,0,0,0-1.406Z" transform="translate(-128.618 -272.088)" fill="#687c97" />
+                                    </g>
+                                </svg>
+                                <p>AMC</p>
+                                <div class="menu-tooltip">AMC</div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "SA011" ? "active" : "" : "")" href="@Url.Action("Index", "TicketIssue")">
+                                <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="17" height="17.147" viewBox="0 0 17 17.147">
+                                    <g id="file" transform="translate(-2.188)">
+                                        <path id="Path_16021" data-name="Path 16021" d="M19.188,5.733A4.365,4.365,0,0,0,15.2,1.389,2.6,2.6,0,0,0,12.894,0H6.416a.635.635,0,0,0-.458.195h0L2.384,3.769l-.02.022a.673.673,0,0,0-.176.455h0v10.3a2.6,2.6,0,0,0,2.6,2.6h8.1a2.6,2.6,0,0,0,2.6-2.6V14.53a.68.68,0,0,0-.645-.685.67.67,0,0,0-.694.669v.028a1.265,1.265,0,0,1-1.265,1.265h-8.1a1.265,1.265,0,0,1-1.265-1.265V4.912H4.5a2.6,2.6,0,0,0,2.6-2.6V1.34h5.794a1.264,1.264,0,0,1,.7.211,4.36,4.36,0,0,0,.563,8.49v1.108a.68.68,0,0,0,.645.685.67.67,0,0,0,.694-.669V10.041A4.366,4.366,0,0,0,19.188,5.733ZM5.761,2.308A1.266,1.266,0,0,1,4.5,3.573H4.475L5.761,2.287v.021Zm9.068,6.445a3.02,3.02,0,1,1,3.02-3.02A3.023,3.023,0,0,1,14.829,8.753Z" transform="translate(0 0)" fill="#687c97" />
+                                        <path id="Path_16022" data-name="Path 16022" d="M360.312,109.318a.67.67,0,0,0-.67.67v.568a.67.67,0,0,0,1.34,0v-.568A.67.67,0,0,0,360.312,109.318Z" transform="translate(-345.483 -105.657)" fill="#687c97" />
+                                        <path id="Path_16023" data-name="Path 16023" d="M361.02,193.608a.67.67,0,1,0-.411.753A.675.675,0,0,0,361.02,193.608Z" transform="translate(-345.535 -186.604)" fill="#687c97" />
+                                        <path id="Path_16024" data-name="Path 16024" d="M97.983,281.588h3.231a.67.67,0,1,0,0-1.34H97.983a.67.67,0,1,0,0,1.34Z" transform="translate(-91.939 -270.863)" fill="#687c97" />
+                                        <path id="Path_16025" data-name="Path 16025" d="M97.983,369.312h5.6a.67.67,0,1,0,0-1.34h-5.6a.67.67,0,1,0,0,1.34Z" transform="translate(-91.939 -355.649)" fill="#687c97" />
+                                        <path id="Path_16026" data-name="Path 16026" d="M97.983,193.479h2.008a.67.67,0,1,0,0-1.34H97.983a.67.67,0,1,0,0,1.34Z" transform="translate(-91.939 -185.704)" fill="#687c97" />
+                                    </g>
+                                </svg>
+                                <p>Ticket Issue</p>
+                                <div class="menu-tooltip">Ticket Issue</div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="menu-item-link" href="https://bxray-dev.kockpit.in" target="_blank">
+                        <svg class="iconify dashboard" xmlns="http://www.w3.org/2000/svg" width="15.339" height="15.339" viewBox="0 0 15.339 15.339">
+                            <g id="dashboard_1_" data-name="dashboard (1)" transform="translate(-1 -1)">
+                                <path id="Path_16032" data-name="Path 16032" d="M19.275,7.972H13.7a.7.7,0,0,1-.7-.7V1.7a.7.7,0,0,1,.7-.7h5.578a.7.7,0,0,1,.7.7V7.275A.7.7,0,0,1,19.275,7.972ZM14.394,6.578h4.183V2.394H14.394Z" transform="translate(-3.633)" fill="#687c97" />
+                                <path id="Path_16033" data-name="Path 16033" d="M16.486,19.972a3.486,3.486,0,1,1,3.486-3.486,3.486,3.486,0,0,1-3.486,3.486Zm0-5.578a2.092,2.092,0,1,0,2.092,2.092A2.092,2.092,0,0,0,16.486,14.394Z" transform="translate(-3.633 -3.633)" fill="#687c97" />
+                                <path id="Path_16034" data-name="Path 16034" d="M7.275,13H1.7a.7.7,0,0,0-.7.7v5.578a.7.7,0,0,0,.7.7H7.275a.7.7,0,0,0,.7-.7V13.7A.7.7,0,0,0,7.275,13Zm-.7,5.578H2.394V14.394H6.578Z" transform="translate(0 -3.633)" fill="#687c97" />
+                                <path id="Path_16035" data-name="Path 16035" d="M7.275,7.972H1.7a.7.7,0,0,1-.7-.7V1.7A.7.7,0,0,1,1.7,1H7.275a.7.7,0,0,1,.7.7V7.275A.7.7,0,0,1,7.275,7.972ZM2.394,6.578H6.578V2.394H2.394Z" fill="#687c97" />
+                            </g>
+                        </svg>
+                        <p>Bxray Utility</p>
+                        <div class="menu-tooltip">Bxray Utility</div>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    @RenderBody()
+
+    <partial name="~/Views/Login/_Logout.cshtml" />
+    <!--<section class="main">
+        <div class="menu" id="menu">
+            <div class="logo">
+                <a asp-action="Dashboard" asp-controller="Home"><img src="~/assets/logo.svg" alt="logo"></a>
+            </div>
+            <div class="menu-nav">
+                <ul>
+                    <li class="menu-nav-item outer-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA001" ? "active" : "" : "")">
+                        <span class="iconify menu-item-icon" data-icon="bx:bxs-dashboard"></span>
+                        <a asp-action="Dashboard" asp-controller="Home"><p>Dashboard</p></a>
+                    </li>
+
+                    @if (Context.Session.GetString("SessionInfo_Role") == "ADMIN")
+                    {
+                        <li class="menu-nav-item outer-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA002" ? "active" : "" : "")">
+                            <span class="iconify menu-item-icon" data-icon="ic:round-manage-accounts"></span>
+                            <p>User Management</p>
+                            <i class="bi bi-chevron-down dropdown-icon"></i>
+                        </li>
+                        <div class="submenu">
+                            <li class="menu-nav-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA002" ? "active" : "" : "")">
+                                <span class="iconify" data-icon="clarity:users-line"></span>
+                                <a asp-action="Index" asp-controller="SubUserManagement"><p>Users</p></a>
+                            </li>
+                        </div>
+                        <li class="menu-nav-item outer-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA003" || ViewData["PageId"].ToString() == "OA004" || ViewData["PageId"].ToString() == "OA005" ? "active" : "" : "")">
+                            <span class="iconify menu-item-icon" data-icon="eos-icons:service-plan"></span>
+                            <p>Plans</p>
+                            <i class="bi bi-chevron-down dropdown-icon"></i>
+                        </li>
+                        <div class="submenu">
+                            <li class="menu-nav-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA003" ? "active" : "" : "")">
+                                <span class="iconify" data-icon="icon-park-outline:buy"></span>
+                                <p><a asp-action="Index" asp-controller="PlanInfo">Buy Plan</a></p>
+                            </li>
+                            <li class="menu-nav-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA004" ? "active" : "" : "")">
+                                <span class="iconify" data-icon="ant-design:pull-request-outlined"></span>
+                                <p><a asp-action="RequestedPlan" asp-controller="PlanInfo">Requested Plans</a></p>
+                            </li>
+                            <li class="menu-nav-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA005" ? "active" : "" : "")">
+                                <span class="iconify" data-icon="carbon:license"></span>
+                                <p><a asp-action="ActivePlan" asp-controller="PlanInfo">My Plans & Licenses</a></p>
+                            </li>
+                            <li class="menu-nav-item outer-item">
+                                <img src="~/assets/support.png" alt="" style="height:19px;width:45px;">
+                                <a asp-action="Index" asp-controller="RaiseIssue"><p>Support</p></a>
+                            </li>
+                        </div>
+                    }
+                </ul>
+            </div>
+
+            <div class="close-btn" id="close-menu">
+                <i class="bi bi-x-lg"></i>
+            </div>
+        </div>
+        <div class="offerings expanded" id="offerings">
+            <div class="header">
+                <div class="menu-toggle" id="menu-toggle">
+                    <i class="bi bi-list btn" id="ham-btn"></i>
+                    <i class="bi bi-x btn" id="close-btn"></i>
+                </div>
+                <div class="header-cta">
+                    <div class="search-bar">
+                        <i class="bi bi-search"></i>
+                        <input type="text" placeholder="Search here...">
+                    </div>
+                    <div class="notification">
+                        <i class="bi bi-bell"></i>
+                    </div>
+                    <div class="settings">
+                        <i class="bi bi-gear"></i>
+                        <div class="dropdown">
+                            <ul>-->
+    @*<li>Edit Profile</li>
+        <li>Settings</li>*@
+    <!--<li><a asp-action="Logout" asp-controller="Login">Sign Out</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="user-profile">
+                        <div class="name">@Context.Session.GetString("SessionInfo_EmailId")</div>
+                        <div class="profile-pic">
+                            @if (String.IsNullOrEmpty(Context.Session.GetString("SessionInfo_logo")))
+                            {
+                                <i class="bi bi-person-circle"></i>
+                            }else{
+                                <img height="40px" width="100%" src="@Url.Content(Context.Session.GetString("SessionInfo_logo"))" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>-->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/script.js"></script>
+    <script src="~/js/site.js"></script>
+    <script src="~/Theme/plugins/fstdropdown-master/fstdropdown.min.js"></script>
+
+
+
+
+
+    <!-- DataTables -->
+    <script src="~/Theme/plugins/datatables/jquery.dataTables.min.js"></script>
+
+    @*<script src="~/Theme/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+        <script src="~/Theme/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+        <script src="~/Theme/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>*@
+    <!-- Toastr -->
+    <script src="~/Theme/plugins/toastr/toastr.min.js"></script>
+
+
+    @*<script type="text/javascript">
+            $(document).ready(function () {
+                //$("#loader").hide();
+                if ($('#tData').length > 0) {
+                    var table = $('#tData').DataTable({
+                        orderCellsTop: true,
+                        fixedHeader: true,
+                        language: {
+                            'paginate': {
+                                'previous': '<',
+                                'next': '>'
+                            },
+                            'search': ""
+                        },
+                        searching: true,
+                        //"dom": '<"toolbar">frtip',
+                        "dom": '<"pull-left"f><"toolbar">tip'
+                    });
+                    $(".dataTables_filter input").attr("placeholder", "Search here");
+                }
+            });
+        </script>*@
+    <script type="text/javascript">
+        $(document).ready(() => {
+            $("#users-table").DataTable();
+        });
+    </script>
+    <script type="text/javascript">
+        function postForm(path, params, method) {
+            method = method || 'post';
+            var form = document.createElement('form');
+            form.setAttribute('method', method);
+            form.setAttribute('action', path);
+            for (var key in params) {
+                if (params.hasOwnProperty(key)) {
+                    var hiddenField = document.createElement('input');
+                    hiddenField.setAttribute('type', 'hidden');
+                    hiddenField.setAttribute('name', key);
+                    hiddenField.setAttribute('value', params[key]);
+                    form.appendChild(hiddenField);
+                }
+            }
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+    <script>
+        function updateCart(btn) {
+            var _Id = $(btn).attr("id");
+            var _action = $(btn).attr("action");
+            var _count = $("#count_" + _Id + "").text();
+            if (_action == 'sub' && _count == 1) {
+                toastr.error("atleast one product required");
+            }
+            if (_action == 'add') {
+                _count++;
+            } if (_action == 'sub' && _count > 1) {
+                _count--;
+            }
+            var formData = new FormData();
+            formData.append("cId", _Id);
+            formData.append("tLicencse", _count);
+            $.ajax({
+                url: "@Url.Action("UpdateCart", "Home")",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.success == true) {
+                        $("#count_" + _Id + "").text(_count);
+                    } else {
+                        toastr.error(res.msg)
+                    }
+                },
+                error: function (err) {
+                    toastr.error(err);
+                }
+            });
+        }
+    </script>
+    <script>
+        function RemoveProduct(btn) {
+            var id = $(btn).attr("id");
+             if (confirm("Are you sure want to remove this product from cart?")) {
+                var formData = new FormData();
+                 formData.append("cId", id);
+
+                $.ajax({
+                    url: "@Url.Action("RemoveProduct", "Home")",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        if (res.success == true) {
+                            $("#div_" + id + "").remove();
+                        } else {
+                            toastr.error(res.msg)
+                        }
+                    },
+                    error: function (err) {
+                        toastr.error(err);
+                    }
+                });
+            }
+        }
+    </script>
+    @*<script type="text/javascript">
+            $(document).ready(function () {
+                //$("#loader").hide();
+                if ($('#tData').length > 0) {
+                    var table = $('#tData').DataTable({
+                        orderCellsTop: true,
+                        fixedHeader: true,
+                        language: {
+                            'paginate': {
+                                'previous': '<',
+                                'next': '>'
+                            },
+                            'search': ""
+                        },
+                        searching: true,
+                        //"dom": '<"toolbar">frtip',
+                        "dom": '<"pull-left"f><"toolbar">tip'
+                    });
+                    $(".dataTables_filter input").attr("placeholder", "Search here");
+                }
+            });
+        </script>*@
+    <script type="text/javascript">
+        $(document).ready(() => {
+            $("#tData").DataTable();
+        });
+    </script>
+    <script type="text/javascript">
+        function postForm(path, params, method) {
+            method = method || 'post';
+            var form = document.createElement('form');
+            form.setAttribute('method', method);
+            form.setAttribute('action', path);
+            for (var key in params) {
+                if (params.hasOwnProperty(key)) {
+                    var hiddenField = document.createElement('input');
+                    hiddenField.setAttribute('type', 'hidden');
+                    hiddenField.setAttribute('name', key);
+                    hiddenField.setAttribute('value', params[key]);
+                    form.appendChild(hiddenField);
+                }
+            }
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+    <script src="~/js/cookiemanager.js"></script>
+    @*<script>
+            $(function () {
+                $.ajax({
+                    async: false,
+                    url: "@Url.Action("GetLinks", "Base")",
+                    type: "POST",
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (result) {
+                        if (result != "") {
+                            $("#tags").autocomplete({
+                                source: jQuery.parseJSON(result),
+                                select: function (e, ui) {
+                                    location.href = ui.item.the_link;
+                                }
+                            });
+                        }
+                    },
+                    error: function (errorThrown) {
+
+                    }
+                });
+            });
+        </script>*@
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,117 @@
+﻿@using KockpitPortal.Models.SuperAdmin;
+@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="main">
+    <div class="products-card-container">
+        @if (ViewBag.Projects != null)
+        {
+            foreach (var item in (List<tblProject>)ViewBag.Projects)
+            {
+                <div class="card">
+                    <div class="card-video-container">
+                        <video src="@Url.Content(item.ProjectVideo)" class="card-video" muted poster="@Url.Content(item.ProjectImage)" onmouseout="this.load();"></video>
+                        @if (!string.IsNullOrEmpty(item.LicenseKey))
+                        {
+                            <div class="installed">
+                                <span class="iconify" data-icon="teenyicons:tick-circle-outline"></span>
+                            </div>
+                        }
+                    </div>
+                    <div class="card-text-wrapper">
+                        <div class="card-name-wrapper">
+                            <div class="card-name">
+                                <div class="icon">
+                                    <img src="@Url.Content(item.ProjectIcon)" alt="offering icon"/>
+                                </div>
+                                <div class="text">
+                                    <h3>@item.ProjectName</h3>
+                                    <p class="sub">@item.ProjectType</p>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.LicenseKey))
+                            {
+                                <a href="#" onclick="RedirectOffering(this)" 
+                                   lkey="@item.LicenseKey" 
+                                   url="@item.ProjectStartUpLink"
+                                   pro="@(item.IsPro ? "1" : "0")"
+                                   class="install-btn">Visit</a>
+                            }
+                            else
+                            {
+                                <a asp-action="Index" asp-controller="PlanInfo" class="install-btn">Buy Plan</a>
+                            }
+                        </div>
+                        <p class="card-desc">
+                            @item.Description
+                        </p>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    
+        <div class="additional-resources">
+            <h3>Additional Resources</h3>
+            <div class="additional-resources-cards-container">
+                <a href="@Url.Action("Index", "RaiseIssue")" class="card">
+                    <div class="icon">
+                        <span class="iconify" data-icon="fluent:headset-20-regular"></span>
+                    </div>
+                    <div class="text">
+                        <h4>Help & Support</h4>
+                        <p>Share Power BI reports and Dashboards in the form on screenshots</p>
+                    </div>
+                </a>
+                @if (Context.Session.GetString("SessionInfo_Role") == "ADMIN")
+                {
+                    <a href="@Url.Action("ActivePlan", "PlanInfo")" class="card">
+                        <div class="icon">
+                            <span class="iconify" data-icon="fluent:headset-20-regular"></span>
+                        </div>
+                        <div class="text">
+                            <h4>Manage Subscriptions</h4>
+                            <p>Share Power BI reports and Dashboards in the form on screenshots</p>
+                        </div>
+                    </a>
+                }
+                </div>
+        </div>
+    
+</div>
+
+@section Scripts{ 
+    <script type="text/javascript">
+        function RedirectOffering(link) {
+            var _url = $(link).attr("url");
+            var _key = $(link).attr("lkey");
+            var _pro = $(link).attr("pro");
+            console.log(_pro);
+
+            var frmData = new FormData();
+            frmData.append("key", _key);
+            frmData.append("pro", _pro);
+            $.ajax({
+                url: "@Url.Action("SetKID", "Home")",
+                type: "POST",
+                data: frmData,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    if (res === true) {
+                        window.open(_url, '_blank');
+                    }
+                },
+                error: function () {
+                }
+            });
+
+            @*postForm("@Url.Action("RedirectOffering", "Home")", {
+                "link": _url,
+                "key": _key
+            });*@
+        }
+    </script>
+}

@@ -1,0 +1,389 @@
+﻿@model KockpitPortal.ViewModels.SuperAdmin.tblUsersViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+
+<div class="main">
+    <div class="admin-representatives-container">
+        <div class="admin-representatives-header">
+            <p>Support Person</p>
+            <div class="offering-input">
+                <button class="ko-btn-primary-lg" data-toggle="modal" data-target="#actionModal"
+                        onclick="initControl();" title="Add Support person">
+                    Add New Support Person
+                </button>
+            </div>
+        </div>
+        <table id="representatives-table">
+            <thead>
+                <tr>
+                    <td>S.No</td>
+                    <td>Company</td>
+                    <td>Email</td>
+                    <td>Role</td>
+                    <td>Created On</td>
+                    <td>Status</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.users != null && Model.users.Count > 0)
+                {
+                    int nRow = 0;
+                    foreach (var item in Model.users)
+                    {
+                        <tr>
+                            <td>
+                                @(nRow += 1)
+                            </td>
+                            <td>
+                                <div class="company-info">
+                                    <div class="company-icon"><img src="@Url.Content(item.Logo)" height="50" width="50" /></div>
+                                    <p class="company-name">@item.CompanyName</p>
+                                </div>
+                            </td>
+                            <td>@item.EmailId</td>
+                            @if(item.Role == "SUPPORTMANAGER")
+                            {
+                                <td>Support Manager</td>
+                            }
+                            else if(item.Role == "SUPPORTREPRESENTATIVE")
+                            {
+                                  <td>Support Representative</td>
+                            }
+                            <td>@item.CreatedOn.ToShortDateString()</td>
+                            <td>
+                                @if (item.ActiveStatus)
+                                {
+                                    <span class="pill active">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="pill inactive">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <button clientid="@item.Id"
+                                        empcode="@item.EmpCode"
+                                        emailid="@item.EmailId"
+                                        company="@item.CompanyName"
+                                        contactNo="@item.ContactNo1"
+                                        alternateNumber="@item.Contact2"
+                                        role="@item.Role"
+                                        active="@item.ActiveStatus"
+                                        logo="@Url.Content(item.Logo)"
+                                        onclick="editClient(this)" title="edit support person">
+                                    <span class="iconify" data-icon="ep:edit"></span>
+                                </button>
+
+                                <a href="@Url.Action("Remove","Employee", new { nId = item.Id, strSchemaName = item.SchemaName, strEmailId = item.EmailId })"
+                                   onclick="return confirmation();" title="delete support person">
+                                    <span class="iconify" data-icon="fluent:delete-20-regular"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="overlay" id="loader" style="display:none">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+</div>
+
+
+<div class="modal" tabindex="-1" id="actionModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Support Person</h5>
+                <button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close">
+                    <span class="iconify" data-icon="ep:close-bold"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create" asp-controller="Employee" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="user.Id" />
+                    <input type="hidden" asp-for="user.Role" />
+                    <div class="input-row">
+                        <div class="input-group in-column form-margin">
+                            <label for="offering">Representative Name<span style="color:indianred;">*</span></label>
+                            <input type="text" placeholder="Type here..." asp-for="user.CompanyName">
+                        </div>
+                        <div class="input-group in-column form-margin">
+                            <label for="offering">Representative Code<span style="color:indianred;">*</span></label>
+                            <input type="text" placeholder="Type here..." asp-for="user.EmpCode">
+                        </div>
+                    </div>
+                    <div class="input-group in-column form-margin">
+                        <label for="description">Email<span style="color:indianred;">*</span></label>
+                        <input type="text" asp-for="user.EmailId">
+                    </div>
+                    <div class="input-row form-margin">
+                        <div class="input-group in-column">
+                            <label for="plan-validity">Mobile Number(Whatsapp)<span style="color:indianred;">*</span></label>
+                            <input type="text" asp-for="user.ContactNo1" placeholder="Type here...">
+                        </div>
+                        <div class="input-group in-column">
+                            <label for="plan-price">Alternate Number</label>
+                            <input type="text" asp-for="user.Contact2" placeholder="Type here...">
+                        </div>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group in-column form-margin">
+                            <label for="offering">Profile Image</label>
+                            <input type="file" accept="image/*" onchange="readURL(this)" asp-for="user.file">
+                        </div>
+                        <img id="imgLogo" style="max-height:10rem; object-fit:cover;" />
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group form-margin">
+                            <input class="custom-checkbox" type="checkbox" asp-for="user.IsSupportManager">
+                            <label class="checkbox_label" for="user_IsSupportManager">
+                                <div class="check-icon">
+                                    <span class="iconify" data-icon="akar-icons:check"></span>
+                                </div>
+                                Support Manager
+                            </label>
+                        </div>
+                        <div class="input-group form-margin">
+                            <input class="custom-checkbox" type="checkbox" asp-for="user.ActiveStatus">
+                            <label class="checkbox_label" for="user_ActiveStatus">
+                                <div class="check-icon">
+                                    <span class="iconify" data-icon="akar-icons:check"></span>
+                                </div>
+                                Active Status
+                            </label>
+                        </div>
+                    </div>
+                    <div class="input-group form-margin">
+                        <span style="color:#687c97; font-size:1.2rem;">*Whatsapp number is required for send whatsapp notification for support</span>
+                    </div>
+                    <button class="ko-btn-primary-lg" onclick="return ValidateEntry();">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+                    toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+                    toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#actionModal").on('hidden.bs.modal', function () {
+                clearValidate();
+            });
+
+        });
+
+        $(document).ready(function () {
+            $("#user_CompanyName").prop("disabled", false);
+            $("#user_EmailId").prop("disabled", false);
+        });
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imgLogo')
+                        .attr('src', e.target.result);
+                    $('#imgLogo').show();
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                $('#imgLogo').show();
+            }
+        }
+
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+            if ($('#user_CompanyName').val().trim().length == 0) {
+                $('#user_CompanyName').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#user_EmailId').val().trim().length == 0) {
+                $('#user_EmailId').parent().addClass('error');
+                allow = false;
+            }
+            if ($('#user_EmpCode').val().trim().length == 0) {
+                $('#user_EmpCode').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($("#user_ContactNo1").val().trim().length != 10) {
+                $('#user_ContactNo1').parent().addClass('error');
+             //   allow = false;
+            }
+
+            if ($("#user_Contact2").val() != "" && $("#user_Contact2").val().trim().length != 10) {
+                $('#user_Contact2').parent().addClass('error');
+               // allow = false;
+            }
+
+
+            if (allow &&  (validateEmail($('#user_EmailId').val().trim()) == false) ){
+                toastr.error("Please enter valid Email");
+                allow = false;
+            }
+
+            if ($("#user_Id").val() == '' && $("#user_file").val().trim().length != 0) {
+                if (allow && ValidateFileType() == false) {
+                    $("#user_file").parent().addClass('error');
+                    allow = false;
+                }
+            }
+
+            if (allow && $("#user_ContactNo1").val().replace(/[^\d]/g, '').length != 10) {
+                toastr.error("please enter valid 10 digit mobile number");
+                $('#user_ContactNo1').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($("#user_Contact2").val() != "" && $("#user_Contact2").val().trim().length != 10) {
+                $('#user_Contact2').parent().addClass('error');
+                toastr.error("please enter valid 10 digit mobile number");
+                allow = false;
+            }
+
+            if (allow) {
+                $("#loader").show();
+                $("#actionModal").modal('hide');
+            }
+            return allow;
+        }
+
+        function confirmation() {
+            if (confirm("This action will remove client from backend also so, Are you sure want to completely remove this client ?")) {
+                $("#loader").show();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function editClient(btn) {
+            var _clientId = $(btn).attr("clientid");
+            var _companyName = $(btn).attr("company");
+            var _emailId = $(btn).attr("emailid");
+            var _logo = $(btn).attr("logo");
+            var _supportManager = $(btn).attr("role") == "SUPPORTMANAGER" ? true : false;
+            var _empCode = $(btn).attr("empcode");
+            var _contactNo1 = $(btn).attr("contactNo");
+            var _contactNo2 = $(btn).attr("alternateNumber");
+            var _active = $(btn).attr("active") == "active" ? true : false;
+
+            $("#user_Role").val($(btn).attr("role"));
+            $("#user_Id").val(_clientId);
+            $("#user_CompanyName").val(_companyName);
+            $("#user_EmailId").val(_emailId);
+            $("#user_ContactNo1").val(_contactNo1);
+            $("#user_Contact2").val(_contactNo2);
+            $("#user_EmpCode").val(_empCode);
+            $("#user_ActiveStatus").prop("checked", _active);
+            $("#user_IsSupportManager").prop("checked", _supportManager);
+
+            $("#user_CompanyName").prop("disabled", true);
+            $("#user_EmailId").prop("disabled", true);
+
+            $("#imgLogo").attr("src", _logo);
+            $("#imgLogo").show();
+
+            $("#actionModal").modal("show");
+
+            $("#divCCEmail").hide();
+        }
+
+        function clearValidate() {
+            $('#user_CompanyName').parent().removeClass('error');
+            $('#user_EmailId').parent().removeClass('error');
+            $('#user_ContactNo1').parent().removeClass('error');
+            $('#user_Contact2').parent().removeClass('error');
+            $('#user_EmpCode').parent().removeClass('error');
+            $("#user_file").parent().removeClass('error');
+        }
+
+        function initControl() {
+            $("#user_CompanyName").prop("disabled", false);
+            $("#user_EmailId").prop("disabled", false);
+
+            $("#user_Id").val("");
+            $("#user_file").val("");
+            $("#user_CompanyName").val("");
+            $("#user_EmailId").val("");
+            $("#user_ActiveStatus").prop("checked", true);
+            $("#user_EmpCode").val("");
+            $("#user_ContactNo1").val("");
+            $("#user_Contact2").val("");
+            $("#imgLogo").attr("src", "");
+            $("#user_IsSupportManager").prop("checked", false);
+            $("#imgLogo").hide();
+            $("#user_file").val("");
+        }
+
+        function validateEmail(email) {
+            const re = /^(([^<>()[\]\\.,;:\s@@"]+(\.[^<>()[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        function ValidateFileType() {
+            var validator = true;
+            var fileName = document.getElementById("user_file").value;
+            var idxDot = fileName.lastIndexOf(".") + 1;
+            var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+            if (!(extFile == "jpg" || extFile == "jpeg" || extFile == "png")) {
+                toastr.error("Only jpg/jpeg and png files are allowed!");
+                validator = false;
+            }
+            return validator;
+        }
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imgLogo')
+                        .attr('src', e.target.result);
+                    $("#imgLogo").show();
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                $("#imgLogo").hide();
+            }
+        }
+
+    </script>
+}
+
+

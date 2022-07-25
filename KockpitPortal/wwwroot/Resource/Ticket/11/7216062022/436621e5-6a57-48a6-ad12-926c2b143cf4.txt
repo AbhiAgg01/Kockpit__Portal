@@ -1,0 +1,35 @@
+ClearProjControls
+
+
+
+Changes To Be Done
+
+ConfigurationForm>ValidateProject Method
+proInfo.DirectoryInfo = new SFTPEntities.DirectoryOrFile();
+                        proInfo.DirectoryInfo.FullPath = ""; --Below line No 739
+					 else if (!string.IsNullOrEmpty(txtGitUrl.Text))
+                    {
+                        if(string.IsNullOrEmpty(txtGitUsername.Text) || string.IsNullOrEmpty(txtGitPassword.Text) || string.IsNullOrEmpty(txtGitEmail.Text)){
+                            MessageBox.Show("Please Provide Git Credentials");
+                        }                        
+                        else if (!expr.IsMatch(email))
+                        {
+                                MessageBox.Show("Invalid Git Email");
+                        }
+                        //bool lretval = gitrepositorymanager.isvalidrepourl(txtgiturl.text.trim());
+
+                    }
+						
+						
+HardwareConfigForm>CheckPrerequiste
+ if(outputitem.Split(' ')[0].ToLower().Trim().Contains("notebook")) //Previously it was jupyter-notebook
+ 
+SolutionExplorer>FillTreeView
+commitToolStripMenuItem1.Visible = (CurrentProj.IsWindows) ? true : false; //Replace CurrentProj.IsWindows to hasUnCommit.Item1
+            commitPushToolStripMenuItem1.Visible = (CurrentProj.IsWindows) ? true : false;
+            pushToGitToolStripMenuItem.Visible = (CurrentProj.IsWindows) ? true : false;
+            pullToolStripMenuItem.Visible = (CurrentProj.IsWindows) ? true : false;
+            commitPushToolStripMenuItem1.Visible = (CurrentProj.IsWindows) ? true : false;
+            switchCheckoutToolStripMenuItem.Visible = (CurrentProj.IsWindows) ? true : false;
+			
+TaskSchedulerForm> add IsTimmerSet bool variable for validation

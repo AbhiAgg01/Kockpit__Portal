@@ -1,0 +1,410 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using System.Data;
+@using KockpitPortal.Models.Notification;
+@{
+
+    List<tblNotification> _notifications = new List<tblNotification>();
+    string data = Context.Session.GetString("Notification");
+    @if (data != null)
+        _notifications = Newtonsoft.Json.JsonConvert.DeserializeObject<List<tblNotification>>(data);
+
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@((ViewData["PageTitle"] == null ? "Kockpit Portal" : ViewData["PageTitle"].ToString().Split().LastOrDefault()))</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/Theme/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/Theme/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Theme/plugins/toastr/toastr.min.css">
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/Theme/dist/css/adminlte.min.css">
+    <script src="https://code.iconify.design/2/2.1.0/iconify.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <div class="menu-toggle">
+                <span class="iconify menu-toggle-icon" data-icon="heroicons-outline:menu-alt-2"></span>
+            </div>
+            <h2 class="header-heading">Offerings</h2>
+        </div>
+        <div class="header-right">
+            <div class="header-btn full-screen-toggle" tabindex="1">
+                <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
+                    <g id="Group_3145" data-name="Group 3145" transform="translate(-1504 -40)">
+                        <g id="Layer_29" data-name="Layer 29" transform="translate(1502 38)">
+                            <path id="Path_15864" data-name="Path 15864"
+                                  d="M2,7.5v-4A1.5,1.5,0,0,1,3.5,2h4a.5.5,0,0,1,0,1h-4a.5.5,0,0,0-.5.5v4a.5.5,0,0,1-1,0Zm21-4v4a.5.5,0,0,1-1,0v-4a.5.5,0,0,0-.5-.5h-4a.5.5,0,0,1,0-1h4A1.5,1.5,0,0,1,23,3.5Zm0,14v4A1.5,1.5,0,0,1,21.5,23h-4a.5.5,0,0,1,0-1h4a.5.5,0,0,0,.5-.5v-4a.5.5,0,0,1,1,0Zm-15,5a.5.5,0,0,1-.5.5h-4A1.5,1.5,0,0,1,2,21.5v-4a.5.5,0,0,1,1,0v4a.5.5,0,0,0,.5.5h4A.5.5,0,0,1,8,22.5Z"
+                                  fill="#687c97" />
+                        </g>
+                    </g>
+                </svg>
+                <div class="header-tooltip">Fullscreen</div>
+            </div>
+            <div class="header-btn notifications" tabindex="1">
+                <span class="iconify" data-icon="clarity:bell-line"></span>
+                <div class="notification-dot"></div>
+                <div class="header-tooltip">Notification</div>
+                <div class="notification-dropdown">
+                    @if (_notifications != null && _notifications.Count() > 0)
+                    {
+                        @foreach (var item in _notifications)
+                        {
+
+                            if (string.Equals(item.Subject, "License Expiring", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                <div class="notification">
+                                    <p class="message-head">@item.Subject</p>
+                                    <p class="message-body">@item.Message</p>
+                                </div>
+                            }
+                            else
+                            {
+                                if (string.Equals(Context.Session.GetString("SessionInfo_Role"), "SUPPORTMANAGER", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <div class="notification">
+                                        <a class="message-head" href="@Url.Action("ShowAllTickets","RaiseIssue" ,new { id = item.Id })">@item.Subject</a>
+                                        <p class="message-body">@item.Message</p>
+                                    </div>
+                                }
+                                if (string.Equals(Context.Session.GetString("SessionInfo_Role"), "ADMIN", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <div class="notification">
+                                        <a class="message-head" href="@Url.Action("Index","RaiseIssue" ,new { id = item.Id })">@item.Subject</a>
+                                        <p class="message-body">@item.Message</p>
+                                    </div>
+                                }
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        <div class="notification text-center">
+                            <p class="message-head">Notifications</p>
+                            <p class="message-body">No Notification Available</p>
+                        </div>
+                    }
+                    <hr />
+                    <a class="checkout-page-link" href="@Url.Action("Index", "Notification")">See All</a>
+                </div>
+            </div>
+
+            <div class="cart">
+                <div class="header-btn cart-btn" tabindex="1">
+                    <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="23.451" height="22.823"
+                         viewbox="0 0 23.451 22.823">
+                        <g id="shopping-cart" transform="translate(0 -6.028)">
+                            <g id="group_3511" data-name="group 3511" transform="translate(0 6.028)">
+                                <g id="group_3510" data-name="group 3510" transform="translate(0 0)">
+                                    <path id="path_15911" data-name="path 15911"
+                                          d="m99.037,350.322a2.384,2.384,0,1,0,2.384,2.384a2.384,2.384,0,0,0,99.037,350.322zm0,3.708a1.324,1.324,0,1,1,1.324-1.324a1.324,1.324,0,0,1,99.037,354.03z"
+                                          transform="translate(-91.585 -332.266)" fill="#6e768e" />
+                                    <path id="path_15912" data-name="path 15912"
+                                          d="m297.568,350.322a2.384,2.384,0,1,0,2.384,2.384a2.384,2.384,0,0,0,297.568,350.322zm0,3.708a1.324,1.324,0,1,1,1.324-1.324a1.324,1.324,0,0,1,297.568,354.03z"
+                                          transform="translate(-279.602 -332.266)" fill="#6e768e" />
+                                    <path id="path_15913" data-name="path 15913"
+                                          d="m23.34,9.709a.678.678,0,0,0-.435-.22l5.2,9.242l-.49-1.511a2.5,2.5,0,0,0-2.339-1.7h.544a.549.549,0,0,0,0,1.1h2.367a1.416,1.416,0,0,1,1.306.962l7.127,18.61l-.272.632a2.66,2.66,0,0,0,.245,2.39,2.524,2.524,0,0,0,2.04,1.154h19.722a.549.549,0,0,0,0-1.1h9.14a1.385,1.385,0,0,1,8,21.028a1.524,1.524,0,0,1-.136-1.319l.218-.494,11.453-1.209a3,3,0,0,0,22.116,15.7l1.306-5.522a.471.471,0,0,0,23.34,9.709zm-2.285,5.742a1.856,1.856,0,0,1,19.4,16.907l8.079,18.088l-2.53-7.747,16.676.247z"
+                                          transform="translate(0 -6.028)" fill="#6e768e" />
+                                </g>
+                            </g>
+                        </g>
+                    </svg>
+                    <div class="cart-product-count">
+                        0
+                    </div>
+                    <div class="header-tooltip">cart</div>
+                </div>
+                <div class="cart-dropdown">
+                    <div class="cart-dropdown-product-list">
+
+                    </div>
+                </div>
+            </div>
+            <div class="user">
+                <p class="name">
+                    <span>@Context.Session.GetString("SessionInfo_CompanyName")</span>
+                </p>
+                <div class="header-btn" tabindex="1">
+                    <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="18.693" height="19.028"
+                         viewBox="0 0 18.693 19.028">
+                        <g id="Group_3149" data-name="Group 3149" transform="translate(-1831 -39.676)">
+                            <g id="user" transform="translate(1807.079 12.676)">
+                                <path id="Path_15865" data-name="Path 15865"
+                                      d="M51.727,32.363a5.363,5.363,0,1,0-5.363,5.363A5.364,5.364,0,0,0,51.727,32.363Zm-9.328,0a3.964,3.964,0,1,1,3.964,3.964A3.961,3.961,0,0,1,42.4,32.363Z"
+                                      transform="translate(-13.096 0)" fill="#687c97" />
+                                <path id="Path_15866" data-name="Path 15866"
+                                      d="M24.29,87.343a.658.658,0,0,0,.35.093.676.676,0,0,0,.606-.35,9.228,9.228,0,0,1,16.067,0,.7.7,0,0,0,1.213-.7,10.649,10.649,0,0,0-18.515,0,.7.7,0,0,0,.28.956Z"
+                                      transform="translate(0 -41.408)" fill="#687c97" />
+                            </g>
+                        </g>
+                    </svg>
+                    <div class="header-tooltip">User</div>
+                </div>
+                <div class="header-dropdown">
+                    <a href="@Url.Action("Index","Profile")">
+                        <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="11.469"
+                             height="11.675" viewBox="0 0 11.469 11.675">
+                            <g id="user" transform="translate(-23.922 -27)">
+                                <path id="Path_15865" data-name="Path 15865"
+                                      d="M47.581,30.291a3.291,3.291,0,1,0-3.291,3.291A3.291,3.291,0,0,0,47.581,30.291Zm-5.723,0a2.432,2.432,0,1,1,2.432,2.432A2.43,2.43,0,0,1,41.858,30.291Z"
+                                      transform="translate(-14.635)" fill="#3aa0ff" />
+                                <path id="Path_15866" data-name="Path 15866"
+                                      d="M24.147,84.892a.4.4,0,0,0,.215.057.415.415,0,0,0,.372-.215,5.662,5.662,0,0,1,9.858,0,.429.429,0,1,0,.744-.429,6.533,6.533,0,0,0-11.36,0,.43.43,0,0,0,.172.587Z"
+                                      transform="translate(0 -46.274)" fill="#3aa0ff" />
+                            </g>
+                        </svg></span>Profile
+                    </a>
+                    <a href="@Url.Action("Index","ChangePassword")">
+                        <svg class="iconify" width="11.469" height="11.469" xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 13.92 14.3">
+                            <g id="Layer_2" data-name="Layer 2">
+                                <g id="Layer_1-2" data-name="Layer 1">
+                                    <path d="M13.57,8.14,13,7.78a.71.71,0,0,1-.26-1A.62.62,0,0,1,13,6.54l.62-.35a.68.68,0,0,0,.33-.74,7.47,7.47,0,0,0-.31-1,.67.67,0,0,0-.7-.4l-.72.07a.71.71,0,0,1-.78-.63.68.68,0,0,1,.06-.37l.29-.66a.68.68,0,0,0-.17-.8,7,7,0,0,0-.83-.6.66.66,0,0,0-.81.09l-.53.47a.7.7,0,0,1-1,0,.74.74,0,0,1-.17-.33L8.08.56A.67.67,0,0,0,7.48,0L7,0,6.45,0a.68.68,0,0,0-.6.54l-.15.7a.71.71,0,0,1-.84.56.75.75,0,0,1-.34-.18L4,1.16a.66.66,0,0,0-.8-.08,7,7,0,0,0-.83.6.67.67,0,0,0-.17.8l.29.65a.71.71,0,0,1-.36.94.78.78,0,0,1-.37.06L1,4.05a.68.68,0,0,0-.7.4,7,7,0,0,0-.32,1,.67.67,0,0,0,.33.74L1,6.53a.72.72,0,0,1,.27,1A.78.78,0,0,1,1,7.77l-.62.35A.68.68,0,0,0,0,8.86a6.6,6.6,0,0,0,.32,1,.66.66,0,0,0,.7.4l.71-.07a.7.7,0,0,1,.78.63.67.67,0,0,1,0,.37l-.29.65a.67.67,0,0,0,.16.79,8.44,8.44,0,0,0,.83.61A.69.69,0,0,0,4,13.13l.53-.48a.71.71,0,0,1,1,0A.8.8,0,0,1,5.7,13l.14.7a.69.69,0,0,0,.6.55l.52,0,.51,0a.67.67,0,0,0,.6-.55l.15-.7a.71.71,0,0,1,.84-.55.65.65,0,0,1,.34.17l.53.48a.68.68,0,0,0,.8.09,10,10,0,0,0,.84-.61.68.68,0,0,0,.17-.78l-.29-.65a.71.71,0,0,1,.36-.94.57.57,0,0,1,.36-.06l.72.08a.69.69,0,0,0,.7-.4,8.57,8.57,0,0,0,.31-1A.67.67,0,0,0,13.57,8.14ZM13,9.54l-.69-.08a1.35,1.35,0,0,0-.74.12,1.43,1.43,0,0,0-.72,1.89l.29.63a7.9,7.9,0,0,1-.68.5l-.52-.47a1.43,1.43,0,0,0-2.36.77l-.14.68H6.55l-.14-.68a1.43,1.43,0,0,0-2.36-.77l-.52.47a7.9,7.9,0,0,1-.68-.5l.29-.63a1.44,1.44,0,0,0-1.47-2L1,9.54a5.7,5.7,0,0,1-.25-.8l.6-.35a1.42,1.42,0,0,0,.53-.53,1.44,1.44,0,0,0-.53-1.95l-.6-.34A5.31,5.31,0,0,1,1,4.77l.69.07a1.39,1.39,0,0,0,.75-.12,1.42,1.42,0,0,0,.71-1.89L2.85,2.2a5.6,5.6,0,0,1,.68-.49L4,2.17a1.39,1.39,0,0,0,.68.35A1.43,1.43,0,0,0,6.41,1.4L6.55.73,7,.71l.42,0,.14.67a1.38,1.38,0,0,0,.34.67,1.43,1.43,0,0,0,2,.1l.52-.46a7.76,7.76,0,0,1,.68.49l-.29.63a1.56,1.56,0,0,0-.12.74,1.43,1.43,0,0,0,1.58,1.27L13,4.76a8.27,8.27,0,0,1,.26.8l-.6.35a1.5,1.5,0,0,0-.53.53,1.42,1.42,0,0,0,.53,2l.6.35A7.46,7.46,0,0,1,13,9.54Z"
+                                          style="fill:#fc6" />
+                                    <g id="Path_15863" data-name="Path 15863">
+                                        <path d="M3.39,6.58a.35.35,0,0,1,.4-.28h0a.42.42,0,0,1,.29.46A2.86,2.86,0,1,0,7.33,4.31a2.89,2.89,0,0,0-2.49.91.4.4,0,0,1-.53.08.36.36,0,0,1-.11-.48l0,0a3.59,3.59,0,1,1-.84,1.79Z"
+                                              style="fill:#ffb369" />
+                                    </g>
+                                </g>
+                            </g>
+                        </svg>
+                        Change Password
+                    </a>
+                    <a data-toggle="modal" data-target="#logoutModal" style="cursor:pointer;">
+                        <svg class="iconify" id="_1._Icons_Line_ab-testing"
+                             data-name="1. Icons / Line /  ab-testing" xmlns="http://www.w3.org/2000/svg" width="10.667"
+                             height="13.334" viewBox="0 0 10.667 13.334">
+                            <path id="file-export"
+                                  d="M9,13.334H1.667A1.668,1.668,0,0,1,0,11.668v-10A1.669,1.669,0,0,1,1.667,0h6A.329.329,0,0,1,7.9.1L10.57,2.765a.327.327,0,0,1,.1.254V4.334a.333.333,0,1,1-.667,0v-1H7.667A.334.334,0,0,1,7.333,3V.667H1.667a1,1,0,0,0-1,1v10a1,1,0,0,0,1,1H9a1,1,0,0,0,1-1V10.334a.333.333,0,0,1,.667,0v1.334A1.668,1.668,0,0,1,9,13.334ZM8,1.139V2.668H9.529Zm.334,8.2a.333.333,0,0,1-.236-.57L9.529,7.334h-5.2a.333.333,0,1,1,0-.667h5.2L8.1,5.237a.334.334,0,1,1,.472-.472l2,2a.334.334,0,0,1,0,.472l-2,2A.331.331,0,0,1,8.333,9.335Z"
+                                  fill="#fc5a5a" />
+                        </svg>Log Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="sidebar">
+        <div class="sidebar-close-btn">
+            <span class="iconify" data-icon="bi:x"></span>
+        </div>
+        <a href="@Url.Action("SupportManagerDashboard","Home")" class="logo">
+            <img src="~/assets/kockpit-logo.svg" alt="logo">
+            <p>Kockpit</p>
+        </a>
+        <div class="menu">
+            <ul>
+                @*<li>
+                        <a class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA001" ? "active" : "" : "")" href="@Url.Action("SupportManagerDashboard","Home")">
+                            <svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="19.433" height="15.144"
+                                 viewBox="0 0 19.433 15.144">
+                                <g id="Group_3521" data-name="Group 3521" transform="translate(-40 -290.5)">
+                                    <path id="Fill_1" data-name="Fill 1"
+                                          d="M9.716,7.9a.451.451,0,0,1-.16-.029L.282,4.352a.43.43,0,0,1,0-.807L9.556.029a.452.452,0,0,1,.319,0L19.15,3.545a.43.43,0,0,1,0,.807L9.876,7.868A.449.449,0,0,1,9.716,7.9Zm0-7L1.665,3.948,9.716,7l8.05-3.052Z"
+                                          transform="translate(40 290.5)" fill="#687c97" />
+                                    <path id="Fill_4" data-name="Fill 4"
+                                          d="M9.716,6.139a.45.45,0,0,1-.159-.029L.282,2.594a.43.43,0,0,1,0-.807L4.92.029a.445.445,0,0,1,.571.247.43.43,0,0,1-.253.56L1.665,2.19,9.716,5.242,17.767,2.19,14.194.836a.43.43,0,0,1-.253-.56.445.445,0,0,1,.571-.247L19.15,1.787a.43.43,0,0,1,0,.807L9.876,6.11a.45.45,0,0,1-.159.029"
+                                          transform="translate(40 296.043)" fill="#687c97" />
+                                    <path id="Fill_6" data-name="Fill 6"
+                                          d="M9.716,6.058a.45.45,0,0,1-.159-.029L.282,2.513a.43.43,0,0,1,0-.807L4.7.029A.444.444,0,0,1,5.27.277a.431.431,0,0,1-.253.56L1.665,2.109,9.716,5.161l8.051-3.052L14.415.837a.431.431,0,0,1-.253-.56.445.445,0,0,1,.571-.247L19.15,1.706a.43.43,0,0,1,0,.807L9.876,6.029a.45.45,0,0,1-.159.029"
+                                          transform="translate(40 299.586)" fill="#687c97" />
+                                </g>
+                            </svg>
+                            <p>Dashboard</p>
+                            <div class="tooltip">Dashboard</div>
+                        </a>
+                    </li>*@
+                <li>
+                    <a class="menu-item-link @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA002" ? "active" : "" : "")" href="@Url.Action("ShowAllTickets","RaiseIssue")">
+                        <span class="iconify" data-icon="si-glyph:customer-support"></span>
+                        @*<svg class="iconify" xmlns="http://www.w3.org/2000/svg" width="19.433" height="15.144"
+                                 viewBox="0 0 19.433 15.144">
+                                <g id="Group_3521" data-name="Group 3521" transform="translate(-40 -290.5)">
+                                    <path id="Fill_1" data-name="Fill 1"
+                                          d="M9.716,7.9a.451.451,0,0,1-.16-.029L.282,4.352a.43.43,0,0,1,0-.807L9.556.029a.452.452,0,0,1,.319,0L19.15,3.545a.43.43,0,0,1,0,.807L9.876,7.868A.449.449,0,0,1,9.716,7.9Zm0-7L1.665,3.948,9.716,7l8.05-3.052Z"
+                                          transform="translate(40 290.5)" fill="#687c97" />
+                                    <path id="Fill_4" data-name="Fill 4"
+                                          d="M9.716,6.139a.45.45,0,0,1-.159-.029L.282,2.594a.43.43,0,0,1,0-.807L4.92.029a.445.445,0,0,1,.571.247.43.43,0,0,1-.253.56L1.665,2.19,9.716,5.242,17.767,2.19,14.194.836a.43.43,0,0,1-.253-.56.445.445,0,0,1,.571-.247L19.15,1.787a.43.43,0,0,1,0,.807L9.876,6.11a.45.45,0,0,1-.159.029"
+                                          transform="translate(40 296.043)" fill="#687c97" />
+                                    <path id="Fill_6" data-name="Fill 6"
+                                          d="M9.716,6.058a.45.45,0,0,1-.159-.029L.282,2.513a.43.43,0,0,1,0-.807L4.7.029A.444.444,0,0,1,5.27.277a.431.431,0,0,1-.253.56L1.665,2.109,9.716,5.161l8.051-3.052L14.415.837a.431.431,0,0,1-.253-.56.445.445,0,0,1,.571-.247L19.15,1.706a.43.43,0,0,1,0,.807L9.876,6.029a.45.45,0,0,1-.159.029"
+                                          transform="translate(40 299.586)" fill="#687c97" />
+                                </g>
+                            </svg>*@
+                        <p>Support</p>
+                        <div class="tooltip">Support</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    @RenderBody()
+    <partial name="~/Views/Login/_Logout.cshtml" />
+    <!--<section class="main">
+        <div class="menu" id="menu">
+            <div class="logo">
+                <a asp-action="Dashboard" asp-controller="Home"><img src="~/assets/logo.svg" alt="logo"></a>
+            </div>
+            <div class="menu-nav">
+                <ul>
+                    <li class="menu-nav-item outer-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA001" ? "active" : "" : "")">
+                        <span class="iconify menu-item-icon" data-icon="bx:bxs-dashboard"></span>
+                        <a asp-action="Dashboard" asp-controller="Home"><p>Dashboard</p></a>
+                    </li>
+
+                    @if (Context.Session.GetString("SessionInfo_Role") == "ADMIN")
+                    {
+                        <li class="menu-nav-item outer-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA002" ? "active" : "" : "")">
+                            <span class="iconify menu-item-icon" data-icon="ic:round-manage-accounts"></span>
+                            <p>User Management</p>
+                            <i class="bi bi-chevron-down dropdown-icon"></i>
+                        </li>
+                        <div class="submenu">
+                            <li class="menu-nav-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA002" ? "active" : "" : "")">
+                                <span class="iconify" data-icon="clarity:users-line"></span>
+                                <a asp-action="Index" asp-controller="SubUserManagement"><p>Users</p></a>
+                            </li>
+                        </div>
+                        <li class="menu-nav-item outer-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA003" || ViewData["PageId"].ToString() == "OA004" || ViewData["PageId"].ToString() == "OA005" ? "active" : "" : "")">
+                            <span class="iconify menu-item-icon" data-icon="eos-icons:service-plan"></span>
+                            <p>Plans</p>
+                            <i class="bi bi-chevron-down dropdown-icon"></i>
+                        </li>
+                        <div class="submenu">
+                            <li class="menu-nav-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA003" ? "active" : "" : "")">
+                                <span class="iconify" data-icon="icon-park-outline:buy"></span>
+                                <p><a asp-action="Index" asp-controller="PlanInfo">Buy Plan</a></p>
+                            </li>
+                            <li class="menu-nav-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA004" ? "active" : "" : "")">
+                                <span class="iconify" data-icon="ant-design:pull-request-outlined"></span>
+                                <p><a asp-action="RequestedPlan" asp-controller="PlanInfo">Requested Plans</a></p>
+                            </li>
+                            <li class="menu-nav-item @(ViewData["PageId"] != null ? ViewData["PageId"].ToString() == "OA005" ? "active" : "" : "")">
+                                <span class="iconify" data-icon="carbon:license"></span>
+                                <p><a asp-action="ActivePlan" asp-controller="PlanInfo">My Plans & Licenses</a></p>
+                            </li>
+                            <li class="menu-nav-item outer-item">
+                                <img src="~/assets/support.png" alt="" style="height:19px;width:45px;">
+                                <a asp-action="Index" asp-controller="RaiseIssue"><p>Support</p></a>
+                            </li>
+                        </div>
+                    }
+                </ul>
+            </div>
+
+            <div class="close-btn" id="close-menu">
+                <i class="bi bi-x-lg"></i>
+            </div>
+        </div>
+        <div class="offerings expanded" id="offerings">
+            <div class="header">
+                <div class="menu-toggle" id="menu-toggle">
+                    <i class="bi bi-list btn" id="ham-btn"></i>
+                    <i class="bi bi-x btn" id="close-btn"></i>
+                </div>
+                <div class="header-cta">
+                    <div class="search-bar">
+                        <i class="bi bi-search"></i>
+                        <input type="text" placeholder="Search here...">
+                    </div>
+                    <div class="notification">
+                        <i class="bi bi-bell"></i>
+                    </div>
+                    <div class="settings">
+                        <i class="bi bi-gear"></i>
+                        <div class="dropdown">
+                            <ul>-->
+    @*<li>Edit Profile</li>
+        <li>Settings</li>*@
+    <!--<li><a asp-action="Logout" asp-controller="Login">Sign Out</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="user-profile">
+                        <div class="name">@Context.Session.GetString("SessionInfo_EmailId")</div>
+                        <div class="profile-pic">
+                            @if (String.IsNullOrEmpty(Context.Session.GetString("SessionInfo_logo")))
+                            {
+                                <i class="bi bi-person-circle"></i>
+                            }else{
+                                <img height="40px" width="100%" src="@Url.Content(Context.Session.GetString("SessionInfo_logo"))" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>-->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/script.js"></script>
+    <script src="~/js/site.js"></script>
+
+    <!-- DataTables -->
+    <script src="~/Theme/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Theme/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Theme/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Theme/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <!-- Toastr -->
+    <script src="~/Theme/plugins/toastr/toastr.min.js"></script>
+
+    @*<script type="text/javascript">
+            $(document).ready(function () {
+                //$("#loader").hide();
+                if ($('#tData').length > 0) {
+                    var table = $('#tData').DataTable({
+                        orderCellsTop: true,
+                        fixedHeader: true,
+                        language: {
+                            'paginate': {
+                                'previous': '<',
+                                'next': '>'
+                            },
+                            'search': ""
+                        },
+                        searching: true,
+                        //"dom": '<"toolbar">frtip',
+                        "dom": '<"pull-left"f><"toolbar">tip'
+                    });
+                    $(".dataTables_filter input").attr("placeholder", "Search here");
+                }
+            });
+        </script>*@
+    <script type="text/javascript">
+        $(document).ready(() => {
+            $("#users-table").DataTable();
+        });
+    </script>
+    <script type="text/javascript">
+        function postForm(path, params, method) {
+            method = method || 'post';
+            var form = document.createElement('form');
+            form.setAttribute('method', method);
+            form.setAttribute('action', path);
+            for (var key in params) {
+                if (params.hasOwnProperty(key)) {
+                    var hiddenField = document.createElement('input');
+                    hiddenField.setAttribute('type', 'hidden');
+                    hiddenField.setAttribute('name', key);
+                    hiddenField.setAttribute('value', params[key]);
+                    form.appendChild(hiddenField);
+                }
+            }
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+    <script src="~/js/cookiemanager.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

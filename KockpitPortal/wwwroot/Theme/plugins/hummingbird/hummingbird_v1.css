@@ -1,0 +1,64 @@
+﻿
+/* font */
+html, body {
+    /* background-color: #f5f8fa; */
+    background-color: #fcfdfd;
+    color: #636b6f;
+/*    font-family: 'Fira sans', 'Helvetica', 'Arial', sans-serif;
+    font-size: 18px;*/
+}
+
+/* padding for the fixed navbar */
+/*body {
+    padding-top: 0px;
+    padding-bottom: 40px;
+}*/
+
+    /* small top padding for geoextractor SPA, because no normal header */
+    body.geoextr {
+        padding-top: 20px;
+        padding-bottom: 40px;
+    }
+
+.navbar-fixed-top {
+    /* background-color: #fcfdfd; */
+}
+
+.myjumbotron {
+    background-color: #d5f3e1;
+}
+
+
+code {
+    font-size: 18px !important;
+}
+
+.stylish-input-group .input-group-addon {
+    background: white !important;
+}
+
+.stylish-input-group .form-control {
+    //border-right:0;
+    box-shadow: 0 0 0;
+    border-color: #ccc;
+}
+
+.stylish-input-group button {
+    border: 1;
+    background: transparent;
+}
+
+.h-scroll {
+    background-color: #fcfdfd;
+    height: 260px;
+    overflow-y: scroll;
+}
+
+
+.h-scroll-large {
+    background-color: #fcfdfd;
+    height: 350px; /* %-height of the viewport */
+    /* position: fixed; */
+    overflow-y: scroll;
+    /* overflow-x: hidden; */
+}

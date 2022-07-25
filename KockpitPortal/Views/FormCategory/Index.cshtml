@@ -1,0 +1,201 @@
+﻿@model KockpitPortal.ViewModels.SuperAdmin.tblFormCategoryViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<section class="main">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-8">
+                        <h4 class="card-title">Form Categories</h4>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" style="float:right" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#actionModal"
+                                onclick="initControl();">
+                            <i class="fa fa-plus"></i> Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="col-md-12" style="overflow-x:scroll">
+                    <table id="tData" class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <td>Offerings</td>
+                                <td>Category</td>
+                                <td>Action</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.formCategories != null && Model.formCategories.Count > 0)
+                            {
+                                foreach (var item in Model.formCategories)
+                                {
+                                    <tr>
+                                        <td>@item.ProjectName</td>
+                                        <td>@item.CategoryName</td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm" categoryid="@item.Id"
+                                                    projectid="@item.ProjectId"
+                                                    categoryname="@item.CategoryName"
+                                                    onclick="editModal(this)">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <a href="@Url.Action("Remove","FormCategory", new { nId = item.Id })"
+                                               onclick="return confirmation();"
+                                               class="btn btn-danger btn-sm">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="overlay" id="loader" style="display:none">
+                <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal form for add user starts here-->
+<div class="modal fade" id="actionModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col-lg-12">
+                    <div class="row d-flex">
+                        <div class="col-lg-10">
+                            <h5 class="modal-title" id="exampleModalLabel"><b>Form Category</b></h5>
+                        </div>
+                        <div class="col-lg-2">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form asp-action="Upsert" asp-controller="FormCategory" method="post">
+                <input type="hidden" asp-for="formCategory.Id" />
+                <div class="modal-body">
+                    <div class="row d-flex">
+                        <div class="col-lg-12">
+                            <div class="row d-flex">
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Offering</label>
+                                    <select asp-for="formCategory.ProjectId" asp-items="ViewBag.ProjectList" class="fname form-control"></select>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Category</label>
+                                    <input type="text" asp-for="formCategory.CategoryName" class="fname form-control" placeholder="Category Name">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-12">
+                        <div class="row d-flex">
+                            <div class="col-lg-5">
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="modal-button">
+                                    <button type="submit" onclick="return ValidateEntry();" class="btn btn-primary"><b>Submit</b></button>
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+            toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+            toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#actionModal").on('hidden.bs.modal', function () {
+                clearValidate();
+            });
+
+            //var datatableHtml = '<div class="button-class"><button type="button" style="float:right" class="btn btn-primary" data-toggle="modal" data-target="#actionModal" onclick="initControl();"><span class="iconify" data-icon="ant-design:user-add-outlined" data-inline="false"></span> Add New Module</button></div>';
+            //$("div.toolbar").html(datatableHtml);
+        });
+
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+            if ($('#formCategory_ProjectId').val().trim().length == 0) {
+                $('#formCategory_ProjectId').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#formCategory_CategoryName').val().trim().length == 0) {
+                $('#formCategory_CategoryName').addClass('is-invalid');
+                allow = false;
+            }
+
+            if (allow) {
+                $("#loader").show();
+                $("#actionModal").modal('hide');
+            }
+            return allow;
+        }
+
+        function confirmation() {
+            if (confirm("Are you sure want to delete this module ?")) {
+                $("#loader").show();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function editModal(btn) {
+            var _categoryId = $(btn).attr("categoryid");
+            var _projectId = $(btn).attr("projectid");
+            var _categoryName = $(btn).attr("categoryname");
+            $("#formCategory_Id").val(_categoryId);
+            $("#formCategory_ProjectId").val(_projectId);
+            $("#formCategory_CategoryName").val(_categoryName);
+            $("#actionModal").modal("show");
+        }
+
+        function clearValidate() {
+            $('#formCategory_ProjectId').removeClass('is-invalid');
+            $('#formCategory_CategoryName').removeClass('is-invalid');
+        }
+
+        function initControl() {
+            $("#formCategory_Id").val("");
+            $("#formCategory_ProjectId").val("");
+            $("#formCategory_CategoryName").val("");
+        }
+    </script>
+}
+

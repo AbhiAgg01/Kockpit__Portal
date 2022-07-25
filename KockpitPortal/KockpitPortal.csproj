@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>b2ba91a7-35b9-4c03-80a9-c2749ce8fd7c</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\Theme\plugins\fstdropdown-master\fstdropdown.js" />
+    <Content Remove="wwwroot\Theme\plugins\fstdropdown-master\fstdropdown.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".gitignore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cronos" Version="0.7.1" />
+    <PackageReference Include="Google.Cloud.Firestore" Version="2.5.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.19" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
+    <PackageReference Include="Npgsql" Version="5.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Resource\Project\" />
+    <Folder Include="wwwroot\Theme\plugins\pageloader\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\ChangePassword\Index.cshtml" />
+    <None Include="wwwroot\Theme\plugins\fstdropdown-master\fstdropdown.js" />
+    <None Include="wwwroot\Theme\plugins\fstdropdown-master\fstdropdown.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KockpitAuthenticator\KockpitAuthenticator.csproj" />
+    <ProjectReference Include="..\KockpitUtility\KockpitUtility.csproj" />
+  </ItemGroup>
+
+</Project>

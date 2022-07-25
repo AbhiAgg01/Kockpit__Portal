@@ -1,0 +1,270 @@
+﻿@model IEnumerable<KockpitPortal.Models.PlanManagement.tblPlanRequest>
+@{
+    ViewData["Title"] = "RequestedPlan";
+}
+<style>
+    .popover {
+        max-width: 100%;
+    }
+</style>
+
+<div class="main">
+    <div class="users-table-wrapper">
+        <div class="users-table-header">
+            <h3 class="header-heading">Requested Plans</h3>
+            <!-- <div class="users-table-header-actions">
+                <button>Purchase New Plans</button>
+                <button>Go To My Plans</button>
+            </div> -->
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <td>Transaction Id</td>
+                    <td>Purchase Date</td>
+                    <td>Payment Method</td>
+                    <td>Payment Mode</td>
+                    <td>Status</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><a href="#" onclick="fnGetRequestDetail(this)" data-toggle="modal" requestid="@item.Id">@item.PaymentTransactionNo</a></td>
+                        <td>@item.PurchaseDate</td>
+                        <td>@item.PaymentMethod</td>
+                        <td>@item.PaymentMode</td>
+                        @if (item.IsApproved == true)
+                        {
+                            <td><span class="pill active"><i class="fa fa-check"></i> APPROVED</span></td>
+                        }
+                        else if (item.IsApproved == false)
+                        {
+                            <td>
+                                <span class="pill inactive">
+                                    <i class="fa fa-times-circle"></i> REJECTED
+                                </span>
+                                <a class="btn btn-default btn-sm" data-toggle="popover-hover" data-remarks="@item.Remarks">
+                                    <i class="fas fa-info-circle"></i>
+                                </a>
+                            </td>
+                        }
+                        else
+                        {
+                            <td><span class="badge badge-info"><i class="fa fa-clock"></i> UNDER PROCESS</span></td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <!-- <div class="pagination">
+            <div class="prev-btn">
+                <span class="iconify" data-icon="bi:arrow-left"></span>Prev</div>
+            <div class="pagination-numbers">
+
+            </div>
+            <div class="next-btn">
+                Next
+                <span class="iconify" data-icon="bi:arrow-right"></span>
+            </div>
+        </div> -->
+    </div>
+    <div class="overlay" id="loader" style="display:none">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+
+</div>
+
+@*<section class="content2">
+        <div class="container-fluid">
+            <div class="card card-default">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-8">
+                            <h4 class="card-title">Requested Plans</h4>
+                        </div>
+                        <div class="col-4" style="text-align:right">
+                            <a href="@Url.Action("Index", "PlanInfo")" class="btn btn-primary btn-sm">
+                                <i class="fa fa-plus"></i> Purchase New Plans
+                            </a>
+                            &nbsp;
+                            <a href="@Url.Action("ActivePlan", "PlanInfo")" class="btn btn-secondary btn-sm">
+                                <i class="fa fa-plus"></i> Go to My Plans
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="col-md-12" style="overflow-x:scroll">
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            <table class="table table-sm table-striped">
+                                <thead>
+                                    <tr>
+                                        <td>Transaction No.</td>
+                                        <td>Purchase Date</td>
+                                        <td>Payment Method</td>
+                                        <td>Payment Mode</td>
+                                        <td>Status</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td><a href="#" onclick="fnGetRequestDetail(this)" data-toggle="modal" requestid="@item.Id">@item.PaymentTransactionNo</a></td>
+                                            <td>@item.PurchaseDate</td>
+                                            <td>@item.PaymentMethod</td>
+                                            <td>@item.PaymentMode</td>
+                                            @if (item.IsApproved == true)
+                                            {
+                                                <td><span class="badge badge-success"><i class="fa fa-check"></i> APPROVED</span></td>
+                                            }
+                                            else if (item.IsApproved == false)
+                                            {
+                                                <td>
+                                                    <span class="badge badge-danger">
+                                                        <i class="fa fa-times-circle"></i> REJECTED
+                                                    </span>
+                                                    <a class="btn btn-default btn-sm" data-toggle="popover-hover" data-remarks="@item.Remarks">
+                                                        <i class="fas fa-info-circle"></i>
+                                                    </a>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td><span class="badge badge-info"><i class="fa fa-clock"></i> UNDER PROCESS</span></td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <span>No Requests Found.</span>
+                        }
+
+                    </div>
+                </div>
+                <div id="loader"></div>
+            </div>
+        </div>
+    </section>
+    *@
+<div class="modal fade" id="actionModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col-lg-12">
+                    <div class="row d-flex w-100">
+                        <div class="col-lg-10">
+                            <h5 class="modal-title" id="exampleModalLabel"><b>Purchase Detail</b></h5>
+                        </div>
+                        <div class="col-lg-2">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+                    <div class="row d-flex w-100">
+                        <div class="col-lg-12" id="divRequestDetail"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // popovers initialization - on hover
+            $('[data-toggle="popover-hover"]').popover({
+                html: true,
+                title: "Sample",
+                trigger: 'hover',
+                placement: 'bottom',
+                footer: "",
+                content: function () { return '<div>' + $(this).data('remarks') + '</div>'; }
+            });
+        });
+
+        function fnGetRequestDetail(btn) {
+            $("#loader").show();
+            $("#divRequestDetail").empty();
+            var _requestId = $(btn).attr("requestid");
+            var formData = new FormData();
+            formData.append("nReqId", _requestId);
+            $.ajax({
+                url: "@Url.Action("GetPlanRequestDetail", "PlanRequest")",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    $("#loader").hide();
+                    if (res.item1.success == true) {
+                        if (res.item2 != null) {
+                            var _requestHtml = "";
+                            $.each(res.item2, function (key, value) {
+                                _requestHtml += '<div class="col-12" id="accordion_'+ key +'">';
+                                _requestHtml += '    <div class="card card-primary card-outline">';
+                                _requestHtml += '        <div class="card-header">';
+                                _requestHtml += '            <div class="row">';
+                                _requestHtml += '                <div class="col-12">';
+                                _requestHtml += '                    <a class="d-block w-100" data-toggle="collapse" href="#collapse_'+ key +'">';
+                                _requestHtml += '                        <h4 class="card-title w-100">';
+                                _requestHtml += '                            '+ key +'';
+                                _requestHtml += '                        </h4>';
+                                _requestHtml += '                    </a>';
+                                _requestHtml += '                </div>';
+                                _requestHtml += '            </div>';
+                                _requestHtml += '        </div>';
+                                _requestHtml += '        <div id="collapse_'+ key +'" class="collapse show" data-parent="#accordion_'+ key +'">';
+                                _requestHtml += '            <div class="card-body">';
+                                _requestHtml += '                <table class="table table-sm table-striped">';
+                                _requestHtml += '                    <thead>';
+                                _requestHtml += '                        <tr>';
+                                _requestHtml += '                            <td>Plan</td>';
+                                _requestHtml += '                            <td>Price</td>';
+                                _requestHtml += '                            <td>Requested License</td>';
+                                _requestHtml += '                        </tr>';
+                                _requestHtml += '                    </thead>';
+                                _requestHtml += '                    <tbody>';
+                                for (i = 0; i < value.length; i++) {
+                                    _requestHtml += '<tr>';
+                                    _requestHtml += '    <td>' + value[i].planName + '</td>';
+                                    _requestHtml += '    <td>' + value[i].planPrice + '</td>';
+                                    _requestHtml += '    <td><label>' + value[i].noOfUsers + '</label></td>';
+                                    _requestHtml += '</tr>';
+                                }
+                                _requestHtml += '                    </tbody>';
+                                _requestHtml += '                </table>';
+                                _requestHtml += '            </div>';
+                                _requestHtml += '        </div>';
+                                _requestHtml += '    </div>';
+                                _requestHtml += '</div>';
+                            });
+
+                            $("#divRequestDetail").html(_requestHtml);
+                            $("#actionModal").modal("show");
+                        } else {
+                            toastr.info("No records found")
+                        }
+                    } else {
+                        toastr.error(res.item1.msg);
+                    }
+                },
+                error: function (err) {
+                    toastr.error(err);
+                }
+            });
+        }
+    </script>
+}

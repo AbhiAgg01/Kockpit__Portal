@@ -1,0 +1,391 @@
+﻿@model KockpitPortal.ViewModels.SuperAdmin.tblProjectViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<div class="main">
+    <div class="admin-offerings-container">
+        <div class="admin-offerings-header">
+            <p>Offerings</p>
+            <div class="offering-input">
+                <button class="ko-btn-primary-lg" data-toggle="modal" data-target="#actionModal"
+                        onclick="initControl();" title="Add Offerings">
+                    Add Offering
+                </button>
+            </div>
+        </div>
+        <table id="tData">
+            <thead>
+                <tr>
+                    <td>Category</td>
+                    <td>Offering</td>
+                    <td>Description</td>
+                    <td>Version</td>
+                    <td>Product Type</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.projects != null && Model.projects.Count > 0)
+                {
+                    foreach (var item in Model.projects)
+                    {
+                <tr>
+                    <td>@item.OfferingCategory</td>
+                    <td>@item.ProjectName</td>
+                    <td>@item.Description</td>
+                    <td>@item.Version</td>
+                    <td>@item.ProjectType</td>
+                    <td>
+                        <button nId="@item.Id"
+                                Category="@item.OfferingCategory"
+                                ProjectName="@item.ProjectName"
+                                Description="@item.Description"
+                                Version="@item.Version"
+                                ProjectType="@item.ProjectType"
+                                ProjectLink="@item.ProjectStartUpLink"
+                                CoverImage="@item.ProjectImage"
+                                CoverVideo="@item.ProjectVideo"
+                                CoverIcon="@item.ProjectIcon"
+                                IsChat="@(item.IsChat == true ? "checked" : "")"
+                                onclick="editModal(this)" title="Edit Offerings">
+                            <span class="iconify" data-icon="ep:edit"></span>
+                        </button>
+                        <a href="@Url.Action("Remove","Project", new { nId = item.Id })"
+                           onclick="return confirmation();" title="Remove Offerings">
+                            <span class="iconify" data-icon="fluent:delete-20-regular"></span>
+                        </a>
+                    </td>
+                </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="overlay" id="loader" style="display:none">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" id="actionModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Offering</h5>
+                <button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close">
+                    <span class="iconify" data-icon="ep:close-bold"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Upsert" asp-controller="Project" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="project.Id" />
+                    <div class="input-group in-column form-margin">
+                        <label for="offering">Offering Category<span style="color:indianred;">*</span></label>
+                        <select asp-for="project.OfferingCategory" asp-items="ViewBag.Category">
+                        </select>
+                    </div>
+                    <div class="input-group in-column form-margin">
+                        <label for="offering">Offering Name<span style="color:indianred;">*</span></label>
+                        <input type="text" placeholder="Type here..." asp-for="project.ProjectName">
+                    </div>
+                    <div class="input-group in-column form-margin">
+                        <label for="description">Description<span style="color:indianred;">*</span></label>
+                        <textarea asp-for="project.Description" cols="30" rows="5" placeholder="Type here..."></textarea>
+                    </div>
+                    <div class="input-row form-margin">
+                        <div class="input-group in-column">
+                            <label for="plan-validity">Version<span style="color:indianred;">*</span></label>
+                            <input type="text" asp-for="project.Version" placeholder="Type here...">
+                        </div>
+                        <div class="input-group in-column">
+                            <label for="plan-price">Offering Type<span style="color:indianred;">*</span></label>
+                            <select asp-for="project.ProjectType">
+                                <option value="">[--Select--]</option>
+                                <option value="Web">Web Application</option>
+                                <option value="Android">Android</option>
+                                <option value="IOS">IOS</option>
+                                <option value="Window">Windows</option>
+                                <option value="Analytics">Analytics</option>
+                                <option value="Mobile App">Mobile App</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-row form-margin">
+                        <div class="input-group in-column ">
+                            <input class="custom-checkbox" type="checkbox" asp-for="project.IsChat" />
+                            <label for="project_IsChat" class="checkbox_label">
+                                <div class="check-icon">
+                                    <span class="iconify" data-icon="akar-icons:check"></span>
+                                </div>
+                                Chat Enabled
+                            </label>
+                        </div>
+                    </div>
+                    <div class="input-group in-column form-margin">
+                        <label for="offering">Offering Link<span style="color:indianred;">*</span></label>
+                        <input type="text" placeholder="Type here..." asp-for="project.ProjectStartUpLink">
+                    </div>
+                    <div class="input-row form-margin">
+                        <div class="input-group in-column form-margin">
+                            <label for="offering">Icon<span style="color:indianred;">*</span></label>
+                            <div class="input-row">
+                                <input type="file" onchange="readURL(this,3)" accept=".jpeg, .png, .jpg" asp-for="project.IconFile">
+                                <img id="iconCover" style="max-height:10rem; object-fit:cover;" />
+                            </div>
+                        </div>
+                        <div class="input-group in-column form-margin">
+                            <label for="offering">Thumbnail</label>
+                            <div class="input-row">
+                                <input type="file" onchange="readURL(this,1)" accept=".jpeg, .png, .jpg" asp-for="project.file">
+                                <img id="imgCover" style="max-height:10rem; object-fit:cover;" />
+                            </div>
+                        </div>
+                    </div>
+                        <div class="input-group in-column form-margin">
+                            <label for="offering">Cover Video</label>
+                            <div class="input-row">
+                                <input type="file" onchange="readURL(this,2)" accept=".mp4" asp-for="project.Videofile">
+                                <video id="vidCover" controls="controls" style="max-height: 10rem;">
+                                </video>
+                            </div>
+                        </div>
+
+                        <button class="ko-btn-primary-lg" onclick="return ValidateEntry();">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+                    toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+                    toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#actionModal").on('hidden.bs.modal', function () {
+                clearValidate();
+            });
+        });
+
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+
+            if ($('#project_OfferingCategory').val().trim().length == 0) {
+                $('#project_OfferingCategory').parent().addClass('error');
+                allow = false;
+            }
+            if ($('#project_ProjectName').val().trim().length == 0) {
+                $('#project_ProjectName').parent().addClass('error');
+                allow = false;
+            }
+            if ($('#project_Description').val().trim().length == 0) {
+                $('#project_Description').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#project_Version').val().trim().length == 0) {
+                $('#project_Version').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#project_ProjectType').val().trim().length == 0) {
+                $('#project_ProjectType').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#project_ProjectStartUpLink').val().trim().length == 0) {
+                $('#project_ProjectStartUpLink').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#project_IconFile').get(0).files.length == 0 && $("#iconCover").prop('src') == '') {
+                $('#project_IconFile').parent().parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#project_Videofile').get(0).files.length != 0 && $('#project_file').get(0).files.length == 0 || $('#project_file').get(0).files.length != 0 && $('#project_Videofile').get(0).files.length == 0) {
+                $('#project_Videofile').parent().parent().addClass('error');
+                $('#project_file').parent().parent().addClass('error');
+                allow = false;
+            }
+
+            //if ($("#project_Id").val() == '' && $('#project_Videofile').get(0).files.length == 0) {
+            //    $('#project_Videofile').parent().parent().addClass('error');
+            //    allow = false;
+            //}
+
+            if (allow && $('#project_Videofile').get(0).files.length != 0) {
+                allow = ValidateFileType(false,false);
+                if (allow == false) {
+                    $('#project_Videofile').parent().parent().addClass('error');
+                }
+            }
+            if (allow  && $('#project_file').get(0).files.length != 0) {
+                allow = ValidateFileType(true,false);
+                if (allow == false) {
+                    $('#project_file').parent().parent().addClass('error');
+                }
+            }
+
+            if (allow && $('#project_IconFile').get(0).files.length != 0) {
+                allow = ValidateFileType(true,true);
+                if (allow == false) {
+                    $('#project_IconFile').parent().parent().addClass('error');
+                }
+            }
+
+            if (allow) {
+                $("#loader").show();
+                $("#actionModal").modal('hide');
+            }
+            return allow;
+        }
+
+        function confirmation() {
+            if (confirm("Are you sure want to delete ?")) {
+                $("#loader").show();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function editModal(btn) {
+            initControl();
+            var _Id = $(btn).attr("nId");
+            var _Category = $(btn).attr("Category");
+            var _ProjectName = $(btn).attr("ProjectName");
+            var _Description = $(btn).attr("Description");
+            var _Version = $(btn).attr("Version");
+            var _ProjectType = $(btn).attr("ProjectType");
+            var _ProjectLink = $(btn).attr("ProjectLink");
+
+            var _CoverImg = $(btn).attr("CoverImage");
+            var _CoverVid = $(btn).attr("CoverVideo");
+            var _CoverIcon = $(btn).attr("CoverIcon");
+            var _IsChat = $(btn).attr("IsChat");
+            console.log(_IsChat);
+
+            $("#project_Id").val(_Id);
+            $("#project_OfferingCategory").val(_Category);
+            $("#project_ProjectName").val(_ProjectName);
+            $("#project_Description").val(_Description);
+            $("#project_Version").val(_Version);
+            $("#project_ProjectType").val(_ProjectType);
+            $("#project_ProjectStartUpLink").val(_ProjectLink);
+            $("#project_IsChat").prop("checked", _IsChat == "checked" ? true : false);
+
+            $("#imgCover").attr("src", _CoverImg);
+            $("#vidCover").attr("src", _CoverVid);
+            $("#iconCover").attr("src", _CoverIcon);
+            $("#actionModal").modal("show");
+        }
+
+        function clearValidate() {
+            $("#project_OfferingCategory").parent().removeClass('error');
+            $('#project_ProjectName').parent().removeClass('error');
+            $('#project_Description').parent().removeClass('error');
+            $('#project_Version').parent().removeClass('error');
+            $('#project_ProjectType').parent().removeClass('error');
+            $('#project_ProjectStartUpLink').parent().removeClass('error');
+            $('#project_Videofile').parent().parent().removeClass('error');
+            $('#project_file').parent().parent().removeClass('error');
+            $('#project_IconFile').parent().parent().removeClass('error');
+
+        }
+
+        function initControl() {
+            $("#project_Id").val("");
+            $("#project_OfferingCategory").val("");
+            $('#project_ProjectName').val("");
+            $('#project_Description').val("");
+            $('#project_Version').val("");
+            $('#project_ProjectType').val("");
+            $('#project_ProjectStartUpLink').val("");
+            $("#imgCover").attr("src", "");
+            $("#vidCover").attr("src", "");
+            $("#iconCover").attr("src", "");
+            $("#project_IsChat").prop("checked", false);
+            $("#project_Videofile").val("");
+            $("#project_file").val("");
+            $("#project_IconFile").val("");
+        }
+
+        function readURL(input,inputId) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    switch (inputId) {
+                        case 1: $('#imgCover').attr('src', e.target.result);
+                            break;
+                        case 2: $('#vidCover').attr('src', e.target.result);
+                            break;
+                        case 3: $('#iconCover').attr('src', e.target.result);
+                            break;
+                        default: break;
+                    }
+                        //$('#imgCover').attr('src', e.target.result);
+                        //$('#vidCover').attr('src', e.target.result);
+                    //if (isImg) {
+                    //} else {
+                    //}
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function ValidateFileType(isImg,isIcon = false) {
+            var validator = true;
+            if (isImg) {
+                if (isIcon) {
+                    var fileName = document.getElementById("project_IconFile").value;
+                    var idxDot = fileName.lastIndexOf(".") + 1;
+                    var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+                    if (!(extFile == "jpg" || extFile == "jpeg" || extFile == "png")) {
+                        toastr.error("Only jpg and png files are allowed!");
+                        validator = false;
+                    }
+                } else {
+                    var fileName = document.getElementById("project_file").value;
+                    var idxDot = fileName.lastIndexOf(".") + 1;
+                    var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+                    if (!(extFile == "jpg" || extFile == "jpeg" || extFile == "png")) {
+                        toastr.error("Only jpg/jpeg and png files are allowed!");
+                        validator = false;
+                    }
+                }
+            } else {
+                var fileName = document.getElementById("project_Videofile").value;
+                var idxDot = fileName.lastIndexOf(".") + 1;
+                var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+                if (extFile != "mp4") {
+                    toastr.error("Only mp4 files are allowed!");
+                    validator = false;
+                } else {
+                    if ($("#project_Videofile").get(0).files[0].size > ((1024 * 1024) * 10)) {
+                        toastr.error("Please upload file less than 10MB.");
+                        validator = false;
+                    }
+                }
+            }
+            return validator;
+        }
+    </script>
+}
+

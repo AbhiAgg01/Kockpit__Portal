@@ -1,0 +1,626 @@
+﻿@model Dictionary<string, List<MyPlans>>;
+@{
+    ViewData["Title"] = "ActivePlan";
+    List<string> nSubScriptionId = new List<string>();
+    // var nSubScriptionId = "";
+    var nTotalLicense = 0;
+    var nActivated = 0;
+    var nUnassigned = 0;
+    var nExpired = 0;
+    var nTransfered = 0;
+}
+
+
+<div class="main">
+    <div class="plans-and-licence-container">
+        <p class="plans-and-licence-header">My Plans & Licences</p>
+        @if (Model != null && Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+                @foreach (var val in item.Value)
+                {
+                    @if (! nSubScriptionId.Contains(val.SubscriptionId)  )
+                    {
+                        { nSubScriptionId.Add(val.SubscriptionId); }
+                        { nTotalLicense += val.TotalKeys; }
+                        { nActivated += val.UsedKeys; }
+                        { nUnassigned += val.UnusedKeys; }
+                        { nExpired += val.ExpiredKeys; }
+                        { nTransfered += val.TransferedKeys; }
+                    }
+                }
+                <div class="product-accordion-container">
+                    <div class="accordion-header">
+                        <div class="icon">
+                            <span class="iconify icon-plus" data-icon="ant-design:plus-circle-outlined"></span>
+                            <span class="iconify icon-minus" data-icon="ant-design:minus-circle-outlined"></span>
+                        </div>
+                        <p>@item.Key</p>
+                    </div>
+                    <div class="accordion-cards-container">
+                        <div class="card">
+                            <div class="icon">
+                                <span class="iconify" data-icon="octicon:stack-16"></span>
+                            </div>
+                            <div class="text">
+                                <p class="licence">Total Licence</p>
+                                <p class="licence-count">@nTotalLicense</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="icon">
+                                <span class="iconify" data-icon="teenyicons:tick-circle-outline"></span>
+                            </div>
+                            <div class="text">
+                                <p class="licence">Activated Licence</p>
+                                <p class="licence-count">@nActivated</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="icon">
+                                <span class="iconify" data-icon="lucide:user-x"></span>
+                            </div>
+                            <div class="text">
+                                <p class="licence">Unassigned Licence</p>
+                                <p class="licence-count">@nUnassigned</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="icon">
+                                <span class="iconify" data-icon="mdi:clock-alert-outline"></span>
+                            </div>
+                            <div class="text">
+                                <p class="licence">Expired Licence</p>
+                                <p class="licence-count">@nExpired</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="icon">
+                                <span class="iconify" data-icon="mdi:clock-alert-outline"></span>
+                            </div>
+                            <div class="text">
+                                <p class="licence">Transfered Licence</p>
+                                <p class="licence-count">@nTransfered</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-accordion-hidden-content">
+                        <div class="search-input">
+                            <input type="text" placeholder="Search..." onkeyup="myFunction(this);">
+                        </div>
+                        <table class="tData" id="tbl_@item.Key.Replace(" ","_")">
+                            <thead>
+                                <tr>
+                                    <td>S.No</td>
+                                    <td>Licence Key</td>
+                                    <td>Validity (In Days)</td>
+                                    <td>Assigned To</td>
+                                    <td>Activation Date</td>
+                                    <td>Expiry Date</td>
+                                    <td>AMC Start</td>
+                                    <td>AMC End</td>
+                                    <td>Remaining</td>
+                                    <td>Status</td>
+                                    <td>Action</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{int nRow = 0;}
+                                @foreach (var val in item.Value)
+                                {
+
+                                    <tr style="background-color: @((val.IsExpired != null && Convert.ToBoolean(val.IsExpired)) ? "#d98a8a6b" : "")">
+                                        <td>@(nRow += 1)</td>
+                                        <td>@val.LicenseKey</td>
+                                        <td>@val.ValidityDays</td>
+                                        <td>@val.AssignTo</td>
+                                        <td>@(val.ActivationDate == null ? "" : Convert.ToDateTime(val.ActivationDate).ToShortDateString())</td>
+                                        <td>@(val.ExpiryDate == null ? "" : Convert.ToDateTime(val.ExpiryDate).ToShortDateString())</td>
+                                        @if(val.AMCId != 0)
+                                        {
+                                            <td>@val.AMCStartDate.Value.ToString("dd/MM/yyyy")</td>
+                                            <td>@val.AMCEndDate.Value.ToString("dd/MM/yyyy")</td>
+                                            <td>@val.RemainingDays</td>
+                                        }
+                                        else
+                                        {
+                                            <td>NA</td>
+                                            <td>NA</td>
+                                            <td>NA</td>
+                                        }
+                                        
+                                        <td>
+                                            @if (string.IsNullOrEmpty(val.AssignTo))
+                                            {
+                                                <div class="pill inactive">UNASSIGNED</div>
+                                            }
+                                            else if (val.IsExpired != null && Convert.ToBoolean(val.IsExpired) && (!Convert.ToBoolean(val.IsTransfered)))
+                                            {
+                                                <div class="pill inactive">EXPIRED</div>
+                                            }
+                                            else if (val.IsExpired != null && Convert.ToBoolean(val.IsExpired) && (Convert.ToBoolean(val.IsTransfered)))
+                                            {
+                                                <div class="pill inactive">Transfered</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="pill active">ASSIGNED</div>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (string.IsNullOrEmpty(val.AssignTo))
+                                            {
+                                                <button type="button" onclick="fnAssingPopup(this)" data-toggle="modal"
+                                                        keyid="@val.Id"
+                                                        projectid="@val.ProjectId"
+                                                        licensekey="@val.LicenseKey"
+                                                        validity="@val.ValidityDays"
+                                                        title="Assign License">
+                                                    Assign
+                                                </button>
+                                            }
+                                            else if (val.IsExpired != null && Convert.ToBoolean(val.IsExpired))
+                                            {
+                                            }
+                                            else
+                                            {
+                                                <button type="button" onclick="fnTransferPopup(this)" data-toggle="modal"
+                                                        keyid="@val.Id"
+                                                        projectid="@val.ProjectId"
+                                                        title="Transfer License">
+                                                    Transfer
+                                                </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                { nActivated = 0; }
+                { nExpired = 0; }
+                { nTotalLicense = 0; }
+                { nUnassigned = 0; }
+                { nTransfered = 0; }
+            }
+        }
+    </div>
+    <div class="overlay" id="loader" style="display:none">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="actionModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col-lg-12">
+                    <div class="row d-flex">
+                        <div class="col-lg-10">
+                            <h5 class="modal-title" id="exampleModalLabel"><b>Assign License</b></h5>
+                        </div>
+                        <div class="col-lg-2">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form method="post">
+                <input type="hidden" id="hidLicenseKeyId" />
+                <input type="hidden" id="hidProjectId" />
+                <div class="modal-body">
+                    <div class="row d-flex">
+                        <div class="col-lg-12">
+                            <div class="row d-flex">
+                                <div class="col-lg-12 form-group">
+                                    License Key <br />
+                                    <label id="ctlLicenseKey"></label>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    Validity <br />
+                                    <label id="ctlValidity"></label> Days
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Assign To</label>
+                                    <select id="ctlUser" asp-items="ViewBag.UserList" class="fname form-control"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row d-flex">
+                        <div class="col-12" style="text-align:center">
+                            <button  type="button" id="btnAssign" class="ko-btn-primary">Assign</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="transferModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col-lg-12">
+                    <div class="row d-flex">
+                        <div class="col-lg-10">
+                            <h5 class="modal-title" id="exampleModalLabel"><b>Transfer License</b></h5>
+                        </div>
+                        <div class="col-lg-2">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form method="post">
+                <input type="hidden" id="hidTransferLicenseKeyId" />
+                <input type="hidden" id="hidTransferProjectId" />
+                <div class="modal-body">
+                    <div class="row d-flex">
+                        <div class="col-lg-12">
+                            <div class="row d-flex">
+                                <div class="col-lg-12 form-group">
+                                    Old License Key <br />
+                                    <label id="ctlTransferOldLicenseKey"></label>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    Expiry Date <br />
+                                    <label id="ctlTransferExpiry"></label>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Assign To</label>
+                                    <select id="ctlTransferUser" asp-items="ViewBag.UserList" class="fname form-control"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row d-flex">
+                        <div class="col-12" style="text-align:center">
+                            <button type="button" id="btnTransfer" class="ko-btn-primary">Transfer</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@*<div class="modal fade" id="actionModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col-lg-12">
+                    <div class="row d-flex">
+                        <div class="col-lg-10">
+                            <h5 class="modal-title"><b>Offering</b></h5>
+                        </div>
+                        <div class="col-lg-2">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form asp-action="RaiseIssue" asp-controller="PlanInfo" method="post" enctype="multipart/form-data">
+                <input type="hidden" id="_hidOfferingId" />
+                <div class="modal-body">
+                    <div class="row d-flex">
+                        <div class="col-lg-12">
+                            <div class="row d-flex">
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Ticket Name</label>
+                                    <input type="text" class="form-control" placeholder="Offering Name">
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Ticket Query</label>
+                                    <textarea rows="5" class="form-control" placeholder="Ticket Query" id="_tQuery"></textarea>
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Description</label>
+                                    <textarea rows="5" class="form-control" placeholder="Description" id="_tDescription"></textarea>
+                                </div>
+
+                                <div class="col-lg-6 form-group">
+                                    <label for="fname">Ticket Level</label>
+                                    <select class="form-control" id="selTicketLevel">
+                                        <option value="">[--Select--]</option>
+                                        <option value="Critical">Critical</option>
+                                        <option value="High">High</option>
+                                        <option value="Normal">Normal</option>
+                                        <option value="Low">Low</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-8 form-group">
+                                    <label for="fname">Attach file</label>
+                                    <input type="file" id="_tFile" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-12">
+                        <div class="row d-flex">
+                            <div class="col-lg-5">
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="modal-button">
+                                    <button type="submit" onclick="return ValidateEntry();" class="btn btn-primary"><b>Submit</b></button>
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>*@
+
+
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+                    toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+                    toastr.success("@ViewData["success"]");
+                </text>
+            }
+        });
+
+        $(document).ready(function () {
+            $("#hidLicenseKeyId").val("");
+            $("#ctlLicenseKey").html("");
+            $("#ctlValidity").html("");
+            $("#hidProjectId").val("");
+
+            $('#ctlTransferUser').selectize({
+                sortField: 'text'
+            });
+            $('#ctlUser').selectize({
+                sortField: 'text'
+            });
+
+            $("#btnAssign").on("click", function () {
+                var _id = $("#hidLicenseKeyId").val();
+                var _projectId = $("#hidProjectId").val();
+                var _userId = $("#ctlUser").val();
+
+                $("#loader").show();
+                $("#actionModal").modal("hide");
+                //AssignLicense
+                var formData = new FormData();
+                formData.append("nId", _id);
+                formData.append("nUserId", _userId);
+                formData.append("nProjectId", _projectId);
+                $.ajax({
+                    url: "@Url.Action("AssignLicense", "PlanInfo")",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        $("#loader").hide();
+                        if (res.success == true) {
+                            toastr.success(res.msg)
+                            window.location.href = "@Url.Action("ActivePlan", "PlanInfo")";
+                        } else {
+                            toastr.error(res.msg);
+                        }
+                    },
+                    error: function (err) {
+                        toastr.error(err);
+                        $("#loader").hide();
+                    }
+                });
+            });
+
+            $("#btnTransfer").on("click", function () {
+                var _id = $("#hidTransferLicenseKeyId").val();
+                var _userId = $("#ctlTransferUser").val();
+                var _projectId = $("#hidTransferProjectId").val();
+
+                if (confirm("Are you sure want to transfer this license?")) {
+                    $("#loader").show();
+                    $("#transferModal").modal("hide");
+                    var formData = new FormData();
+                    formData.append("nId", _id);
+                    formData.append("nUserId", _userId);
+                    formData.append("nProjectId", _projectId);
+                    $.ajax({
+                        url: "@Url.Action("TransferLicense", "PlanInfo")",
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (res) {
+                            $("#loader").hide();
+                            if (res.success == true) {
+                                toastr.success(res.msg)
+                                window.location.href = "@Url.Action("ActivePlan", "PlanInfo")";
+                            } else {
+                                toastr.error(res.msg);
+                            }
+                        },
+                        error: function (err) {
+                            toastr.error(err);
+                            $("#loader").hide();
+                        }
+                    });
+                }
+            });
+        });
+
+        function fnAssingPopup(btn) {
+            var _licenseKey = $(btn).attr("licensekey");
+            var _validity = $(btn).attr("validity");
+            var _id = $(btn).attr("keyid");
+            var _projectId = $(btn).attr("projectid");
+
+            $("#hidLicenseKeyId").val(_id);
+            $("#ctlLicenseKey").html(_licenseKey);
+            $("#ctlValidity").html(_validity);
+            $("#hidProjectId").val(_projectId);
+            $("#actionModal").modal("show");
+        }
+
+        function fnTransferPopup(btn) {
+            var _id = $(btn).attr("keyid");
+            var _projectId = $(btn).attr("projectid");
+
+            $("#hidTransferLicenseKeyId").val();
+            $("#hidTransferProjectId").val();
+            $("#ctlTransferOldLicenseKey").empty();
+            $("#ctlTransferExpiry").empty();
+
+            var formData = new FormData();
+            formData.append("nId", _id);
+            $.ajax({
+                url: "@Url.Action("GetNewLicenseInfo", "PlanInfo")",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    $("#loader").hide();
+                    if (res.item1.success == true) {
+                        if (res.item2 != null) {
+                            $("#hidTransferLicenseKeyId").val(_id);
+                            $("#hidTransferProjectId").val(_projectId);
+                            $("#ctlTransferOldLicenseKey").html(res.item2.transferFrom);
+                            $("#ctlTransferExpiry").html(res.item2.expiryDate);
+                            $("#transferModal").modal("show");
+                        } else {
+                            toastr.info("No records found")
+                        }
+                    } else {
+                        toastr.error(res.item1.msg);
+                    }
+                },
+                error: function (err) {
+                    toastr.error(err);
+                    $("#loader").hide();
+                }
+            });
+
+
+
+        }
+
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+            if ($('#_tName').val().trim().length == 0) {
+                $('#_tName').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#_tQuery').val().trim().length == 0) {
+                $('#_tQuery').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#_tDescription').val().trim().length == 0) {
+                $('#_tDescription').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#selTicketLevel').val().trim().length == 0) {
+                $('#selTicketLevel').addClass('is-invalid');
+                allow = false;
+            }
+
+            if ($('#_tFile').get(0).files.length === 0) {
+                $('#_tFile').addClass('is-invalid');
+                allow = false;
+            }
+
+
+            if (allow) {
+                $("#loader").show();
+                $("#actionModal").modal('hide');
+            }
+            return allow;
+        }
+
+        function clearValidate() {
+            $('#_tName').removeClass('is-invalid');
+            $('#_tQuery').removeClass('is-invalid');
+            $('#_tDescription').removeClass('is-invalid');
+            $('#selTicketLevel').removeClass('is-invalid');
+            $('#_tFile').removeClass('is-invalid');
+        }
+
+        const allAccordions = document.querySelectorAll(".accordion-header");
+
+        allAccordions.forEach(item => {
+            item.addEventListener("click", () => {
+                item.parentElement.classList.toggle("accordion-show");
+            });
+        });
+
+
+        //function readURL(input, isImg = false) {
+        //    if (input.files && input.files[0]) {
+        //        var reader = new FileReader();
+        //        reader.onload = function (e) {
+        //            if (isImg) {
+        //                $('#imgCover').attr('src', e.target.result);
+        //            } else {
+        //                $('#vidCover').attr('src', e.target.result);
+        //            }
+        //        };
+        //        reader.readAsDataURL(input.files[0]);
+        //    }
+        //}
+
+        function myFunction(input) {
+            // Declare variables
+            var re;
+         
+            var filter = $(input).val();
+
+            lis = $(input).parent().next('table').find('tbody').find('tr');
+            
+            for (index = 0; index < lis.length; index++) {
+                var li = lis[index];
+                var a = $(li).find("td:nth-child(2)").text();
+                var b = $(li).find("td:nth-child(4)").text();
+
+                if (a.includes(filter) || b.includes(filter)) {
+                    li.style.display = '';
+                } else {
+                    li.style.display = 'none';
+                }
+            }
+        }
+
+    </script>
+}

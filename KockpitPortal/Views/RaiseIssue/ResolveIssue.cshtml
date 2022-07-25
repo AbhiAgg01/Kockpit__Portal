@@ -1,0 +1,1123 @@
+﻿@model KockpitPortal.ViewModels.Support.tblTicketViewModel;
+@{
+ViewData["Title"] = "Index";
+Layout = "~/Views/Shared/_LayoutSupportRep.cshtml";
+}
+
+<div class="main">
+    <div class="all-tickets-container">
+        <div class="ticket-cards-wrapper">
+            <div class="ticket-card unassigned-card">
+                <div class="icon">
+                    <span class="iconify" data-icon="clarity:warning-line"></span>
+                </div>
+                <div class="text">
+                    <p class="ticket-subtitle">Total Ticket</p>
+                    <p class="ticket-count">@ViewBag.Total</p>
+                </div>
+                <a href="@Url.Action("ResolveIssue", "RaiseIssue", new {tType = "All"})"><span class="iconify" data-icon="bi:arrow-right-circle"></span></a>
+            </div>
+            <div class="ticket-card active-card">
+                <div class="icon">
+                    <span class="iconify" data-icon="bi:check-circle"></span>
+                </div>
+                <div class="text">
+                    <p class="ticket-subtitle">My Open Tickets</p>
+                    <p class="ticket-count">@ViewBag.TotalAssignedToMe</p>
+                </div>
+                <a href="@Url.Action("ResolveIssue", "RaiseIssue", new {tType = "Open"})"><span class="iconify" data-icon="bi:arrow-right-circle"></span></a>
+            </div>
+            <div class="ticket-card closed-card">
+                <div class="icon">
+                    <span class="iconify" data-icon="bx:lock"></span>
+                </div>
+                <div class="text">
+                    <p class="ticket-subtitle">My Closed Tickets</p>
+                    <p class="ticket-count">@ViewBag.TotalCloseByMe</p>
+                </div>
+                <a href="@Url.Action("ResolveIssue", "RaiseIssue", new {tType = "Close"})"><span class="iconify" data-icon="bi:arrow-right-circle"></span></a>
+            </div>
+            <div class="ticket-card assigned-card">
+                <div class="icon">
+                    <span class="iconify" data-icon="fluent:arrow-repeat-all-16-filled"></span>
+                </div>
+                <div class="text">
+                    <p class="ticket-subtitle">Total Unassigned Tickets</p>
+                    <p class="ticket-count">@ViewBag.Unassigned</p>
+                </div>
+                <a href="@Url.Action("ResolveIssue", "RaiseIssue", new {tType = "Unassigned"})"> <span class="iconify" data-icon="bi:arrow-right-circle"></span></a>
+            </div>
+        </div>
+
+
+        @*<div class="main">*@
+        <div class="tickets-container">
+            <div class="tickets-header">
+                <div class="header-left">
+                    <p>Tickets</p>
+                </div>
+                <div class="header-right">
+                    <div class="search-input">
+                        <input type="text" placeholder="Search..." onkeyup="myFunction(this);">
+                    </div>
+                </div>
+            </div>
+            <div class="ticket-tabs">
+                <div class="tab  @((string.Equals(ViewBag.TicketType, "All") || ViewBag.TicketType == null )?"active" : "")">
+                    <span>All Tickets</span>
+                </div>
+                <div class="tab  @(string.Equals(ViewBag.TicketType, "Open") || string.Equals(ViewBag.TicketType, "Close")  ?"active" : "")">
+                    <span>My Tickets</span>
+                </div>
+                <div class="tab @(string.Equals(ViewBag.TicketType, "Unassigned")  ?"active" : "") ">
+                    <span>Unassigned</span>
+                </div>
+            </div>
+            <div class="tickets-wrapper tickets all-tickets @((string.Equals(ViewBag.TicketType, "All" ) || ViewBag.TicketType == null) ?"shown" : "")">
+                <div class="secondary-tabs-container">
+                    <div class="secondary-tab active">
+                        <span>All Tickets</span>
+                    </div>
+                    <div class="secondary-tab">
+                        <span>Open Tickets</span>
+                    </div>
+                    <div class="secondary-tab">
+                        <span>Close Tickets</span>
+                    </div>
+                </div>
+                <div class="tickets-container all-all-tickets shown">
+                    @if (Model.tickets != null && Model.tickets.Count > 0)
+                    {
+                        @foreach (var item in Model.tickets)
+                        {
+
+                            <div class="ticket">
+                                <div class="ticket-header">
+                                    <p class="ticket-issue"><a href="@Url.Action("TimeLine", "RaiseIssue", new { id = item.Id} )"> (<span>@item.UniqueId</span>) @item.TicketSubject</a> </p>
+                                    <div class="ticket-actions">
+                                        @if (item.Attachment.ToString() != "")
+                                        {
+                                            <a href="@item.Attachment.ToString().Substring(1, item.Attachment.Length - 1)" target="_blank" title="Attachment"><span class="iconify" data-icon="akar-icons:file"></span> </a>
+                                        }
+                                        @if (item.AssignedTo == ViewBag.SupportManagerID)
+                                        {
+                                            <button class="comment-toggle-btn" data-bs-toggle="collapse" href="#ticketMessages_All_All_@item.Id" onclick="ShowComments(this,'_All_All_');" data-Id="@item.Id" title="Show Comments"><span class="iconify" data-icon="bi:chat-dots"></span></button>
+                                            <button data-value="@item.Id"
+                                                    data-assignedTo="@item.AssignedTo"
+                                                    data-ticketSubject="@item.TicketSubject"
+                                                    data-level="@item.Level"
+                                                    data-issueId="@item.IssueId"
+                                                    data-discription="@item.Description"
+                                                    data-subscriptionId="@item.subscriptionId"
+                                                    data-scenario="@item.Scenario"
+                                                    data-resolution="@item.Resolution"
+                                                    data-userid="@item.UserId"
+                                                    data-uniqueid="@item.UniqueId"
+                                                    data-status="@item.TicketStatus"
+                                                    onclick="EditTicket(this);"
+                                                    title="Edit Ticket">
+                                                <span class="iconify" data-icon="clarity:note-edit-line"></span>
+                                            </button>
+                                            if (item.TicketStatus == "Open")
+                                            {
+                                                <button data-value="@item.Id" data-resolution="@item.Resolution" onclick="CloseTicket(this);"
+                                                        title="Close Ticket">
+                                                    <span class="iconify" data-icon="ant-design:close-circle-twotone"></span>
+                                                </button>
+                                            }
+
+                                        }
+                                    </div>
+                                </div>
+                                <div class="ticket-info">
+                                    <p>Description: @item.Description</p>
+                                    <p>Company: @item.UserName</p>
+                                    <p>Scenario: @item.Scenario</p>
+                                    <p>Date: @item.CreatedOn.ToString("yyyy-MM-dd")</p>
+                                    <p>Criticality: @item.Level</p>
+                                    <p>Time: @item.CreatedOn.ToString("HH:mm:tt")</p>
+                                </div>
+                                <div class="collapse" id="ticketMessages_All_All_@item.Id">
+                                    <p class="comments-heading">Comments</p>
+                                    <div class="comments-wrapper" id="comment_All_All_@item.Id">
+                                    </div>
+                                    @if (item.AssignedTo == ViewBag.SupportManagerID)
+                                    {
+                                        <div class="comment-input-wrapper">
+                                            <input type="text" name="comment-input" id="tComment_All_All_@item.Id" placeholder="Enter comment">
+                                            <input type="file" name="comment-attachment" id="tFile_All_All_@item.Id" style="display: none;" />
+                                            <label for="tFile_All_All_@item.Id"><span class="iconify" data-icon="gridicons:attachment"></span></label>
+                                            <button onclick="AddComment(this,'_All_All_');" data-id="@item.Id" data-assignedto="@item.AssignedTo" data-userid="@item.UserId" data-uniqueid="@item.UniqueId">Comment</button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="tickets-container all-open-tickets">
+                    @if (Model.tickets != null && Model.tickets.Count > 0)
+                    {
+                        @foreach (var item in Model.tickets)
+                        {
+                            if (item.TicketStatus == "Open")
+                            {
+                                <div class="ticket">
+                                    <div class="ticket-header">
+                                        <p class="ticket-issue"><a href="@Url.Action("TimeLine", "RaiseIssue", new { id = item.Id} )"> (<span>@item.UniqueId</span>) @item.TicketSubject</a> </p>
+                                        <div class="ticket-actions">
+                                            @if (item.Attachment.ToString() != "")
+                                            {
+                                                <a href="@item.Attachment.ToString().Substring(1, item.Attachment.Length - 1)" target="_blank" title="Attachment"><span class="iconify" data-icon="akar-icons:file"></span> </a>
+                                            }
+                                            @if (item.AssignedTo == ViewBag.SupportManagerID)
+                                            {
+                                                <button class="comment-toggle-btn" data-bs-toggle="collapse" href="#ticketMessages_All_Open_@item.Id" onclick="ShowComments(this,'_All_Open_');" data-Id="@item.Id" title="Show Comments"><span class="iconify" data-icon="bi:chat-dots"></span></button>
+                                                <button data-value="@item.Id"
+                                                        data-assignedTo="@item.AssignedTo"
+                                                        data-ticketSubject="@item.TicketSubject"
+                                                        data-level="@item.Level"
+                                                        data-issueId="@item.IssueId"
+                                                        data-discription="@item.Description"
+                                                        data-subscriptionId="@item.subscriptionId"
+                                                        data-scenario="@item.Scenario"
+                                                        data-resolution="@item.Resolution"
+                                                        data-userid="@item.UserId"
+                                                        data-uniqueid="@item.UniqueId"
+                                                        data-status="@item.TicketStatus"
+                                                        onclick="EditTicket(this);" title="Edit Ticket">
+                                                    <span class="iconify" data-icon="clarity:note-edit-line"></span>
+                                                </button>
+                                                <button data-value="@item.Id" data-resolution="@item.Resolution" onclick="CloseTicket(this);" title="Close Ticket"><span class="iconify" data-icon="ant-design:close-circle-twotone"></span></button>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="ticket-info">
+                                        <p>Description: @item.Description</p>
+                                        <p>Company: @item.UserName</p>
+                                        <p>Scenario: @item.Scenario</p>
+                                        <p>Date: @item.CreatedOn.ToString("yyyy-MM-dd")</p>
+                                        <p>Criticality: @item.Level</p>
+                                        <p>Time: @item.CreatedOn.ToString("HH:mm:tt")</p>
+                                    </div>
+                                    <div class="collapse" id="ticketMessages_All_Open_@item.Id">
+                                        <p class="comments-heading">Comments</p>
+                                        <div class="comments-wrapper" id="comment_All_Open_@item.Id">
+                                        </div>
+                                        @if (item.AssignedTo == ViewBag.SupportManagerID)
+                                        {
+                                            <div class="comment-input-wrapper">
+                                                <input type="text" name="comment-input" id="tComment_All_Open_@item.Id" placeholder="Enter comment">
+                                                <input type="file" name="comment-attachment" id="tFile_All_Open_@item.Id" style="display: none;" />
+                                                <label for="tFile_All_Open_@item.Id"><span class="iconify" data-icon="gridicons:attachment"></span></label>
+                                                <button onclick="AddComment(this,'_All_Open_');" data-id="@item.Id" data-assignedto="@item.AssignedTo" data-userid="@item.UserId" data-uniqueid="@item.UniqueId">Comment</button>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+                <div class="tickets-container all-close-tickets">
+                    @if (Model.tickets != null && Model.tickets.Count > 0)
+                    {
+                        @foreach (var item in Model.tickets)
+                        {
+                            if (item.TicketStatus == "Close")
+                            {
+                                <div class="ticket">
+                                    <div class="ticket-header">
+                                        <p class="ticket-issue"><a href="@Url.Action("TimeLine", "RaiseIssue", new { id = item.Id} )"> (<span>@item.UniqueId</span>) @item.TicketSubject</a> </p>
+                                        <div class="ticket-actions">
+                                            @if (item.Attachment.ToString() != "")
+                                            {
+                                                <a href="@item.Attachment.ToString().Substring(1, item.Attachment.Length - 1)" target="_blank" title="Attachment"><span class="iconify" data-icon="akar-icons:file"></span> </a>
+                                            }
+                                            @if (item.AssignedTo == ViewBag.SupportManagerID)
+                                            {
+                                                <button class="comment-toggle-btn" data-bs-toggle="collapse" href="#ticketMessages_All_Close_@item.Id" onclick="ShowComments(this,'_All_Close_');" data-Id="@item.Id" title="Show Comments"><span class="iconify" data-icon="bi:chat-dots"></span></button>
+                                                <button data-value="@item.Id"
+                                                        data-assignedTo="@item.AssignedTo"
+                                                        data-ticketSubject="@item.TicketSubject"
+                                                        data-level="@item.Level"
+                                                        data-issueId="@item.IssueId"
+                                                        data-discription="@item.Description"
+                                                        data-subscriptionId="@item.subscriptionId"
+                                                        data-scenario="@item.Scenario"
+                                                        data-resolution="@item.Resolution"
+                                                        data-userid="@item.UserId"
+                                                        data-uniqueid="@item.UniqueId"
+                                                        data-status="@item.TicketStatus"
+                                                        onclick="EditTicket(this);" title="Edit Ticket">
+                                                    <span class="iconify" data-icon="clarity:note-edit-line"></span>
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="ticket-info">
+                                        <p>Description: @item.Description</p>
+                                        <p>Company: @item.UserName</p>
+                                        <p>Scenario: @item.Scenario</p>
+                                        <p>Date: @item.CreatedOn.ToString("yyyy-MM-dd")</p>
+                                        <p>Criticality: @item.Level</p>
+                                        <p>Time: @item.CreatedOn.ToString("HH:mm:tt")</p>
+                                    </div>
+                                    <div class="collapse" id="ticketMessages_All_Close_@item.Id">
+                                        <p class="comments-heading">Comments</p>
+                                        <div class="comments-wrapper" id="comment_All_Close_@item.Id">
+                                        </div>
+                                        @if (item.AssignedTo == ViewBag.SupportManagerID)
+                                        {
+                                            <div class="comment-input-wrapper">
+                                                <input type="text" name="comment-input" id="tComment_All_Close_@item.Id" placeholder="Enter comment">
+                                                <input type="file" name="comment-attachment" id="tFile_All_Close_@item.Id" style="display: none;" />
+                                                <label for="tFile_All_Close_@item.Id"><span class="iconify" data-icon="gridicons:attachment"></span></label>
+                                                <button onclick="AddComment(this,'_All_Close_');" data-id="@item.Id" data-assignedto="@item.AssignedTo" data-userid="@item.UserId" data-uniqueid="@item.UniqueId">Comment</button>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+            <div class="tickets-wrapper tickets my-tickets @(string.Equals(ViewBag.TicketType, "Open") || string.Equals(ViewBag.TicketType, "Close")  ?"shown" : "")">
+                <div class="secondary-tabs-container">
+                    <div class="secondary-tab @(ViewBag.TicketType != "Open" && ViewBag.TicketType != "Close" ? "active" :"")">
+                        <span>All Tickets</span>
+                    </div>
+                    <div class="secondary-tab @(string.Equals(ViewBag.TicketType, "Open")   ?"active" : "")">
+                        <span>Open Tickets</span>
+                    </div>
+                    <div class="secondary-tab @( string.Equals(ViewBag.TicketType, "Close")  ?"active" : "")">
+                        <span>Close Tickets</span>
+                    </div>
+                </div>
+                <div class="tickets-container my-all-tickets @(ViewBag.TicketType != "Open" && ViewBag.TicketType != "Close" ? "shown" :"") ">
+                    @if (Model.tickets != null && Model.tickets.Count > 0)
+                    {
+                        @foreach (var item in Model.tickets)
+                        {
+                            if (item.AssignedTo == ViewBag.SupportManagerID)
+                            {
+                                <div class="ticket">
+                                    <div class="ticket-header">
+                                        <p class="ticket-issue"><a href="@Url.Action("TimeLine", "RaiseIssue", new { id = item.Id} )"> (<span>@item.UniqueId</span>) @item.TicketSubject</a> </p>
+                                        <div class="ticket-actions">
+                                            @if (item.Attachment.ToString() != "")
+                                            {
+                                                <a href="@item.Attachment.ToString().Substring(1, item.Attachment.Length - 1)" target="_blank" title="Attachment"><span class="iconify" data-icon="akar-icons:file"></span> </a>
+                                            }
+                                            <button class="comment-toggle-btn" data-bs-toggle="collapse" href="#ticketMessages_My_All_@item.Id" onclick="ShowComments(this,'_My_All_');" data-Id="@item.Id" title="Show Comments"><span class="iconify" data-icon="bi:chat-dots"></span></button>
+                                            <button data-value="@item.Id"
+                                                    data-assignedTo="@item.AssignedTo"
+                                                    data-ticketSubject="@item.TicketSubject"
+                                                    data-level="@item.Level"
+                                                    data-issueId="@item.IssueId"
+                                                    data-discription="@item.Description"
+                                                    data-subscriptionId="@item.subscriptionId"
+                                                    data-scenario="@item.Scenario"
+                                                    data-resolution="@item.Resolution"
+                                                    data-userid="@item.UserId"
+                                                    data-uniqueid="@item.UniqueId"
+                                                    data-status="@item.TicketStatus"
+                                                    onclick="EditTicket(this);" title="Edit Ticket">
+                                                <span class="iconify" data-icon="clarity:note-edit-line"></span>
+                                            </button>
+                                            @if (item.TicketStatus == "Open")
+                                            {
+                                                <button data-value="@item.Id" data-resolution="@item.Resolution" onclick="CloseTicket(this);" title="Close Ticket"><span class="iconify" data-icon="ant-design:close-circle-twotone"></span></button>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="ticket-info">
+                                        <p>Description: @item.Description</p>
+                                        <p>Company: @item.UserName</p>
+                                        <p>Scenario: @item.Scenario</p>
+                                        <p>Date: @item.CreatedOn.ToString("yyyy-MM-dd")</p>
+                                        <p>Criticality: @item.Level</p>
+                                        <p>Time: @item.CreatedOn.ToString("HH:mm:tt")</p>
+                                    </div>
+                                    <div class="collapse" id="ticketMessages_My_All_@item.Id">
+                                        <p class="comments-heading">Comments</p>
+                                        <div class="comments-wrapper" id="comment_My_All_@item.Id">
+                                        </div>
+                                        <div class="comment-input-wrapper">
+                                            <input type="text" name="comment-input" id="tComment_My_All_@item.Id" placeholder="Enter comment">
+                                            <input type="file" name="comment-attachment" id="tFile_My_All_@item.Id" style="display: none;" />
+                                            <label for="tFile_My_All_@item.Id"><span class="iconify" data-icon="gridicons:attachment"></span></label>
+                                            <button onclick="AddComment(this,'_My_All_');" data-id="@item.Id" data-assignedto="@item.AssignedTo" data-userid="@item.UserId" data-uniqueid="@item.UniqueId">Comment</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+                <div class="tickets-container my-open-tickets @(string.Equals(ViewBag.TicketType, "Open")  ?"shown" : "")">
+                    @if (Model.tickets != null && Model.tickets.Count > 0)
+                    {
+                        @foreach (var item in Model.tickets)
+                        {
+                            if (item.AssignedTo == ViewBag.SupportManagerID && item.TicketStatus == "Open")
+                            {
+                                <div class="ticket">
+                                    <div class="ticket-header">
+                                        <p class="ticket-issue"><a href="@Url.Action("TimeLine", "RaiseIssue", new { id = item.Id} )"> (<span>@item.UniqueId</span>) @item.TicketSubject</a> </p>
+                                        <div class="ticket-actions">
+                                            @if (item.Attachment.ToString() != "")
+                                            {
+                                                <a href="@item.Attachment.ToString().Substring(1, item.Attachment.Length - 1)" target="_blank" title="Attachment"><span class="iconify" data-icon="akar-icons:file"></span> </a>
+                                            }
+                                            <button class="comment-toggle-btn" data-bs-toggle="collapse" href="#ticketMessages_My_Open_@item.Id" onclick="ShowComments(this,'_My_Open_');" data-Id="@item.Id" title="Show Comments"><span class="iconify" data-icon="bi:chat-dots"></span></button>
+                                            <button data-value="@item.Id"
+                                                    data-assignedTo="@item.AssignedTo"
+                                                    data-ticketSubject="@item.TicketSubject"
+                                                    data-level="@item.Level"
+                                                    data-issueId="@item.IssueId"
+                                                    data-discription="@item.Description"
+                                                    data-subscriptionId="@item.subscriptionId"
+                                                    data-scenario="@item.Scenario"
+                                                    data-resolution="@item.Resolution"
+                                                    data-userid="@item.UserId"
+                                                    data-uniqueid="@item.UniqueId"
+                                                    data-status="@item.TicketStatus"
+                                                    onclick="EditTicket(this);"
+                                                    title="Edit Ticket">
+                                                <span class="iconify" data-icon="clarity:note-edit-line"></span>
+                                            </button>
+                                            <button data-value="@item.Id" data-resolution="@item.Resolution" onclick="CloseTicket(this);" title="Close Ticket"><span class="iconify" data-icon="ant-design:close-circle-twotone"></span></button>
+                                        </div>
+                                    </div>
+                                    <div class="ticket-info">
+                                        <p>Description: @item.Description</p>
+                                        <p>Company: @item.UserName</p>
+                                        <p>Scenario: @item.Scenario</p>
+                                        <p>Date: @item.CreatedOn.ToString("yyyy-MM-dd")</p>
+                                        <p>Criticality: @item.Level</p>
+                                        <p>Time: @item.CreatedOn.ToString("HH:mm:tt")</p>
+                                    </div>
+                                    <div class="collapse" id="ticketMessages_My_Open_@item.Id">
+                                        <p class="comments-heading">Comments</p>
+                                        <div class="comments-wrapper" id="comment_My_Open_@item.Id">
+                                        </div>
+                                        <div class="comment-input-wrapper">
+                                            <input type="text" name="comment-input" id="tComment_My_Open_@item.Id" placeholder="Enter comment">
+                                            <input type="file" name="comment-attachment" id="tFile_My_Open_@item.Id" style="display: none;" />
+                                            <label for="tFile_My_Open_@item.Id"><span class="iconify" data-icon="gridicons:attachment"></span></label>
+                                            <button onclick="AddComment(this,'_My_Open_');" data-id="@item.Id" data-assignedto="@item.AssignedTo" data-userid="@item.UserId" data-uniqueid="@item.UniqueId">Comment</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+                <div class="tickets-container my-close-tickets @(string.Equals(ViewBag.TicketType, "Close")  ?"shown" : "")">
+                    @if (Model.tickets != null && Model.tickets.Count > 0)
+                    {
+                        @foreach (var item in Model.tickets)
+                        {
+                            if (item.AssignedTo == ViewBag.SupportManagerID && item.TicketStatus == "Close")
+                            {
+                                <div class="ticket">
+                                    <div class="ticket-header">
+                                        <p class="ticket-issue"><a href="@Url.Action("TimeLine", "RaiseIssue", new { id = item.Id} )"> (<span>@item.UniqueId</span>) @item.TicketSubject</a> </p>
+                                        <div class="ticket-actions">
+                                            @if (item.Attachment.ToString() != "")
+                                            {
+                                                <a href="@item.Attachment.ToString().Substring(1, item.Attachment.Length - 1)" target="_blank" title="Attachment"><span class="iconify" data-icon="akar-icons:file"></span> </a>
+                                            }
+                                            <button class="comment-toggle-btn" data-bs-toggle="collapse" href="#ticketMessages_My_Close_@item.Id" onclick="ShowComments(this,'_My_Close_');" data-Id="@item.Id" title="Show Comments"><span class="iconify" data-icon="bi:chat-dots"></span></button>
+                                            <button data-value="@item.Id"
+                                                    data-assignedTo="@item.AssignedTo"
+                                                    data-ticketSubject="@item.TicketSubject"
+                                                    data-level="@item.Level"
+                                                    data-issueId="@item.IssueId"
+                                                    data-discription="@item.Description"
+                                                    data-subscriptionId="@item.subscriptionId"
+                                                    data-scenario="@item.Scenario"
+                                                    data-resolution="@item.Resolution"
+                                                    data-userid="@item.UserId"
+                                                    data-uniqueid="@item.UniqueId"
+                                                    data-status="@item.TicketStatus"
+                                                    onclick="EditTicket(this);"
+                                                    title="Edit Ticket">
+                                                <span class="iconify" data-icon="clarity:note-edit-line"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="ticket-info">
+                                        <p>Description: @item.Description</p>
+                                        <p>Company: @item.UserName</p>
+                                        <p>Scenario: @item.Scenario</p>
+                                        <p>Date: @item.CreatedOn.ToString("yyyy-MM-dd")</p>
+                                        <p>Criticality: @item.Level</p>
+                                        <p>Time: @item.CreatedOn.ToString("HH:mm:tt")</p>
+                                    </div>
+                                    <div class="collapse" id="ticketMessages_My_Close_@item.Id">
+                                        <p class="comments-heading">Comments</p>
+                                        <div class="comments-wrapper" id="comment_My_Close_@item.Id">
+                                        </div>
+                                        <div class="comment-input-wrapper">
+                                            <input type="text" name="comment-input" id="tComment_My_Close_@item.Id" placeholder="Enter comment">
+                                            <input type="file" name="comment-attachment" id="tFile_My_Close_@item.Id" style="display: none;" />
+                                            <label for="tFile_My_Close_@item.Id"><span class="iconify" data-icon="gridicons:attachment"></span></label>
+                                            <button onclick="AddComment(this,'_My_Close_');" data-id="@item.Id" data-assignedto="@item.AssignedTo" data-userid="@item.UserId" data-uniqueid="@item.UniqueId">Comment</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+            <div class="tickets-wrapper tickets unassigned-tickets @(string.Equals(ViewBag.TicketType, "Unassigned")  ?"shown" : "")">
+                <div class="tickets-container unassigned-all-tickets shown">
+                    @if (Model.tickets != null && Model.tickets.Count > 0)
+                    {
+                        @foreach (var item in Model.tickets)
+                        {
+                            if (item.AssignedTo == 0)
+                            {
+                                <div class="ticket">
+                                    <div class="ticket-header">
+                                        <p class="ticket-issue"><a href="@Url.Action("TimeLine", "RaiseIssue", new { id = item.Id} )"> (<span>@item.UniqueId</span>) @item.TicketSubject</a> </p>
+                                        <div class="ticket-actions">
+                                            @if (item.Attachment.ToString() != "")
+                                            {
+                                                <a href="@item.Attachment.ToString().Substring(1, item.Attachment.Length - 1)" target="_blank" title="Attachment"><span class="iconify" data-icon="akar-icons:file"></span> </a>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="ticket-info">
+                                        <p>Description: @item.Description</p>
+                                        <p>Company: @item.UserName</p>
+                                        <p>Scenario: @item.Scenario</p>
+                                        <p>Date: @item.CreatedOn.ToString("yyyy-MM-dd")</p>
+                                        <p>Criticality: @item.Level</p>
+                                        <p>Time: @item.CreatedOn.ToString("HH:mm:tt")</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="overlay" id="loader" style="display:none">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+@*</div>*@
+</div>
+<div class="modal fade" id="closeModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="col-lg-12">
+                <div class="row d-flex">
+                    <div class="col-lg-10">
+                        <h5 class="modal-title" id="exampleModalLabel"><b><i class="fa fa-ticket"></i>Close Ticket</b></h5>
+                    </div>
+                    <div class="col-lg-2">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="hidCTicketId" />
+        <div class="modal-body">
+            <div class="row d-flex">
+                <div class="col-lg-12">
+                    <div class="row d-flex">
+                        <div class="col-lg-12 form-group">
+                            <label for="fname">Add Comments<span style="color:indianred;">*</span></label>
+                            <textarea rows="5" id="tResolution" class="form-control" placeholder="Enter Resolution"></textarea>
+                        </div>
+                        <div class="col-lg-12 form-group">
+                            <span style="color:indianred;" id="error"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-lg-12">
+                <div class="row d-flex">
+                    <div class="col-lg-5">
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="modal-button">
+                            <button type="button" class="btn btn-primary" onclick="UpdateTicketStatus();"><b>Submit</b></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal fade" id="showAttachments" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="col-lg-12">
+                <div class="row d-flex">
+                    <div class="col-lg-10">
+                        <h5 class="modal-title" id="exampleModalLabel"><b><i class="fa fa-ticket"></i>Attachments</b></h5>
+                    </div>
+                    <div class="col-lg-2">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-body" id="dAttachment">
+
+            <div class="row d-flex form-group">
+                <div class="col-lg-12">
+                    <i class="bi bi-paperclip"></i><a href="~/Resource/Ticket/683d09f2-e502-4af7-9b7b-51e3ff9685f0.png" target="_blank">683d09f2-e502-4af7-9b7b-51e3ff9685f0.png</a>
+                </div>
+            </div>
+            <hr />
+            <div class="row d-flex form-group">
+                <div class="col-lg-12">
+                    <i class="bi bi-paperclip"></i><a href="~/Resource/Ticket/683d09f2-e502-4af7-9b7b-51e3ff9685f0.png" target="_blank">683d09f2-e502-4af7-9b7b-51e3ff9685f0.png</a>
+                </div>
+            </div>
+            <hr />
+            <div class="row d-flex form-group">
+                <div class="col-lg-12">
+                    <i class="bi bi-paperclip"></i><a href="~/Resource/Ticket/683d09f2-e502-4af7-9b7b-51e3ff9685f0.png" target="_blank">683d09f2-e502-4af7-9b7b-51e3ff9685f0.png</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Raise Ticket</h5>
+            <button type="button" data-dismiss="modal" aria-label="Close"><span class="iconify" data-icon="ep:close-bold"></span></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="hidTicketId" />
+            <div class="group">
+                <label for="offering">Offering</label>
+                <select id="eOffering" asp-items="ViewBag.Plans" disabled>
+                </select>
+            </div>
+            <div class="modal-input-row">
+                <div class="group">
+                    <label for="ticket-subject">Ticket Subject</label>
+                    <input type="text" id="eSubject" readonly>
+                </div>
+                <div class="group">
+                    <label for="ticket-level">Ticket Level</label>
+                    <select id="eLevel">
+                        <option value="">[--Select--]</option>
+                        <option value="Critical">Critical</option>
+                        <option value="High">High</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
+                <div class="group">
+                    <label for="issue-type">Issue Type</label>
+                    <select id="eIssue" asp-items="ViewBag.Issue" disabled>
+                    </select>
+                </div>
+            </div>
+            <div class="group">
+                <label for="description">Description</label>
+                <textarea id="eDiscription" cols="30" rows="5" placeholder="Type here..." readonly></textarea>
+            </div>
+            <div class="group">
+                <label for="scenario">Scenario</label>
+                <textarea id="eScenario" cols="30" rows="5" placeholder="Type here..." readonly></textarea>
+            </div>
+            <div class="group" id="resDiv">
+                <label for="scenario">Resolution</label>
+                <textarea id="eResolution" cols="30" rows="5" placeholder=""></textarea>
+                <span style="color:indianred;" id="resError"></span>
+            </div>
+            <button onclick="Update();" id="eUpdate">Submit</button>
+        </div>
+        <!-- <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+        </div> -->
+    </div>
+</div>
+</div>
+
+
+@section Scripts
+{
+<script type="text/javascript">
+    $(function () {
+
+
+
+        @if(ViewData["error"] != null)
+        {
+            <text>
+                toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+            </text>
+        }
+        @if(ViewData["success"] != null)
+        {
+            <text>
+                toastr.success("@ViewData["success"]");
+            </text>
+        }
+
+    });
+    var edit = false;
+    @*function Download(btn) {
+        var Id = $(btn).data("value");
+        var frmData = new FormData();
+        frmData.append("tId", Id);
+        $("#loader").show();
+        $.ajax({
+            url: "@Url.Action("GetAttachments", "RaiseIssue")",
+            type: "POST",
+            data: frmData,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                $("#loader").hide();
+                if (result.item1.success == true) {
+                    if (result.item2.length > 0) {
+                        $("#showAttachments").modal('show');
+                        $("#dAttachment").html("");
+                        for (var i = 0; i < result.item2.length; i++) {
+                            var htmlData = "";
+                            htmlData += '<div class="row d-flex form-group">';
+                            htmlData += '<div "class=col-lg-12">';
+                            htmlData += '<i class="bi bi-paperclip"></i>';
+                            htmlData += ' <a href = ' + window.location.origin + result.item2[i].trim().slice(1) + ' target = "_blank" >' + result.item2[i].split("/")[5] + '</a>';
+                            htmlData += '</div></div>';
+                            htmlData += '</hr>';
+                            $("#dAttachment").append(htmlData);
+                        }
+                    }
+                } else {
+                    toastr.error(result.item2.msg);
+                }
+            },
+            error: function (errorThrown) {
+                $("#loader").hide();
+                toastr.error(errorThrown.Msg);
+            }
+        });
+
+    }*@
+
+    function EditTicket(btn) {
+        var uniqueId = $(btn).data("uniqueid")
+        var userId = $(btn).data("userid");
+        var id = $(btn).data("value");
+        var assignedTo = $(btn).data("assignedto");
+        var ticketSubject = $(btn).data("ticketsubject");
+        var level = $(btn).data("level");
+        var issueId = $(btn).data("issueid");
+        var discription = $(btn).data("discription");
+        var subscriptionId = $(btn).data("subscriptionid");
+        var scenario = $(btn).data("scenario");
+        var resolution = $(btn).data("resolution");
+        var status = $(btn).data("status");
+        $("#eResolution").val(resolution);
+
+        if (status.trim() == "Open") {
+            $("#eUpdate").show();
+        } else {
+            $("#eUpdate").hide();
+        }
+        $("#hidStatus").val(status);
+        $("#eOffering").val(subscriptionId);
+        $("#eSubject").val(ticketSubject);
+        $("#eLevel").val(level);
+        $("#eIssue").val(issueId);
+        $("#eDiscription").text(discription);
+        $("#eScenario").text(scenario);
+        $("#hidAssignedTo").val(assignedTo);
+        $("#hidTicketId").val(id);
+        $("#hidUserId").val(userId);
+        $("#hidUniqueId").val(uniqueId);
+        $("#editModal").modal('show');
+    }
+
+    function AddComment(btn,value) {
+        var Id = $(btn).data("id");
+        var  assignedTo  = $(btn).data("assignedto");
+        var userId = $(btn).data("userid");
+        var uniqueId = $(btn).data("uniqueid");
+        var comment = $("#tComment"+value+Id+"").val();
+        var allow = true;
+        if ($("#tComment"+value + Id + "").val().trim().length == 0) {
+            $("#tComment"+value + Id + "").addClass('is-invalid');
+            allow = false;
+        } else {
+            $("#tComment"+value + Id + "").removeClass('is-invalid');
+        }
+        var uploadedfile = $("#tFile"+value+Id+"").get(0);
+        if (allow) {
+            $("#loader").show();
+            // $("#editModal").modal('hide');
+            var frmData = new FormData();
+            frmData.append("tTicketId", Id);
+            frmData.append("nAssignedTo", assignedTo);
+            frmData.append("tComment", comment);
+            frmData.append("tAttachment", uploadedfile.files[0]);
+            frmData.append("userId", userId);
+            frmData.append("uniqueId", uniqueId);
+            $("#tFile"+value+Id).val("");
+            $("#tComment"+value+Id).val("");
+            $("#loader").show();
+            $.ajax({
+                url: "@Url.Action("AddComment", "RaiseIssue")",
+                type: "POST",
+                data: frmData,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    $("#loader").hide();
+                    if (result.success == true) {
+
+                        $("#loader").hide();
+                        toastr.success("comment added succesfully on this ticket");
+                        $("#tFile" +value +Id + "").val("");
+                        $("#tComment" +value+ Id + "").val("");
+                        GetComments(Id,value);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error: function (errorThrown) {
+                    $("#loader").hide();
+                    toastr.error(errorThrown.Msg);
+                }
+            });
+        }
+    }
+
+    function CloseTicket(btn) {
+        var Id = $(btn).data("value");
+        $("#tResolution").val($(btn).data("resolution"));
+        $("#hidCTicketId").val(Id);
+        $("#closeModal").modal('show');
+    }
+
+    function UpdateTicketStatus() {
+        var allow = true;
+        if ($('#tResolution').val().trim().length < 20 ) {
+            $("#tResolution").addClass('is-invalid');
+            allow = false;
+        } else {
+            $("#tResolution").removeClass('is-invalid');
+        }
+
+        if (allow) {
+            $("#loader").show();
+            var resolution = $("#tResolution").val();
+            var Id = $("#hidCTicketId").val();
+            var status = "Close";
+            postForm("@Url.Action("UpdateTicketStatus", "RaiseIssue")", {
+                "status": status,
+                "resolution": resolution,
+                "ticketId": Id
+            });
+        }
+    }
+
+    $("#tResolution").keydown(function () {
+        var _res = $(this).val().trim();
+        if (_res.length < 20) {
+            $("#error").show();
+            $("#error").text(_res.length + " characters out of 20 characters");
+        } else {
+            $("#error").hide();
+        }
+    });
+
+    $("#eResolution").keydown(function () {
+        var _res = $(this).val().trim();
+        if (_res.length < 20) {
+            $("#resError").show();
+            $("#resError").text(_res.length + " characters out of 20 characters");
+        } else {
+            $("#resError").hide();
+        }
+    });
+
+
+    function ShowComments(btn,value) {
+            const commentContainer = btn.parentElement.parentElement.nextElementSibling.nextElementSibling;
+        if (commentContainer.classList.contains("shown")) {
+            commentContainer.classList.remove("shown");
+        } else {
+            commentContainer.classList.add("shown");
+        }
+        GetComments($(btn).data("id"),value);
+    }
+
+        function GetComments(Id,value) {
+        $("#comment"+value + Id + "").html("");
+        // var Id = $(btn).data("id");
+        if (Id != undefined) {
+            var frmData = new FormData();
+            frmData.append("id", Id);
+            $("#loader").show();
+            $.ajax({
+                url: "@Url.Action("ShowComments", "RaiseIssue")",
+                type: "POST",
+                data: frmData,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    $("#loader").hide();
+                    if (result.item1.success == true) {
+                        $("#hComments").show();
+                        $("#sComments").hide();
+                        var htmlData = "";
+                        //htmlData += "<div class='card  col-12' style='margin-left:10px;padding-top:10px;'>";
+
+                        for (var i = 0; i < result.item2.length; i++) {
+                            if (result.item2[i].action == "Comment added on ticket") {
+                                htmlData += "<div class='comment'>";
+                                htmlData += "<img src=" + window.location.origin + result.item2[i].logo.trim().slice(1) + " ><div class='comment-data'> <div class='comment-timestamp'>";
+                                htmlData += '<p class="comment-date"> <span class="iconify" data-icon="uil:calender"></span>' + result.item2[i].ticketStatusDate.replace('T', ' ').replace('Z', '').split(' ')[0];+'</p> ';
+                                htmlData += '<p class="comment-time"> <span class="iconify" data-icon="uil:calender"></span>' + convertTime12to24(result.item2[i].ticketStatusDate.replace('T', ' ').replace('Z', '').split(' ')[1]) + '</p> ';
+                                if (result.item2[i].attachment != null && result.item2[i].attachment != "")
+                                    htmlData += "<p class='comment-attachment'> <a href=" + window.location.origin + result.item2[i].attachment.trim().slice(1) + " class='link-black text-sm' target='_blank'><span class='iconify' data-icon='akar-icons:file'></span></a></p>"
+                                htmlData += "</div>";
+                                htmlData += '<p class="commentor-name">' + result.item2[i].userName + '</p>';
+                                htmlData += '<p class="comment-text">' + result.item2[i].remarks +'</p></div></div>';
+                            }
+                        }
+                        $("#comment"+ value+Id+"").append(htmlData);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error: function (errorThrown) {
+                    $("#loader").hide();
+                    toastr.error(errorThrown.Msg);
+                }
+            });
+        }
+    }
+
+
+    const convertTime12to24 = (time12h) => {
+        const [time, modifier] = time12h.split(' ');
+
+        let [hours, minutes] = time.split(':');
+
+        if (hours === '12') {
+            hours = '00';
+        }
+        if (modifier === 'PM') {
+            hours = parseInt(hours, 10) + 12;
+        }
+        var ampm = hours < 12 ? "AM" : "PM";
+        return `${hours}:${minutes} ${ampm}`;
+    }
+
+    
+
+    function updateTicket()
+    {
+        var status = $("#hidStatus").val();
+        if (edit == false) {
+            $("#cDiv").hide();
+            $("#eLevel").prop("disabled", false);
+            $("#eResolution").attr("readonly", false);
+            $("#eUpdate").show();
+            $("#eSubmit").hide();
+            edit = true;
+            if (status.trim() == "Close") {
+                $(".afooter").show();
+            }
+        } else {
+            $("#cDiv").show();
+            $("#eLevel").prop("disabled", true);
+            $("#eResolution").attr("readonly", true);
+            $("#eUpdate").hide();
+            $("#eSubmit").show();
+            edit = false;
+            if (status.trim() == "Close") {
+                $(".afooter").hide();
+            }
+        }
+
+    }
+
+    function Update() {
+        var tId = $("#hidTicketId").val();
+        var level = $("#eLevel").val();
+        var resolution = $("#eResolution").val();
+
+        var allow = true;
+
+        if (level.trim().length == 0) {
+            toastr.error("Please select ticket level");
+            allow = false;
+        }
+        if (allow && resolution.trim() != "" && resolution.trim().length < 20) {
+            toastr.error("Resolution must be 20 characters");
+            allow = false;
+        }
+        if (allow && tId != undefined) {
+            var frmData = new FormData();
+            frmData.append("tId", tId);
+            frmData.append("ticketLevel", level);
+            frmData.append("nResolution", resolution);
+            $("#loader").show();
+            $.ajax({
+                url: "@Url.Action("UpdateTicketResolutionLevel", "RaiseIssue")",
+                type: "POST",
+                data: frmData,
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    $("#loader").hide();
+                    if (result.success) {
+                        toastr.success("succesfully updated ticket");
+                        location.reload();
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error: function (errorThrown) {
+                    $("#loader").hide();
+                    toastr.error(errorThrown.Msg);
+                }
+            });
+        }
+    }
+
+    function myFunction(input) {
+        // Declare variables
+        var re;
+        //var input = document.getElementById('myInput'),
+        var filter = $(input).val();
+        //   var id = $(input).data("id");
+        //ul = document.getElementById('mAll'),
+        if ($('.all-tickets').hasClass('shown')) {
+            lis = $('.all-tickets').find('.shown').find('.ticket');
+        } else if ($('.my-tickets').hasClass('shown')) {
+            lis = $('.my-tickets').find('.shown').find('.ticket');
+        }
+        else
+            lis = $(".unassigned-tickets").find('.shown').find('.ticket');
+        //lis = ul.getElementsByTagName('li'),
+        searchTerms = filter.match(/[a-z]+/gi);
+        //li, a;
+
+        if (searchTerms) {
+            searchTerms = searchTerms.map(function (term) {
+                return '(?=.*' + term + ')';
+            });
+
+            re = new RegExp(searchTerms.join(''), 'i');
+        } else {
+            re = /./;
+        }
+
+        // Loop through all list items, and hide those who don't match the search query
+        for (index = 0; index < lis.length; index++) {
+            var li = lis[index];
+            var a = $(li).find('.ticket-header').find('.ticket-issue').find('a');
+
+            if (! /^\d+$/.test(filter.slice(1))) {
+                if (re.test(a.html())) {
+                    li.style.display = '';
+                } else {
+                    li.style.display = 'none';
+                }
+            } else {
+                if ($(a).find('span').html().includes(filter)) {
+                    li.style.display = '';
+                } else {
+                    li.style.display = 'none';
+                }
+            }
+        }
+    }
+
+    const activeSecondaryTabs = document.querySelector(".all-tickets").querySelectorAll(".secondary-tab");
+    const initialTicketsContainer = Array.from(document.querySelector(".all-tickets").querySelectorAll(".tickets-container"));
+
+    console.log(activeSecondaryTabs, initialTicketsContainer);
+
+    activeSecondaryTabs.forEach((item, index) => {
+        item.addEventListener("click", () => {
+            activeSecondaryTabs.forEach(item => {
+                item.classList.remove("active");
+            });
+            item.classList.add("active");
+
+
+
+            for (let i = 0; i < initialTicketsContainer.length; i++) {
+                initialTicketsContainer[i].classList.remove("shown");
+            }
+
+            initialTicketsContainer[index].classList.add("shown");
+        })
+    })
+
+
+    const tabs = document.querySelectorAll(".tab");
+    const allTicketsWrapper = document.querySelectorAll(".tickets-wrapper");
+    console.log(tabs, allTicketsWrapper);
+
+    tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => {
+            tabs.forEach(item => {
+                item.classList.remove("active");
+            });
+            tab.classList.add("active");
+            allTicketsWrapper.forEach(item => {
+                item.classList.remove("shown");
+            });
+            allTicketsWrapper[index].classList.add("shown");
+
+            const secondaryTabs = allTicketsWrapper[index].querySelectorAll(".secondary-tab");
+            console.log(secondaryTabs);
+
+            let allTicketsContainer = allTicketsWrapper[index].querySelectorAll(".tickets-container");
+
+            secondaryTabs.forEach((stab, sindex) => {
+                stab.addEventListener("click", () => {
+                    secondaryTabs.forEach(item => {
+                        item.classList.remove("active");
+                    })
+                    stab.classList.add("active");
+
+                    allTicketsContainer.forEach(item => {
+                        item.classList.remove("shown");
+                    });
+                    allTicketsContainer[sindex].classList.add("shown");
+                });
+            })
+
+        })
+    });
+
+</script>
+}

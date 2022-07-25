@@ -1,0 +1,186 @@
+﻿@using System.Data;
+@using Microsoft.AspNetCore.Http;
+@using KockpitPortal.Models.Notification;
+@{
+    //Layout = "~/Views/Shared/_LayoutNew.cshtml";
+
+    List<tblNotification> notifications = new List<tblNotification>();
+    @if (ViewBag.Notifications != null)
+    {
+        notifications = ViewBag.Notifications;
+    }
+    if (Context.Session.GetString("SessionInfo_Role") == "SUPPORTREPRESENTATIVE")
+    {
+        Layout = "~/Views/Shared/_LayoutSupportRep.cshtml";
+    }
+    else if (Context.Session.GetString("SessionInfo_Role") == "SUPPORTMANAGER")
+    {
+        Layout = "~/Views/Shared/_LayoutSupportManager.cshtml";
+    }
+    else if (Context.Session.GetString("SessionInfo_Role") == "SUPERADMIN")
+    {
+        Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<div class="main">
+    <div class="notification-container">
+        <div class="notification-header">
+            <p>Notifications</p>
+            <a href="@Url.Action("DeleteAllNotificaion", "Notification")" title="delete notifications">Delete All</a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Notification</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (notifications != null && notifications.Count() > 0)
+                {
+                    @foreach (var item in notifications)
+                    {
+                        if (string.Equals(item.Subject, "License Expiring", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            <tr style="background: @(item.IsRead ? "#f0f0f0" : "");">
+                                <td style="color: #222B45;">@item.Subject</td>
+                                <td>@item.Message</td>
+                                <td>@item.Createdon.ToString("dd/MM/yyyy")</td>
+                                <td><a href="@Url.Action("DeleteNotificaion", "Notification", new {id = item.Id})" onclick="return confirmMsg()" title="delete notification"><span class="iconify" data-icon="ri:delete-bin-6-line"></span> </a></td>
+                            </tr>
+                        }
+                        else if (string.Equals(item.Subject, "License Request", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            <tr style="background: @(item.IsRead ? "#f0f0f0" : "");">
+                                <td style="color: #222B45;">@item.Subject</td>
+                                <td>@item.Message</td>
+                                <td>@item.Createdon.ToString("dd/MM/yyyy")</td>
+                                <td><a href="@Url.Action("DeleteNotificaion", "Notification", new {id = item.Id})" onclick="return confirmMsg()" title="delete notification"><span class="iconify" data-icon="ri:delete-bin-6-line"></span> </a></td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr style="background: @(item.IsRead ? "#f0f0f0" : "");">
+                                <td>@item.Subject</td>
+                                @if (string.Equals(Context.Session.GetString("SessionInfo_Role"), "ADMIN", StringComparison.OrdinalIgnoreCase) || string.Equals(Context.Session.GetString("SessionInfo_Role"), "SUBADMIN", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <td><a href="@Url.Action("Index", "RaiseIssue", new { id = item.Id })">@item.Message</a></td>
+                                }
+                                @if (string.Equals(Context.Session.GetString("SessionInfo_Role"), "SUPPORTMANAGER", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <td><a href="@Url.Action("ShowAllTickets", "RaiseIssue", new { id = item.Id } )">@item.Message</a></td>
+                                }
+                                @if (string.Equals(Context.Session.GetString("SessionInfo_Role"), "SUPPORTREPRESENTATIVE", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <td><a href="@Url.Action("ResolveIssue", "RaiseIssue", new { id = item.Id } )">@item.Message</a></td>
+                                }
+                                <td>@item.Createdon.ToString("dd/MM/yyyy")</td>
+                                <td><a href="@Url.Action("DeleteNotificaion", "Notification", new {id = item.Id})" onclick="return confirmMsg()" title="delete notification"><span class="iconify" data-icon="ri:delete-bin-6-line"></span> </a></td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="overlay" id="loader" style="display:none">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+</div>
+
+@*<br />
+    <div class="card card-outline card-cyan main">
+        <div class="card-header">
+            <h3 class="card-title">
+                <span class="iconify nav__icon" data-icon="carbon:chart-evaluation" data-inline="false"></span>
+                Notifications
+            </h3>
+        </div>
+         form start
+        <div class="card-body d-block">
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th style="width:300px;">Subject</th>
+                                <th>Notification</th>
+                                <th style="width:200px;">Date</th>
+                                @if (notifications != null)
+                                {
+                                    <th style="width:130px;"><a href="@Url.Action("DeleteAllNotificaion", "Notification")" class="btn btn-sm btn-danger" onclick="return confirmMsg()"><i class="fa fa-trash"></i> Delete All</a></th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody id="tblBody">
+
+                            @if (notifications != null && notifications.Count() > 0)
+                            {
+                                @foreach (var item in notifications)
+                                {
+                                    <tr style="background-color: @(item.IsRead ? "#f2f2f2" : "white");">
+                                        <td>@item.Subject</td>
+                                        @if (string.Equals(Context.Session.GetString("SessionInfo_Role"), "ADMIN", StringComparison.OrdinalIgnoreCase) || string.Equals(Context.Session.GetString("SessionInfo_Role"), "SUBADMIN", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <td><a href="@Url.Action("Index", "RaiseIssue", new { id = item.Id })">@item.Message</a></td>
+                                        }
+                                        @if (string.Equals(Context.Session.GetString("SessionInfo_Role"), "SUPPORTMANAGER", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <td><a href="@Url.Action("ShowAllTickets", "RaiseIssue", new { id = item.Id } )">@item.Message</a></td>
+                                        }
+                                        @if (string.Equals(Context.Session.GetString("SessionInfo_Role"), "SUPPORTREPRESENTATIVE", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <td><a href="@Url.Action("ResolveIssue", "RaiseIssue", new { id = item.Id } )">@item.Message</a></td>
+                                        }
+                                        <td>@item.Createdon</td>
+                                        <td><a href="@Url.Action("DeleteNotificaion", "Notification", new {id = item.Id})" class="btn btn-sm btn-danger" onclick="return confirmMsg()"><i class="fa fa-trash"></i> Remove</a></td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="overlay" id="loader" style="display:none">
+            <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+        </div>
+    </div>*@
+@section scripts{
+    <script type="text/javascript">
+
+    $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+                    toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+                    toastr.success("@ViewData["success"]");
+                </text>
+            }
+        })
+
+        $(document).ready(function () {
+            $("#isRead").css('background-color', 'red');
+        });
+
+        function confirmMsg() {
+            if (confirm("Are you sure want to delete ?")) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    </script>
+}

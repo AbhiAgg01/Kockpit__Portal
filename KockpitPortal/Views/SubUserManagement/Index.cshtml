@@ -1,0 +1,456 @@
+﻿@model KockpitPortal.ViewModels.SuperAdmin.tblUsersViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="main">
+
+    <div class="users-table-wrapper">
+        <div class="users-table-header">
+            <h3 class="header-heading">Users</h3>
+            <div class="users-table-header-actions">
+                
+				<button id="btnSendBulkMail" type="button" class="btn btn-secondary btn-sm d-none">
+                            <i class="fa fa-mail-bulk"></i> Send Credentials
+                        </button>
+                        &nbsp;
+                <button data-toggle="modal" data-target="#actionModal"
+                        onclick="initControl();" title="Add New User">
+                    Add New User
+                </button>
+            </div>
+        </div>
+        <table id="users-table">
+            <thead>
+                <tr>
+                    <td>S.No</td>
+                    <td>Logo</td>
+                    <td>User Name</td>
+                    <td>Email</td>
+                    <td>Created On</td>
+                    <td>Status</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.users != null && Model.users.Count > 0)
+                {
+                    int nRow = 0;
+                    foreach (var item in Model.users)
+                    {
+                        <tr>
+                            <td>
+                                @(nRow += 1)
+                            </td>
+                            <td><img src="@Url.Content(item.Logo)" height="50" width="50" /></td>
+                            <td>@item.CompanyName</td>
+                            <td>@item.EmailId</td>
+                            <td>@item.CreatedOn.ToShortDateString()</td>
+                            <td>
+                                @if (item.ActiveStatus)
+                                {
+                                    <span class="pill active">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="pill inactive">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="table-actions">
+                                    <button class="btn btn-secondary btn-sm"
+                                            clientid="@item.Id"
+                                            onclick="sendMail(this)"
+                                            title="Send Mail">
+                                        <i class="fa fa-envelope"></i>
+                                    </button>
+
+                                    <button class="btn btn-info btn-sm" clientid="@item.Id"
+                                            emailid="@item.EmailId"
+                                            company="@item.CompanyName"
+                                            empcode="@item.EmpCode"
+                                            active="@item.ActiveStatus"
+                                            whatsappnumber="@item.ContactNo1"
+                                            alternate="@item.Contact2"
+                                            logo="@Url.Content(item.Logo)"
+                                            onclick="editClient(this)"
+                                            title="Edit Ticket">
+                                        <span class="iconify" data-icon="ep:edit"></span>
+                                    </button>
+
+                                    <a href="@Url.Action("Remove","SubUserManagement", new { nId = item.Id, strSchemaName = item.SchemaName, strEmailId = item.EmailId })"
+                                       onclick="return confirmation();"
+                                       title="Remove User">
+                                        <span class="iconify" data-icon="fluent:delete-20-regular"></span>
+                                    </a>
+                                </div>
+							
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+       
+  
+    </div>
+    <div class="overlay" id="loader" style="display:none">
+        <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+    </div>
+
+</div>
+
+
+
+
+<div class="modal fade" id="actionModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><b>Add/Edit User</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form asp-action="Create" asp-controller="SubUserManagement" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="user.Id" />
+                <div class="modal-body">
+
+                    <div class="group">
+                        <label>Name<span style="color:indianred;">*</span></label>
+                        <input type="text" asp-for="user.CompanyName" placeholder="enter name">
+                    </div>
+                    <div class="group">
+                        <label>EmpCode<span style="color:indianred;">*</span></label>
+                        <input type="text" asp-for="user.EmpCode" placeholder="enter Empcode">
+                    </div>
+                    <div class="group">
+                        <label>Email<span style="color:indianred;">*</span></label>
+                        <input type="email" asp-for="user.EmailId" placeholder="enter email address">
+                    </div>
+                    <div class="group">
+                        <label>Enter whatsapp Number</label>
+                        <input type="text" asp-for="user.ContactNo1" placeholder="enter whatsapp number">
+                    </div>
+                    <div class="group">
+                        <label>Enter alternate number</label>
+                        <input type="text" asp-for="user.Contact2" placeholder="enter alternate number">
+                    </div>
+                    <div class="input-row">
+
+                        <div class="group">
+                            <label>select profile image</label>
+                            <input type="file" accept="image/*" onchange="readURL(this)" asp-for="user.file">
+                        </div>
+                        <img id="imgLogo" style="max-height:10rem; object-fit:cover;" />
+                    </div>
+
+                    <div class="group checkbox-input">
+                        <input type="checkbox" asp-for="user.ActiveStatus">
+                        <label>Active Status</label>
+                    </div>
+                    <div class="input-group form-margin">
+                        <span style="color:indianred;">*Whatsapp number is required for send whatsapp notification for support</span>
+                    </div>
+                    <button id="btnSubmit" onclick="return ValidateEntry();">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@*<div class="modal fade" id="actionModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="col-lg-12">
+                    <div class="row d-flex">
+                        <div class="col-lg-10">
+                            <h5 class="modal-title" id="exampleModalLabel"><b>User</b></h5>
+                        </div>
+                        <div class="col-lg-2">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form asp-action="Create" asp-controller="SubUserManagement" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="user.Id" />
+                <div class="modal-body">
+                    <div class="row d-flex">
+                        <div class="col-lg-12">
+                            <div class="row d-flex">
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">User Name</label>
+                                    <input type="text" asp-for="user.CompanyName" class="fname form-control" placeholder="Enter Name">
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Email</label>
+                                    <input type="email" asp-for="user.EmailId" class="fname form-control" placeholder="Enter Email Id">
+                                </div>
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Contact Number (Whatsapp no )*</label>
+                                    <input type="text" asp-for="user.ContactNo1" class="fname form-control" placeholder="Enter whatsapp number">
+                                </div>
+
+                                <div class="col-lg-12 form-group">
+                                    <label for="fname">Alternate Number</label>
+                                    <input type="text" asp-for="user.Contact2" class="fname form-control" placeholder="Enter Alternate number">
+                                </div>
+                                <div class="col-lg-8 form-group">
+                                    <label for="fname">Profile Image</label>
+                                    <input type="file" accept="image/*" onchange="readURL(this)" class="fname form-control" asp-for="user.file" />
+                                </div>
+                                <div class="col-lg-4 form-group">
+                                    <img src="" id="imgLogo" height="50%" width="80%" style="display:none" />
+                                </div>
+                                <div class="col-lg-6 form-group">
+                                    <input type="checkbox" asp-for="user.ActiveStatus" />
+                                    Active
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-12">
+                        <div class="row d-flex">
+                            <div class="col-lg-12" style="text-align:right">
+                                <div class="modal-button">
+                                    <button type="submit" id="btnSubmit" onclick="return ValidateEntry();" class="btn btn-primary"><b>Submit</b></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>*@
+
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            @if(ViewData["error"] != null)
+            {
+                <text>
+                    toastr.error("@ViewData["error"]", "Error", { "iconClass": 'new-error' });
+                </text>
+            }
+            @if(ViewData["success"] != null)
+            {
+                <text>
+                    toastr.success("@ViewData["success"]");
+                </text>
+            }
+
+            $("#actionModal").on('hidden.bs.modal', function () {
+                clearValidate();
+            });
+
+        });
+
+        $(document).ready(function () {
+            $("#user_CompanyName").prop("disabled", false);
+            $("#user_EmailId").prop("disabled", false);
+			$("#btnSendBulkMail").html('<i class="fa fa-mail-bulk"></i> Send Credentials');
+
+            $("#btnSendBulkMail").on("click", function () {
+                $(this).html("<i class='fa fa-spinner fa-spin'></i>");
+                postForm("@Url.Action("SendBulkMail", "SubUserManagement")", {
+                    "userid" : 0
+                });
+            });																			    
+        });
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imgLogo')
+                        .attr('src', e.target.result);
+                    $("#imgLogo").show();
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                $("#imgLogo").hide();
+            }
+        }
+
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+        function ValidateEntry() {
+            clearValidate();
+
+            var allow = true;
+            if ($('#user_CompanyName').val().trim().length == 0) {
+                $('#user_CompanyName').parent().addClass('error');
+                allow = false;
+            }
+
+            if ($('#user_EmailId').val().trim().length == 0) {
+                $('#user_EmailId').parent().addClass('error');
+                allow = false;
+            }
+            if ($('#user_EmpCode').val().trim().length == 0) {
+                $('#user_EmpCode').parent().addClass('error');
+                allow = false;
+            }
+
+            //if ($("#user_ContactNo1").val().trim().length != 10) {
+            //    $('#user_ContactNo1').parent().addClass('error');
+            //   // allow = false;
+            //}
+
+            if ($("#user_Contact2").val() != "" && $("#user_Contact2").val().trim().length != 10) {
+                $('#user_Contact2').parent().addClass('error');
+              // allow = false;
+            }
+            if (allow &&   (validateEmail($('#user_EmailId').val().trim()) == false)) {
+                toastr.error("Please enter valid Email");
+                allow = false;
+            }
+
+            if ($("#user_Id").val() == '' && $("#user_file").val().trim().length != 0) {
+                if (allow && ValidateFileType() == false) {
+                    $("#user_file").parent().addClass('error');
+                    allow = false;
+                }
+            }
+
+            //if (allow && $("#user_ContactNo1").val().replace(/[^\d]/g, '').length != 10) {
+            //    toastr.error("please enter valid 10 digit mobile number");
+            //    $('#user_ContactNo1').parent().addClass('error');
+            //    allow = false;
+            //}
+
+            if ($("#user_Contact2").val() != "" && $("#user_Contact2").val().trim().length != 10) {
+                $('#user_Contact2').parent().addClass('error');
+                toastr.error("please enter valid 10 digit mobile number");
+                allow = false;
+            }
+
+            if ($("#user_ContactNo1").val() != "" && $("#user_ContactNo1").val().trim().length != 10) {
+                $('#user_ContactNo1').parent().addClass('error');
+                toastr.error("please enter valid 10 digit mobile number");
+                allow = false;
+            }
+
+            if (allow) {
+                $("#loader").show();
+                $("#actionModal").modal('hide');
+            } 
+            return allow;
+        }
+
+        function confirmation() {
+            if (confirm("This action will remove client from backend also so, Are you sure want to completely remove this client ?")) {
+                $("#loader").show();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function editClient(btn) {
+            var _clientId = $(btn).attr("clientid");
+            var _companyName = $(btn).attr("company");
+            var _emailId = $(btn).attr("emailid");
+            var _logo = $(btn).attr("logo");
+            var _whatsappNumber = $(btn).attr("whatsappnumber");
+            var _alternate = $(btn).attr("alternate");
+            var _active = $(btn).attr("active") == "active" ? true : false;
+            var _empcode = $(btn).attr("empcode");
+
+            $("#user_Id").val(_clientId);
+            $("#user_CompanyName").val(_companyName);
+            $("#user_EmailId").val(_emailId);
+            $("#user_EmpCode").val(_empcode);
+            $("#user_ContactNo1").val(_whatsappNumber);
+            $("#user_Contact2").val(_alternate);
+            $("#user_ActiveStatus").prop("checked", _active);
+
+            $("#user_CompanyName").prop("disabled", true);
+            $("#user_EmailId").prop("disabled", true);
+            //$("#user_EmpCode").prop("disabled", true);
+
+            $("#imgLogo").attr("src", _logo);
+            $("#imgLogo").show();
+
+            $("#actionModal").modal("show");
+
+            $("#divCCEmail").hide();
+        }
+
+        function clearValidate() {
+            $('#user_CompanyName').parent().removeClass('error');
+            $('#user_EmailId').parent().removeClass('error');
+            $('#user_ContactNo1').parent().removeClass('error');
+            $('#user_Contact2').parent().removeClass('error');
+            $("#user_file").parent().removeClass('error');
+            $("#user_EmpCode").parent().removeClass('error');
+            
+        }
+
+        function initControl() {
+            $("#user_CompanyName").prop("disabled", false);
+            $("#user_EmailId").prop("disabled", false);
+
+            $("#user_Id").val("");
+            $("#user_CompanyName").val("");
+            $("#user_EmailId").val("");
+            $("#user_ActiveStatus").prop("checked", true);
+
+            $("#imgLogo").attr("src", "");
+            $("#imgLogo").hide();
+            $("#user_file").val("");
+            $("#user_ContactNo1").val("");
+            $("#user_Contact2").val("");
+            $("#user_EmpCode").val("");
+        }
+
+        function validateEmail(email) {
+            const re = /^(([^<>()[\]\\.,;:\s@@"]+(\.[^<>()[\]\\.,;:\s@@"]+)*)|(".+"))@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+		function sendMail(btn) {
+            var _userid = $(btn).attr("clientid");
+            postForm("@Url.Action("SendBulkMail", "SubUserManagement")", {
+                "userid": _userid
+            });
+        }
+
+        function ValidateFileType() {
+            var validator = true;
+            var fileName = document.getElementById("user_file").value;
+            var idxDot = fileName.lastIndexOf(".") + 1;
+            var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+            if (!(extFile == "jpg" || extFile == "jpeg" || extFile == "png" || extFile == "jfif")) {
+                toastr.error("Only jpg/jpeg/jfif and png files are allowed!");
+                validator = false;
+            }
+            return validator;
+        }
+
+        
+    </script>
+}
+
+

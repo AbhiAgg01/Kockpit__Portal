@@ -1,0 +1,1458 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+  color: #0366d6;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px; /* Vertically center the text there */
+}
+
+.main .amc-container {
+    background-color: #fff;
+    border-radius: .5rem;
+}
+
+    .main .amc-container .amc-header {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        padding: 1rem;
+    }
+
+        .main .amc-container .amc-header .header-left p {
+            font-weight: bold;
+            font-size: 1.6rem;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .main .amc-container .amc-header .header-right {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            gap: .5rem;
+        }
+
+            .main .amc-container .amc-header .header-right .search-input input {
+                border: 1px solid #F4F7F9;
+                padding: 1rem;
+            }
+
+            .main .amc-container .amc-header .header-right button {
+                border: none;
+                background-color: #3AA0FF;
+                color: #fff;
+                border-radius: .5rem;
+                padding: 1rem 2rem;
+                font-size: 1.2rem;
+                font-weight: bold;
+            }
+
+    .main .amc-container .clients-list-wrapper {
+        padding-bottom: 1px;
+    }
+
+        .main .amc-container .clients-list-wrapper .client {
+            cursor: pointer;
+            border: 1px solid #F4F7F9;
+            padding: 1rem;
+            border-radius: .5rem;
+            margin: 1rem;
+        }
+
+            .main .amc-container .clients-list-wrapper .client .client-header {
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-align: center;
+                -ms-flex-align: center;
+                align-items: center;
+            }
+
+                .main .amc-container .clients-list-wrapper .client .client-header .client-image {
+                    width: 5rem;
+                    height: 5rem;
+                    border-radius: 50%;
+                    border: .5rem solid #3AA0FF44;
+                    margin-right: 2rem;
+                }
+
+                .main .amc-container .clients-list-wrapper .client .client-header .client-name {
+                    font-size: 1.6rem;
+                    font-weight: bold;
+                }
+
+            .main .amc-container .clients-list-wrapper .client .client-plan-details {
+                margin-top: 1rem;
+                display: none;
+                border: 1px solid #f4f7f9;
+                border-radius: .5rem;
+                padding: 1rem;
+            }
+
+                .main .amc-container .clients-list-wrapper .client .client-plan-details .client-plan-header {
+                    display: -webkit-box;
+                    display: -ms-flexbox;
+                    display: flex;
+                    -webkit-box-pack: justify;
+                    -ms-flex-pack: justify;
+                    justify-content: space-between;
+                }
+
+                    .main .amc-container .clients-list-wrapper .client .client-plan-details .client-plan-header span {
+                        font-size: 1.4rem;
+                        font-weight: bold;
+                        color: #999999;
+                    }
+
+                .main .amc-container .clients-list-wrapper .client .client-plan-details .warranty-details {
+                    display: -webkit-box;
+                    display: -ms-flexbox;
+                    display: flex;
+                    -webkit-box-align: center;
+                    -ms-flex-align: center;
+                    align-items: center;
+                    -webkit-box-pack: center;
+                    -ms-flex-pack: center;
+                    justify-content: center;
+                    margin-block: 1rem;
+                }
+
+                    .main .amc-container .clients-list-wrapper .client .client-plan-details .warranty-details .pill {
+                        padding: .5rem 1rem;
+                        font-size: 1rem;
+                        color: #fff;
+                        display: inline-block;
+                        border-radius: .5rem;
+                        font-size: 1.2rem;
+                    }
+
+                        .main .amc-container .clients-list-wrapper .client .client-plan-details .warranty-details .pill.active {
+                            background-color: #3FBC82;
+                        }
+
+                        .main .amc-container .clients-list-wrapper .client .client-plan-details .warranty-details .pill.inactive {
+                            background-color: #FC5A5A;
+                        }
+
+                .main .amc-container .clients-list-wrapper .client .client-plan-details .client-license-info {
+                    display: -webkit-box;
+                    display: -ms-flexbox;
+                    display: flex;
+                    -webkit-box-align: center;
+                    -ms-flex-align: center;
+                    align-items: center;
+                    -webkit-box-pack: justify;
+                    -ms-flex-pack: justify;
+                    justify-content: space-between;
+                    font-size: 1.2rem;
+                }
+
+            .main .amc-container .clients-list-wrapper .client.expand .client-plan-details {
+                display: block;
+            }
+
+#addAmcModal .modal-content {
+    border: none;
+    border-radius: 1rem;
+}
+
+#addAmcModal .modal-header {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+    #addAmcModal .modal-header button {
+        width: 2.5rem;
+        height: 2.5rem;
+        background-color: #3AA0FF44;
+        border-radius: 50%;
+        color: #3AA0FF;
+        border: none;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+    }
+
+        #addAmcModal .modal-header button .iconify {
+            font-size: 2rem;
+            color: #3AA0FF;
+            opacity: 1;
+        }
+
+#addAmcModal .modal-body {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+    #addAmcModal .modal-body  .group {
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+
+        #addAmcModal .modal-body .group label {
+            display: block;
+            font-size: 1.2rem;
+            color: #222B45;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        #addAmcModal .modal-body .group input, #amcModal .modal-body .group select, #amcModal .modal-body .group textarea {
+            font-size: 1.2rem;
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #EDF2F6;
+            border-radius: .5rem;
+        }
+
+        #addAmcModal .modal-body .group.checkbox-input label {
+            display: inline-block;
+            margin-bottom: 0;
+        }
+
+        #addAmcModal .modal-body .group.checkbox-input input {
+            width: -webkit-max-content;
+            width: -moz-max-content;
+            width: max-content;
+        }
+
+    #addAmcModal .modal-body .input-row {
+        width: 100%;
+        display: -ms-grid;
+        display: grid;
+        -ms-grid-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    #addAmcModal .modal-body button {
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        background-color: #3AA0FF;
+        color: #fff;
+        border-radius: .5rem;
+    } .modal-content {
+    border: none;
+    border-radius: 1rem;
+}
+
+#addAmcModal .modal-header, #actionModal .modal-header {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+    #addAmcModal .modal-header button, #actionModal .modal-header button {
+        width: 2.5rem;
+        height: 2.5rem;
+        background-color: #3AA0FF44;
+        border-radius: 50%;
+        color: #3AA0FF;
+        border: none;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+    }
+
+        #addAmcModal .modal-header button .iconify {
+            font-size: 2rem;
+            color: #3AA0FF;
+            opacity: 1;
+        }
+
+#addAmcModal .modal-body {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+    #addAmcModal .modal-body .group {
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+
+    #addAmcModal .modal-body .group.error label {
+        color: red;
+    }
+
+        #addAmcModal .modal-body .group.error input, #addAmcModal .modal-body .group.error select, #addAmcModal .modal-body .group.error textarea {
+            border: 1px solid red;
+        }
+
+        #addAmcModal .modal-body .group label {
+            display: block;
+            font-size: 1.2rem;
+            color: #222B45;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        #addAmcModal .modal-body .group input, #addAmcModal .modal-body .group select, #addAmcModal .modal-body .group textarea {
+            font-size: 1.2rem;
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #EDF2F6;
+            border-radius: .5rem;
+        }
+
+        #addAmcModal .modal-body .group.checkbox-input label {
+            display: inline-block;
+            margin-bottom: 0;
+        }
+
+        #addAmcModal .modal-body .group.checkbox-input input {
+            width: -webkit-max-content;
+            width: -moz-max-content;
+            width: max-content;
+        }
+
+    #addAmcModal .modal-body .input-row {
+        width: 100%;
+        display: -ms-grid;
+        display: grid;
+        -ms-grid-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    #addAmcModal .modal-body button {
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        background-color: #3AA0FF;
+        color: #fff;
+        border-radius: .5rem;
+    }
+
+#actionModal form .modal-body {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+#actionModal form .modal-body button {
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    background-color: #3AA0FF;
+    color: #fff;
+    border-radius: .5rem;
+}
+
+#actionModal .modal-body .group {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+    #actionModal .modal-body .group.error label {
+        color: red;
+    }
+
+    #actionModal .modal-body .group.error input, #actionModal .modal-body .group.error select, #actionModal .modal-body .group.error textarea {
+        border: 1px solid red;
+    }
+
+    #actionModal .modal-body .group label {
+        display: block;
+        font-size: 1.2rem;
+        color: #222B45;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    #actionModal .modal-body .group input, #actionModal .modal-body .group select, #actionModal .modal-body .group textarea {
+        font-size: 1.2rem;
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid #EDF2F6;
+        border-radius: .5rem;
+    }
+
+    #actionModal .modal-body .group.checkbox-input label {
+        display: inline-block;
+        margin-bottom: 0;
+    }
+
+    #actionModal .modal-body .group.checkbox-input input {
+        width: -webkit-max-content;
+        width: -moz-max-content;
+        width: max-content;
+    }
+
+#actionModal .modal-body .input-row {
+    width: 100%;
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+ 
+.main div#loader {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: #ffffffaa;
+    inset: 0;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main .admin-dashboard-content .admin-dashboard-primary-grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+    margin-bottom: 2.5rem;
+}
+
+    .main .admin-dashboard-content .admin-dashboard-primary-grid .gradient-card {
+        padding: 2.5rem;
+        border-radius: 0.5rem;
+        background: transparent linear-gradient(76deg, #3AA0FF 0%, #FFFFFF 100%) 0% 0% no-repeat padding-box;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+        .main .admin-dashboard-content .admin-dashboard-primary-grid .gradient-card .icon {
+            width: 6rem;
+            height: 6rem;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background-color: #fff;
+            outline: 1rem solid #ffffff55;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .main .admin-dashboard-content .admin-dashboard-primary-grid .gradient-card .icon .iconify {
+                width: 50%;
+                max-width: 3rem;
+                min-width: 3rem;
+                height: auto;
+                color: #3AA0FF;
+            }
+
+        .main .admin-dashboard-content .admin-dashboard-primary-grid .gradient-card .text p {
+            color: #fff;
+        }
+
+        .main .admin-dashboard-content .admin-dashboard-primary-grid .gradient-card .text .card-text-heading {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .main .admin-dashboard-content .admin-dashboard-primary-grid .gradient-card .text .card-text-count {
+            font-size: 5.5rem;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+.main .admin-dashboard-content .admin-dashboard-secondary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+    .main .admin-dashboard-content .admin-dashboard-secondary-grid .secondary-card {
+        padding: 2rem;
+        border-radius: 0.5rem;
+        background-color: #fff;
+        border: 1px solid #eef2f6;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+        .main .admin-dashboard-content .admin-dashboard-secondary-grid .secondary-card .icon {
+            background-color: #fafafa;
+            border-radius: 0.5rem;
+            width: 4rem;
+            aspect-ratio: 1;
+            max-width: 4rem;
+            min-width: 4rem;
+            height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .main .admin-dashboard-content .admin-dashboard-secondary-grid .secondary-card .icon .iconify {
+                max-width: 50%;
+                width: 2rem;
+                min-width: 2rem;
+                height: auto;
+            }
+
+        .main .admin-dashboard-content .admin-dashboard-secondary-grid .secondary-card .text .card-text-heading {
+            font-size: 1.6rem;
+            color: black;
+            font-weight: 600;
+        }
+
+        .main .admin-dashboard-content .admin-dashboard-secondary-grid .secondary-card .text .card-text-count {
+            font-size: 3.5rem;
+            color: #687C97;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+.main .admin-dashboard-content .table-grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+}
+
+    .main .admin-dashboard-content .table-grid .table-wrapper {
+        background-color: #fff;
+        border-radius: 0.5rem;
+        width: 100%;
+        max-width: 100%;
+        overflow: auto;
+    }
+
+        .main .admin-dashboard-content .table-grid .table-wrapper .table-header {
+            padding: 1rem;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .main .admin-dashboard-content .table-grid .table-wrapper table {
+            width: 100%;
+            font-size: 1.2rem;
+        }
+
+            .main .admin-dashboard-content .table-grid .table-wrapper table thead {
+                background-color: #F9FBFD;
+                color: #687C97;
+            }
+
+            .main .admin-dashboard-content .table-grid .table-wrapper table th, .main .admin-dashboard-content .table-grid .table-wrapper table td {
+                padding: 1rem;
+                border: 1px solid #EDF2F6;
+            }
+
+.main .admin-offerings-container {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+}
+
+    .main .admin-offerings-container .admin-offerings-header {
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+        .main .admin-offerings-container .admin-offerings-header p {
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+
+        .main .admin-offerings-container .admin-offerings-header button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border: none;
+            background-color: #3AA0FF;
+            color: #fff;
+            border-radius: 0.5rem;
+        }
+
+    .main .admin-offerings-container .dataTables_wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: scroll;
+    }
+
+        .main .admin-offerings-container .dataTables_wrapper .dataTables_length {
+            grid-column-start: 1;
+            grid-column-end: 2;
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: #687C97;
+        }
+
+            .main .admin-offerings-container .dataTables_wrapper .dataTables_length select {
+                padding: 0.8rem 1rem;
+                margin: 0 1rem;
+                font-size: 1.4rem;
+                color: #687C97;
+                border: 1px solid #F4F7F9;
+                border-radius: 0.5rem;
+                outline: none;
+            }
+
+        .main .admin-offerings-container .dataTables_wrapper .dataTables_filter {
+            grid-column-start: 2;
+            grid-column-end: 3;
+            text-align: right;
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: #687C97;
+        }
+
+            .main .admin-offerings-container .dataTables_wrapper .dataTables_filter input {
+                font-size: 1.4rem;
+                font-weight: 500;
+                padding: 0.8rem;
+                border: 1px solid #F4F7F9;
+                border-radius: 0.5rem;
+                margin-left: 1rem;
+                outline: none;
+            }
+
+        .main .admin-offerings-container .dataTables_wrapper #offerings-table {
+            grid-column-start: 1;
+            grid-column-end: 3;
+            grid-row-start: 2;
+            min-width: 100%;
+        }
+
+        .main .admin-offerings-container .dataTables_wrapper .dataTables_info {
+            grid-column-start: 1;
+            grid-column-end: 3;
+            grid-row-start: 3;
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: #687C97;
+        }
+
+        .main .admin-offerings-container .dataTables_wrapper .dataTables_paginate {
+            grid-column-start: 1;
+            grid-column-end: 3;
+            grid-row-start: 4;
+            padding: 1rem 3rem;
+            font-size: 1.4rem;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+            .main .admin-offerings-container .dataTables_wrapper .dataTables_paginate .paginate_button {
+                cursor: pointer;
+                border: 1px solid #F4F7F9;
+                padding: 0.8rem 2rem;
+                border-radius: 0.5rem;
+                text-decoration: none;
+                color: #687C97;
+            }
+
+            .main .admin-offerings-container .dataTables_wrapper .dataTables_paginate span .paginate_button {
+                color: #687C97;
+                padding: 0.5rem 1rem;
+                border: none;
+                border-radius: unset;
+            }
+
+                .main .admin-offerings-container .dataTables_wrapper .dataTables_paginate span .paginate_button.current {
+                    color: black;
+                    border-bottom: 2px solid #3AA0FF;
+                }
+
+    .main .admin-offerings-container table {
+        width: 100%;
+        min-width: 100%;
+        border-collapse: collapse;
+    }
+
+        .main .admin-offerings-container table thead {
+            background-color: #F9FBFD;
+        }
+
+            .main .admin-offerings-container table thead td {
+                padding: 1rem;
+                font-size: 1.2rem;
+                color: #687C97;
+            }
+
+        .main .admin-offerings-container table tbody {
+            border: none;
+        }
+
+            .main .admin-offerings-container table tbody td {
+                padding: 1rem;
+                font-size: 1.2rem;
+                color: #222B45;
+            }
+
+                .main .admin-offerings-container table tbody td button {
+                    border: none;
+                    background: none;
+                    font-size: 1.4rem;
+                    color: #687C97;
+                }
+
+#actionModal {
+    font-family: "Poppins", sans-serif;
+}
+
+    #actionModal .modal-content {
+        border: none;
+        border-radius: 0.5rem;
+    }
+
+    #actionModal .modal-title {
+        font-size: 1.6rem;
+        font-weight: bold;
+    }
+
+    #actionModal .modal-close-btn {
+        width: 2.5rem;
+        height: 2.5rem;
+        background-color: #EEF2F6;
+        border-radius: 50%;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        #actionModal .modal-close-btn .iconify {
+            font-size: 1.4rem;
+            color: #3AA0FF;
+        }
+
+    #actionModal form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+        #actionModal form .form-margin {
+            margin-bottom: 2rem;
+        }
+
+        #actionModal form .input-row {
+            width: 100%;
+            display: flex;
+            gap: 2rem;
+        }
+
+        #actionModal form .input-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+            #actionModal form .input-group.in-column {
+                flex-direction: column;
+            }
+
+            #actionModal form .input-group label {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: #222B45;
+            }
+
+            #actionModal form .input-group input, #actionModal form .input-group select, #actionModal form .input-group textarea {
+                padding: 1rem;
+                border: 1px solid #F4F7F9;
+                border-radius: 0.5rem;
+                font-size: 1.2rem;
+                color: #687C97;
+                width: 100%;
+            }
+
+        #actionModal form button {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 1rem 2rem;
+            background-color: #3AA0FF;
+        }
+
+.main .admin-plans-container {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    flex: 1;
+}
+
+    .main .admin-plans-container .admin-plans-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .main .admin-plans-container .admin-plans-header p {
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+
+        .main .admin-plans-container .admin-plans-header .plan-input {
+            margin-bottom: 1rem;
+        }
+
+            .main .admin-plans-container .admin-plans-header .plan-input select {
+                border: 1px solid #F4F7F9;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                font-size: 1.2rem;
+                color: #687C97;
+                margin-right: 1.8rem;
+            }
+
+            .main .admin-plans-container .admin-plans-header .plan-input button {
+                font-size: 1.2rem;
+                background-color: #3AA0FF;
+                border-radius: 0.5rem;
+                border: none;
+                color: #fff;
+                padding: 1rem 2rem;
+            }
+
+    .main .admin-plans-container .product-wrapper {
+        border: 1px solid #EDF2F6;
+        border-radius: 0.5rem;
+    }
+
+        .main .admin-plans-container .product-wrapper:not(:last-child) {
+            margin-bottom: 2rem;
+        }
+
+        .main .admin-plans-container .product-wrapper .product-wrapper-header {
+            padding: 1rem;
+            background-color: #fafafa;
+            font-size: 1.6rem;
+            font-weight: bold;
+            border-bottom: 1px solid #edf2f6;
+        }
+
+        .main .admin-plans-container .product-wrapper .products-plans-wrapper {
+            display: grid;
+            gap: 1.8rem;
+            grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+            margin: 1rem;
+        }
+
+            .main .admin-plans-container .product-wrapper .products-plans-wrapper .product-plan {
+                border: 1px solid #EEF2F6;
+                padding: 1rem;
+                border-radius: 0.5rem;
+            }
+
+                .main .admin-plans-container .product-wrapper .products-plans-wrapper .product-plan .product-plan-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                    margin-bottom: 1rem;
+                }
+
+                    .main .admin-plans-container .product-wrapper .products-plans-wrapper .product-plan .product-plan-header .icon {
+                        width: 4rem;
+                        height: auto;
+                        aspect-ratio: 1;
+                        max-width: 4rem;
+                        min-width: 4rem;
+                        background-color: #fafafa;
+                        border-radius: 0.5rem;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                        .main .admin-plans-container .product-wrapper .products-plans-wrapper .product-plan .product-plan-header .icon .iconify {
+                            width: 50%;
+                            min-width: 50%;
+                            max-width: 50%;
+                            height: auto;
+                        }
+
+                    .main .admin-plans-container .product-wrapper .products-plans-wrapper .product-plan .product-plan-header .text {
+                        flex: 1;
+                    }
+
+                        .main .admin-plans-container .product-wrapper .products-plans-wrapper .product-plan .product-plan-header .text .plan-name {
+                            font-size: 1.6rem;
+                            font-weight: bold;
+                        }
+
+                        .main .admin-plans-container .product-wrapper .products-plans-wrapper .product-plan .product-plan-header .text .plan-price {
+                            font-size: 1.2rem;
+                            color: #687C97;
+                            font-weight: bold;
+                        }
+
+                    .main .admin-plans-container .product-wrapper .products-plans-wrapper .product-plan .product-plan-header .plan-actions button {
+                        border: none;
+                        color: #687C97;
+                        background: none;
+                        font-size: 1.4rem;
+                    }
+
+                .main .admin-plans-container .product-wrapper .products-plans-wrapper .product-plan .product-plan-tags {
+                    display: flex;
+                    -moz-column-gap: 2rem;
+                    column-gap: 2rem;
+                    row-gap: 0.5rem;
+                    flex-wrap: wrap;
+                    margin-left: 1rem;
+                }
+
+                    .main .admin-plans-container .product-wrapper .products-plans-wrapper .product-plan .product-plan-tags p {
+                        min-width: -webkit-max-content;
+                        min-width: -moz-max-content;
+                        min-width: max-content;
+                        color: #687C97;
+                        font-size: 1.2rem;
+                    }
+
+                        .main .admin-plans-container .product-wrapper .products-plans-wrapper .product-plan .product-plan-tags p:not(:first-child) {
+                            position: relative;
+                        }
+
+                            .main .admin-plans-container .product-wrapper .products-plans-wrapper .product-plan .product-plan-tags p:not(:first-child)::before {
+                                content: "";
+                                position: absolute;
+                                left: -1rem;
+                                top: 0;
+                                bottom: 0;
+                                margin: auto 0;
+                                width: 0.5rem;
+                                height: 0.5rem;
+                                border-radius: 50%;
+                                background-color: #687c97;
+                            }
+
+.main .admin-clients-container {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+}
+
+    .main .admin-clients-container .admin-clients-header {
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+        .main .admin-clients-container .admin-clients-header p {
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+
+        .main .admin-clients-container .admin-clients-header button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border: none;
+            background-color: #3AA0FF;
+            color: #fff;
+            border-radius: 0.5rem;
+        }
+
+    .main .admin-clients-container .dataTables_wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: scroll;
+    }
+
+        .main .admin-clients-container .dataTables_wrapper .dataTables_length {
+            grid-column-start: 1;
+            grid-column-end: 2;
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: #687C97;
+        }
+
+            .main .admin-clients-container .dataTables_wrapper .dataTables_length select {
+                padding: 0.8rem 1rem;
+                margin: 0 1rem;
+                font-size: 1.4rem;
+                color: #687C97;
+                border: 1px solid #F4F7F9;
+                border-radius: 0.5rem;
+                outline: none;
+            }
+
+        .main .admin-clients-container .dataTables_wrapper .dataTables_filter {
+            grid-column-start: 2;
+            grid-column-end: 3;
+            text-align: right;
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: #687C97;
+        }
+
+            .main .admin-clients-container .dataTables_wrapper .dataTables_filter input {
+                font-size: 1.4rem;
+                font-weight: 500;
+                padding: 0.8rem;
+                border: 1px solid #F4F7F9;
+                border-radius: 0.5rem;
+                margin-left: 1rem;
+                outline: none;
+            }
+
+        .main .admin-clients-container .dataTables_wrapper #clients-table {
+            grid-column-start: 1;
+            grid-column-end: 3;
+            grid-row-start: 2;
+            min-width: 100%;
+        }
+
+        .main .admin-clients-container .dataTables_wrapper .dataTables_info {
+            grid-column-start: 1;
+            grid-column-end: 3;
+            grid-row-start: 3;
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: #687C97;
+        }
+
+        .main .admin-clients-container .dataTables_wrapper .dataTables_paginate {
+            grid-column-start: 1;
+            grid-column-end: 3;
+            grid-row-start: 4;
+            padding: 1rem 3rem;
+            font-size: 1.4rem;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+            .main .admin-clients-container .dataTables_wrapper .dataTables_paginate .paginate_button {
+                cursor: pointer;
+                border: 1px solid #F4F7F9;
+                padding: 0.8rem 2rem;
+                border-radius: 0.5rem;
+                text-decoration: none;
+                color: #687C97;
+            }
+
+            .main .admin-clients-container .dataTables_wrapper .dataTables_paginate span .paginate_button {
+                color: #687C97;
+                padding: 0.5rem 1rem;
+                border: none;
+                border-radius: unset;
+            }
+
+                .main .admin-clients-container .dataTables_wrapper .dataTables_paginate span .paginate_button.current {
+                    color: black;
+                    border-bottom: 2px solid #3AA0FF;
+                }
+
+    .main .admin-clients-container table {
+        width: 100%;
+        min-width: 100%;
+        border-collapse: collapse;
+    }
+
+        .main .admin-clients-container table thead {
+            background-color: #F9FBFD;
+        }
+
+            .main .admin-clients-container table thead td {
+                padding: 1rem;
+                font-size: 1.2rem;
+                color: #687C97;
+            }
+
+        .main .admin-clients-container table tr, .main .admin-clients-container table td {
+            border: 1px solid #EDF2F6;
+            font-size: 1.2rem;
+        }
+
+        .main .admin-clients-container table tbody td {
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: #222B45;
+        }
+
+            .main .admin-clients-container table tbody td .company-info {
+                display: flex;
+                gap: 1rem;
+                align-items: center;
+            }
+
+            .main .admin-clients-container table tbody td .company-icon {
+                width: 4rem;
+                min-width: 4rem;
+                max-width: 4rem;
+                height: auto;
+                aspect-ratio: 1;
+                border-radius: 0.5rem;
+                background-color: #BDC9D3;
+                display: inline-block;
+                overflow: hidden;
+            }
+
+                .main .admin-clients-container table tbody td .company-icon img {
+                    width: 100%;
+                    height: 100%;
+                    -o-object-fit: cover;
+                    object-fit: cover;
+                }
+
+            .main .admin-clients-container table tbody td button {
+                border: none;
+                background: none;
+            }
+
+                .main .admin-clients-container table tbody td button .iconify {
+                    font-size: 1.4rem;
+                    color: #687C97;
+                }
+
+            .main .admin-clients-container table tbody td .pill {
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                color: #fff;
+            }
+
+                .main .admin-clients-container table tbody td .pill.active {
+                    background-color: #3FBC82;
+                }
+
+                .main .admin-clients-container table tbody td .pill.inactive {
+                    background-color: #FC5A5A;
+                }
+
+.main .admin-representatives-container {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+}
+
+    .main .admin-representatives-container .admin-representatives-header {
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+        .main .admin-representatives-container .admin-representatives-header p {
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+
+        .main .admin-representatives-container .admin-representatives-header button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border: none;
+            background-color: #3AA0FF;
+            color: #fff;
+            border-radius: 0.5rem;
+        }
+
+    .main .admin-representatives-container .dataTables_wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: scroll;
+    }
+
+        .main .admin-representatives-container .dataTables_wrapper .dataTables_length {
+            grid-column-start: 1;
+            grid-column-end: 2;
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: #687C97;
+        }
+
+            .main .admin-representatives-container .dataTables_wrapper .dataTables_length select {
+                padding: 0.8rem 1rem;
+                margin: 0 1rem;
+                font-size: 1.4rem;
+                color: #687C97;
+                border: 1px solid #F4F7F9;
+                border-radius: 0.5rem;
+                outline: none;
+            }
+
+        .main .admin-representatives-container .dataTables_wrapper .dataTables_filter {
+            grid-column-start: 2;
+            grid-column-end: 3;
+            text-align: right;
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: #687C97;
+        }
+
+            .main .admin-representatives-container .dataTables_wrapper .dataTables_filter input {
+                font-size: 1.4rem;
+                font-weight: 500;
+                padding: 0.8rem;
+                border: 1px solid #F4F7F9;
+                border-radius: 0.5rem;
+                margin-left: 1rem;
+                outline: none;
+            }
+
+        .main .admin-representatives-container .dataTables_wrapper #representatives-table {
+            grid-column-start: 1;
+            grid-column-end: 3;
+            grid-row-start: 2;
+            min-width: 100%;
+        }
+
+        .main .admin-representatives-container .dataTables_wrapper .dataTables_info {
+            grid-column-start: 1;
+            grid-column-end: 3;
+            grid-row-start: 3;
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: #687C97;
+        }
+
+        .main .admin-representatives-container .dataTables_wrapper .dataTables_paginate {
+            grid-column-start: 1;
+            grid-column-end: 3;
+            grid-row-start: 4;
+            padding: 1rem 3rem;
+            font-size: 1.4rem;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+            .main .admin-representatives-container .dataTables_wrapper .dataTables_paginate .paginate_button {
+                cursor: pointer;
+                border: 1px solid #F4F7F9;
+                padding: 0.8rem 2rem;
+                border-radius: 0.5rem;
+                text-decoration: none;
+                color: #687C97;
+            }
+
+            .main .admin-representatives-container .dataTables_wrapper .dataTables_paginate span .paginate_button {
+                color: #687C97;
+                padding: 0.5rem 1rem;
+                border: none;
+                border-radius: unset;
+            }
+
+                .main .admin-representatives-container .dataTables_wrapper .dataTables_paginate span .paginate_button.current {
+                    color: black;
+                    border-bottom: 2px solid #3AA0FF;
+                }
+
+    .main .admin-representatives-container table {
+        width: 100%;
+        min-width: 100%;
+        border-collapse: collapse;
+    }
+
+        .main .admin-representatives-container table thead {
+            background-color: #F9FBFD;
+        }
+
+            .main .admin-representatives-container table thead td {
+                padding: 1rem;
+                font-size: 1.2rem;
+                color: #687C97;
+            }
+
+        .main .admin-representatives-container table tr, .main .admin-representatives-container table td {
+            border: 1px solid #EDF2F6;
+            font-size: 1.2rem;
+        }
+
+        .main .admin-representatives-container table tbody td {
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: #222B45;
+        }
+
+            .main .admin-representatives-container table tbody td .company-info {
+                display: flex;
+                gap: 1rem;
+                align-items: center;
+            }
+
+            .main .admin-representatives-container table tbody td .company-icon {
+                width: 4rem;
+                min-width: 4rem;
+                max-width: 4rem;
+                height: auto;
+                aspect-ratio: 1;
+                border-radius: 0.5rem;
+                background-color: #BDC9D3;
+                display: inline-block;
+                overflow: hidden;
+            }
+
+                .main .admin-representatives-container table tbody td .company-icon img {
+                    width: 100%;
+                    height: 100%;
+                    -o-object-fit: cover;
+                    object-fit: cover;
+                }
+
+            .main .admin-representatives-container table tbody td button {
+                border: none;
+                background: none;
+            }
+
+                .main .admin-representatives-container table tbody td button .iconify {
+                    font-size: 1.4rem;
+                    color: #687C97;
+                }
+
+            .main .admin-representatives-container table tbody td .pill {
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                color: #fff;
+            }
+
+                .main .admin-representatives-container table tbody td .pill.active {
+                    background-color: #3FBC82;
+                }
+
+                .main .admin-representatives-container table tbody td .pill.inactive {
+                    background-color: #FC5A5A;
+                }

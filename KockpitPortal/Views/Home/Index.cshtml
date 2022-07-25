@@ -1,0 +1,200 @@
+﻿@model KockpitPortal.Models.SuperAdminDashboard
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    var nClient = 0;
+    var nSupportManager = 0;
+    var nSupportRepresentative = 0;
+}
+
+
+
+<div class="main">
+    <div class="admin-dashboard-content">
+        <div class="admin-dashboard-primary-grid">
+            <div class="gradient-card">
+                <div class="icon">
+                    <svg class="iconify first" xmlns="http://www.w3.org/2000/svg" width="25.402" height="22.127" viewBox="0 0 25.402 22.127">
+                        <g id="customer_1_" data-name="customer (1)" transform="translate(0 -33)">
+                            <path id="Path_15978" data-name="Path 15978" d="M173.316,41.633A4.316,4.316,0,1,0,169,37.316,4.321,4.321,0,0,0,173.316,41.633Zm0-7.144a2.828,2.828,0,1,1-2.828,2.828A2.831,2.831,0,0,1,173.316,34.488Z" transform="translate(-160.615)" fill="#fff" />
+                            <path id="Path_15979" data-name="Path 15979" d="M379.729,102.457A2.729,2.729,0,1,0,377,99.729,2.732,2.732,0,0,0,379.729,102.457Zm0-3.969a1.24,1.24,0,1,1-1.24,1.24A1.242,1.242,0,0,1,379.729,98.488Z" transform="translate(-358.296 -60.825)" fill="#fff" />
+                            <path id="Path_15980" data-name="Path 15980" d="M22.033,241H20.882a3.374,3.374,0,0,0-3.061,1.952A5.99,5.99,0,0,0,13.394,241H12.007a5.99,5.99,0,0,0-4.427,1.952A3.374,3.374,0,0,0,4.52,241H3.369A3.362,3.362,0,0,0,0,244.348v5.418a1.458,1.458,0,0,0,1.459,1.454H6.01a1.74,1.74,0,0,0,1.731,1.588h9.92a1.74,1.74,0,0,0,1.731-1.588h4.5a1.51,1.51,0,0,0,1.511-1.505v-5.367A3.362,3.362,0,0,0,22.033,241ZM1.488,244.348a1.872,1.872,0,0,1,1.88-1.86H4.52a1.872,1.872,0,0,1,1.88,1.86v.51c-.5,1.3-.4,2.084-.4,4.874H1.488ZM17.91,251.07a.249.249,0,0,1-.249.249H7.741a.249.249,0,0,1-.249-.249V247a4.521,4.521,0,0,1,4.516-4.516h1.387A4.521,4.521,0,0,1,17.91,247Zm6-1.355c0,.026.277.017-4.515.017,0-2.811.1-3.573-.4-4.874v-.51a1.872,1.872,0,0,1,1.88-1.86h1.151a1.872,1.872,0,0,1,1.88,1.86Z" transform="translate(0 -197.681)" fill="#fff" />
+                            <path id="Path_15981" data-name="Path 15981" d="M27.729,102.457A2.729,2.729,0,1,0,25,99.729,2.732,2.732,0,0,0,27.729,102.457Zm0-3.969a1.24,1.24,0,1,1-1.24,1.24A1.242,1.242,0,0,1,27.729,98.488Z" transform="translate(-23.76 -60.825)" fill="#fff" />
+                        </g>
+                    </svg>
+
+                </div>
+                <div class="text">
+                    <p class="card-text-heading"> <a asp-action="Index" asp-controller="UserManagement">Total Clients</a> </p>
+                    <p class="card-text-count"> @Model.TotalClients</p>
+                </div>
+            </div>
+            <div class="gradient-card">
+                <div class="icon">
+                    <svg class="iconify second" xmlns="http://www.w3.org/2000/svg" width="17.381" height="24.11" viewBox="0 0 17.381 24.11">
+                        <g id="businessman_1_" data-name="businessman (1)" transform="translate(-4.25 -1.25)">
+                            <path id="Path_15982" data-name="Path 15982" d="M12.577,11.9A5.327,5.327,0,1,1,17.9,6.577,5.327,5.327,0,0,1,12.577,11.9Zm0-8.971a3.644,3.644,0,1,0,3.644,3.644,3.644,3.644,0,0,0-3.644-3.644Z" transform="translate(0.364 0)" fill="#fff" />
+                            <path id="Path_15983" data-name="Path 15983" d="M18.548,24.389H7.334A3.086,3.086,0,0,1,4.25,21.3V17.941a8.691,8.691,0,1,1,17.381,0V21.3a3.086,3.086,0,0,1-3.084,3.084ZM12.941,10.932a7.016,7.016,0,0,0-7.009,7.009V21.3a1.4,1.4,0,0,0,1.4,1.4H18.548a1.4,1.4,0,0,0,1.4-1.4V17.941A7.016,7.016,0,0,0,12.941,10.932Z" transform="translate(0 0.971)" fill="#fff" />
+                            <path id="Path_15984" data-name="Path 15984" d="M12.368,20.591a1.955,1.955,0,0,1-1.226-.434L9.7,19a1.971,1.971,0,0,1-.583-2.286l2.479-5.95a.838.838,0,0,1,1.549,0l2.478,5.943A1.973,1.973,0,0,1,15.038,19l-1.444,1.155a1.96,1.96,0,0,1-1.226.438Zm0-7.314-1.7,4.085a.281.281,0,0,0,.083.326l1.444,1.155a.28.28,0,0,0,.35,0l1.443-1.156a.278.278,0,0,0,.084-.325Z" transform="translate(0.572 1.092)" fill="#fff" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="text">
+                    <p class="card-text-heading"><a asp-action="Index" asp-controller="Employee">Total Support Person</a></p>
+                    <p class="card-text-count">@Model.TotalEmployees</p>
+                </div>
+            </div>
+            <div class="gradient-card">
+                <div class="icon">
+                    <svg class="iconify third" id="interview_1_" data-name="interview (1)" xmlns="http://www.w3.org/2000/svg" width="26.807" height="26.807" viewBox="0 0 26.807 26.807">
+                        <path id="Path_15986" data-name="Path 15986" d="M7.536,248.425a4.15,4.15,0,1,0-5.09,0A4.986,4.986,0,0,0,0,252.721V254.4a.785.785,0,0,0,.785.785H9.2a.785.785,0,0,0,.785-.785v-1.682A4.986,4.986,0,0,0,7.536,248.425ZM2.412,245.15a2.579,2.579,0,1,1,2.58,2.58A2.582,2.582,0,0,1,2.412,245.15Zm6,8.468H1.571v-.9a3.421,3.421,0,0,1,6.841,0v.9Zm0,0" transform="translate(0 -228.382)" fill="#fff" />
+                        <path id="Path_15987" data-name="Path 15987" d="M206.2,0H196.11A3.307,3.307,0,0,0,192.8,3.309V18.45a.786.786,0,0,0,1.257.628l3.155-2.366H206.2a3.307,3.307,0,0,0,3.309-3.309V3.309A3.307,3.307,0,0,0,206.2,0Zm1.738,13.4a1.737,1.737,0,0,1-1.738,1.738h-9.253a.786.786,0,0,0-.471.157l-2.108,1.581V3.309a1.737,1.737,0,0,1,1.738-1.738H206.2a1.737,1.737,0,0,1,1.738,1.738Zm0,0" transform="translate(-182.706)" fill="#fff" />
+                        <path id="Path_15988" data-name="Path 15988" d="M266.264,80.332h-8.412a.785.785,0,0,0,0,1.571h8.412a.785.785,0,0,0,0-1.571Zm0,0" transform="translate(-243.607 -76.126)" fill="#fff" />
+                        <path id="Path_15989" data-name="Path 15989" d="M266.264,144.6h-8.412a.785.785,0,0,0,0,1.571h8.412a.785.785,0,0,0,0-1.571Zm0,0" transform="translate(-243.607 -137.031)" fill="#fff" />
+                        <path id="Path_15990" data-name="Path 15990" d="M262.058,208.867h-4.206a.785.785,0,0,0,0,1.571h4.206a.785.785,0,0,0,0-1.571Zm0,0" transform="translate(-243.607 -197.932)" fill="#fff" />
+                    </svg>
+                </div>
+                <div class="text">
+                    <p class="card-text-heading"><a asp-action="Index" asp-controller="PlanRequest">License Request</a> </p>
+                    <p class="card-text-count">@Model.LicenseRequests</p>
+                </div>
+            </div>
+        </div>
+        <div class="admin-dashboard-secondary-grid">
+            <div class="secondary-card">
+                <div class="icon">
+                    <span class="iconify" data-icon="icomoon-free:profile"></span>
+                </div>
+                <div class="text">
+                    <p class="card-text-heading">Total License Sold</p>
+                    <p class="card-text-count">@Model.TotalLicenses</p>
+                </div>
+            </div>
+            <div class="secondary-card">
+                <div class="icon">
+                    <span class="iconify" data-icon="icomoon-free:profile"></span>
+                </div>
+                <div class="text">
+                    <p class="card-text-heading">Active License</p>
+                    <p class="card-text-count">@Model.ActiveLicenses</p>
+                </div>
+            </div>
+            <div class="secondary-card">
+                <div class="icon">
+                    <span class="iconify" data-icon="icomoon-free:profile"></span>
+                </div>
+                <div class="text">
+                    <p class="card-text-heading">Inactive License</p>
+                    <p class="card-text-count">@Model.InActiveLicenses</p>
+                </div>
+            </div>
+            <div class="secondary-card">
+                <div class="icon">
+                    <span class="iconify" data-icon="icomoon-free:profile"></span>
+                </div>
+                <div class="text">
+                    <p class="card-text-heading">Expired License</p>
+                    <p class="card-text-count">@Model.ExpiredLicenses</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-grid">
+            <div class="table-wrapper">
+                <div class="table-header">
+                    Clients
+                </div>
+                <table>
+                    <thead>
+
+                        <tr>
+                            <th>S.No</th>
+                            <th>Company</th>
+                            <th>E-Mail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ClientList != null && Model.ClientList.Count > 0)
+                        {
+                            foreach (var item in Model.ClientList)
+                            {
+                                <tr>
+                                    <td>@(nClient += 1)</td>
+                                    <td>
+                                        <div class="icon"></div>
+                                        <p>@item.CompanyName</p>
+                                    </td>
+                                    <td>@item.EmailId</td>
+                                </tr>
+
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-wrapper">
+                <div class="table-header">
+                    Support Managers
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Company</th>
+                            <th>E-Mail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.SupportManager != null && Model.SupportManager.Count > 0)
+                        {
+                            foreach (var item in Model.SupportManager)
+                            {
+                                <tr>
+                                    <td>@(nSupportManager += 1)</td>
+                                    <td>
+                                        <div class="icon"></div>
+                                        <p>@item.CompanyName</p>
+                                    </td>
+                                    <td>@item.EmailId</td>
+                                </tr>
+
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-wrapper">
+                <div class="table-header">
+                    Support Representatives
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Company</th>
+                            <th>E-Mail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.SupportRepresentative != null && Model.SupportRepresentative.Count > 0)
+                        {
+                            foreach (var item in Model.SupportRepresentative)
+                            {
+                                <tr>
+                                    <td>@(nSupportRepresentative += 1)</td>
+                                    <td>
+                                        <div class="icon"></div>
+                                        <p>@item.CompanyName</p>
+                                    </td>
+                                    <td>@item.EmailId</td>
+                                </tr>
+
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
